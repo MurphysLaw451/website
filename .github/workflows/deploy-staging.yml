@@ -1,7 +1,8 @@
-name: Deploy production
+name: Deploy staging
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+      - main
 
 jobs:
   deploy:
@@ -11,7 +12,7 @@ jobs:
         uses: actions/checkout@v1
 
       - name: Build
-        run: mkdir -p dist && echo "hello world" > ./dist/index.html
+        run: mkdir -p dist && echo "hello staging world" > ./dist/index.html
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -21,4 +22,4 @@ jobs:
           aws-region: eu-west-1
 
       - name: Deploy static site to S3 bucket
-        run: aws s3 sync ./dist/ s3://dgnx.finance/ --delete
+        run: aws s3 sync ./dist/ s3://staging.dgnx.finance/ --delete
