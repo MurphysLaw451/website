@@ -23,10 +23,10 @@ jobs:
           restore-keys: npm-
 
       - name: Install dependencies
-        run: yarn install
+        run: npm ci --ignore-scripts
 
       - name: Build
-        run: yarn build
+        run: npm run build
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
