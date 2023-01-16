@@ -102,7 +102,7 @@ export function Header() {
           <div className="flex items-center md:gap-x-12">
             <Link href="#" aria-label="Home">
               <Image
-                className="h-14 w-14 object-cover"
+                className="h-14 w-14"
                 src={logoImage}
                 alt=""
                 width={56}

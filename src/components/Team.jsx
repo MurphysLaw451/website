@@ -22,25 +22,24 @@ import teamWeizenstar from '@/images/team/weizenstar.jpeg'
 import teamRock from '@/images/team/rock.jpg'
 
 const people = [
-  { name: 'Bomba', role: '-', imageUrl: teamBomba },
-  { name: 'Chief Jawa', role: '-', imageUrl: teamChiefJawa },
-  { name: 'Crypto Stiggy', role: '-', imageUrl: teamCryptoStiggy },
-  { name: 'Daniel', role: '-', imageUrl: teamDaniel },
-  { name: 'DB', role: '-', imageUrl: teamDB },
-  { name: 'Degen Comedian', role: '-', imageUrl: teamDegenComedian },
-  { name: 'Degen Joker', role: '-', imageUrl: teamDegenJoker },
-  { name: 'Degen Trader', role: '-', imageUrl: teamDegenTrader },
-  { name: 'Eric', role: '-', imageUrl: teamEric },
-  { name: 'Ivo', role: '-', imageUrl: teamIvo },
-  { name: 'JC', role: '-', imageUrl: teamJC },
-  { name: 'K9', role: '-', imageUrl: teamK9 },
-  { name: 'Lex', role: '-', imageUrl: teamLex },
-  { name: 'Morty', role: '-', imageUrl: teamMorty },
-  { name: 'Stuart', role: '-', imageUrl: teamStuart },
-  { name: 'The Master Xi', role: '-', imageUrl: teamMasterXi },
-  { name: 'Troke Latu', role: '-', imageUrl: teamTrokeLatu },
-  { name: 'Weizenstar', role: '-', imageUrl: teamWeizenstar },
-  { name: 'Rock', role: 'Frontend dev', imageUrl: teamRock },
+  { name: 'Bomba', role: 'Community Management', imageUrl: teamBomba },
+  { name: 'Chief Jawa', role: 'Design', imageUrl: teamChiefJawa },
+  { name: 'Crypto Stiggy', role: 'Blockchain Analytics & Security', imageUrl: teamCryptoStiggy },
+  { name: 'Daniel', role: 'Lead Solidity Dev', imageUrl: teamDaniel },
+  { name: 'DB', role: 'Operations', imageUrl: teamDB },
+  { name: 'Degen Comedian', role: 'Developer', imageUrl: teamDegenComedian },
+  { name: 'Degen Joker', role: 'Marketing & Community Management', imageUrl: teamDegenJoker },
+  { name: 'Degen Trader', role: 'Operations & Marketing', imageUrl: teamDegenTrader },
+  { name: 'Eric', role: 'Community Management', imageUrl: teamEric },
+  { name: 'JC', role: 'Marketing & Community Management', imageUrl: teamJC },
+  { name: 'K9', role: 'Operations', imageUrl: teamK9 },
+  { name: 'Lex', role: 'Marketing', imageUrl: teamLex },
+  { name: 'Morty', role: 'Design', imageUrl: teamMorty },
+  { name: 'Stuart', role: 'Marketing', imageUrl: teamStuart },
+  { name: 'The Master Xi', role: 'Design', imageUrl: teamMasterXi },
+  { name: 'Troke Latu', role: 'Community Management', imageUrl: teamTrokeLatu },
+  { name: 'Weizenstar', role: 'Product Manager & Developer', imageUrl: teamWeizenstar },
+  { name: 'Rock', role: 'Frontend Dev', imageUrl: teamRock },
 ]
 
 export function Team() {
@@ -56,7 +55,7 @@ export function Team() {
           </div>
           <ul
             role="list"
-            className="mx-auto grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-4 md:gap-x-6 lg:max-w-5xl lg:gap-x-8 lg:gap-y-12 xl:grid-cols-6"
+            className="mx-auto grid grid-cols-3 gap-x-2 gap-y-4 sm:grid-cols-6 md:gap-x-3 lg:max-w-5xl lg:gap-x-4 lg:gap-y-6 xl:grid-cols-8"
           >
             {people.map((person) => (
               <li key={person.name}>
