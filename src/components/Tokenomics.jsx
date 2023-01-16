@@ -26,8 +26,8 @@ const testimonials = [
         '3% of buys and sells stay in the LP to creating a stable price floor and ensuring there is always liquidity to sell $DGNX.',
     },
     {
-      title: 'Backing: 2%',
-      content: '2% of all buys and sells are sent to the liquidity backing pool, giving $DGNX an ever increasing minimum value.',
+      title: 'Backing: 4%',
+      content: '4% of all buys and sells are sent to the liquidity backing pool, giving $DGNX an ever increasing minimum value.',
     },
   ],
   [
@@ -36,10 +36,10 @@ const testimonials = [
       content:
         '2% of all transactions will be used to cover development costs, including audits.',
     },
-    {
-      title: 'Investment fund: 2%',
-      content: '2% of all transactions will be sent to an investment fund for the growth of DegenX.',
-    },
+    // {
+    //   title: 'Investment fund: 2%',
+    //   content: '2% of all transactions will be sent to an investment fund for the growth of DegenX.',
+    // },
   ],
 ]
 
