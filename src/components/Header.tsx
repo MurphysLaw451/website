@@ -5,15 +5,15 @@ import Link from 'next/link'
 import { Popover, Transition } from '@headlessui/react'
 import clsx from 'clsx'
 
-import { Button } from '@/components/Button'
-import { Container } from '@/components/Container'
-import { NavLink } from '@/components/NavLink'
+import { Button } from './Button'
+import { Container } from './Container'
+import { NavLink } from './NavLink'
 
-import logoImage from '@/images/logo.png'
+import logoImage from '../images/logo.png'
 
-function MobileNavLink({ href, children }) {
+function MobileNavLink({ href, children, ...props }) {
   return (
-    <Popover.Button as={Link} href={href} className="block w-full p-2">
+    <Popover.Button as={Link} href={href} className="block w-full p-2" {...props}>
       {children}
     </Popover.Button>
   )
@@ -126,7 +126,7 @@ export function Header() {
             >
               <FaTelegramPlane className="w-6 h-6 text-gray-500" />
             </Link>
-            <Button href="https://app.dgnx.finance/dashboard" color="orange">
+            <Button className="" href="https://app.dgnx.finance/dashboard" color="orange">
               <span>
                 Launch app
               </span>

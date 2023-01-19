@@ -3,17 +3,17 @@ import Image from 'next/image'
 import { Tab } from '@headlessui/react'
 import clsx from 'clsx'
 
-import projectSwap from '@/images/projects/swap.png'
-import projectDgnx from '@/images/projects/dgnx.png'
-import projectDao from '@/images/projects/dao.png'
-import projectBridge from '@/images/projects/bridge.png'
-import projectLocker from '@/images/projects/locker.png'
-import projectStake from '@/images/projects/stake.png'
-import projectFactor from '@/images/projects/factor.png'
-import projectNFT from '@/images/projects/nft.png'
-import projectClinic from '@/images/projects/clinic.png'
+import projectSwap from '../images/projects/swap.png'
+import projectDgnx from '../images/projects/dgnx.png'
+import projectDao from '../images/projects/dao.png'
+import projectBridge from '../images/projects/bridge.png'
+import projectLocker from '../images/projects/locker.png'
+import projectStake from '../images/projects/stake.png'
+import projectFactor from '../images/projects/factor.png'
+import projectNFT from '../images/projects/nft.png'
+import projectClinic from '../images/projects/clinic.png'
 
-import { Container } from '@/components/Container'
+import { Container } from './Container'
 
 const features = [
   {

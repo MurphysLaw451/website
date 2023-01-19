@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 
-import { Button } from '@/components/Button'
-import { Container } from '@/components/Container'
+import { Button } from './Button'
+import { Container } from './Container'
 
 function SwirlyDoodle({ className }) {
   return (
@@ -46,7 +46,7 @@ function CheckIcon({ className }) {
   )
 }
 
-function Plan({ title, description, href, features }) {
+function Plan({ title, description }) {
   return (
     <section
       className={clsx(
@@ -90,17 +90,14 @@ export function Backing() {
           <Plan
             title="Backing"
             description="The DGNX token is backed by its base assets, providing an ever-increasing minimal value that is balanced between blue-chip investments, stable assets, and volatile moonshots. This ensures that the DGNX token will retain its value and provide a steady return on investment for its holders. With its unique balance of assets, the DGNX token is an excellent choice for those looking for stability and growth in their investments."
-            href="/register"
           />
           <Plan
             title="Liquidity"
             description="The DGNX token is unique in that a set percentage, 2%, of every buy and sell transaction is sent to the Liquidity Backing pool. This ensures that the token's minimal value can never decrease, and it provides added stability and security for its holders. With this innovative feature, the DGNX token is an excellent choice for those looking for more security."
-            href="/register"
           />
           <Plan
             title="Burn"
             description="The DGNX token is designed to provide added stability and security for its holders. If the market price ever drops below the intrinsic minimal value, holders have the option to burn their DGNX tokens for their share of the Liquidity Backing. This ensures that the token's minimal value can never decrease, and holders can always expect to be able to sell or burn their DGNX."
-            href="/register"
           />
         </div>
       </Container>

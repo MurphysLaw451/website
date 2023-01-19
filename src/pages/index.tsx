@@ -1,16 +1,16 @@
 import Head from 'next/head'
 
-import { CallToAction } from '@/components/CallToAction'
-import { Faqs } from '@/components/Faqs'
-import { Team } from '@/components/Team'
-import { Roadmap } from '@/components/Roadmap'
-import { Footer } from '@/components/Footer'
-import { Header } from '@/components/Header'
-import { Hero } from '@/components/Hero'
-import { Backing } from '@/components/Backing'
-import { PrimaryFeatures } from '@/components/PrimaryFeatures'
-import { SecondaryFeatures } from '@/components/SecondaryFeatures'
-import { Tokenomics } from '@/components/Tokenomics'
+import { CallToAction } from '../components/CallToAction'
+import { Faqs } from '../components/Faqs'
+import { Team } from '../components/Team'
+import { Roadmap } from '../components/Roadmap'
+import { Footer } from '../components/Footer'
+import { Header } from '../components/Header'
+import { Hero } from '../components/Hero'
+import { Backing } from '../components/Backing'
+import { PrimaryFeatures } from '../components/PrimaryFeatures'
+import { SecondaryFeatures } from '../components/SecondaryFeatures'
+import { Tokenomics } from '../components/Tokenomics'
 
 export default function Home() {
   return (

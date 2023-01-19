@@ -2,9 +2,9 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { FaTelegramPlane, FaTwitter, FaDiscord, FaInstagram, FaTiktok } from 'react-icons/fa';
 
-import { Container } from '@/components/Container'
+import { Container } from './Container'
 
-import logoImage from '@/images/logo.png'
+import logoImage from '../images/logo.png'
 
 export function Footer() {
   return (
