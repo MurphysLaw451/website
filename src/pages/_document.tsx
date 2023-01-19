@@ -5,7 +5,7 @@ export default function Document(props) {
 
   return (
     <Html
-      className="h-full scroll-smooth bg-white antialiased [font-feature-settings:'ss01']"
+      className="dark h-full scroll-smooth antialiased [font-feature-settings:'ss01']"
       lang="en"
     >
       <Head>
@@ -13,7 +13,7 @@ export default function Document(props) {
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
       </Head>
-      <body className="flex h-full flex-col">
+      <body className="flex h-full flex-col bg-white dark:bg-gray-900 ">
         <Main />
         <NextScript />
       </body>

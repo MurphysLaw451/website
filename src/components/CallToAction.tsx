@@ -8,11 +8,11 @@ export function CallToAction() {
   return (
     <section
       id="get-started-today"
-      className="relative overflow-hidden bg-orange-500 py-32"
+      className="relative overflow-hidden bg-orange-500 dark:bg-transparent py-32"
     >
       <Container className="relative">
         <div className="mx-auto max-w-lg text-center">
-          <h2 className="font-display text-3xl tracking-tight text-white sm:text-4xl">
+          <h2 className="font-display text-3xl tracking-tight text-white dark:text-orange-500 sm:text-4xl">
             Join in!
           </h2>
           <p className="my-4 text-lg tracking-tight text-white">

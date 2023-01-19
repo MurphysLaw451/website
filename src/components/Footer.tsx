@@ -8,7 +8,7 @@ import logoImage from '../images/logo.png'
 
 export function Footer() {
   return (
-    <footer className="bg-slate-50">
+    <footer className="">
       <Container>
         <div className="py-16">
           <Image

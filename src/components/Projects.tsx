@@ -85,14 +85,14 @@ export function Projects() {
     <section
       id="projects"
       aria-label="Features for running your books"
-      className="relative overflow-hidden bg-orange-500 pt-20 pb-28 sm:py-32"
+      className="relative overflow-hidden bg-orange-500 dark:bg-gray-900 pt-20 pb-28 sm:py-32"
     >
       <Container className="relative">
         <div className="max-w-2xl md:mx-auto md:text-center xl:max-w-none">
-          <h2 className="font-display text-3xl tracking-tight text-white sm:text-4xl md:text-5xl">
+          <h2 className="font-display text-3xl dark:text-orange-500 tracking-tight text-white sm:text-4xl md:text-5xl">
             Nine projects to rule them all
           </h2>
-          <p className="mt-6 text-lg tracking-tight text-white">
+          <p className="mt-6 text-lg tracking-tight text-white dark:text-slate-400">
             Meet the DegenX ecosystem
           </p>
         </div>
@@ -111,7 +111,7 @@ export function Projects() {
                       className={clsx(
                         'group relative rounded-full py-1 px-4 lg:rounded-r-none lg:rounded-l-xl lg:py-2 lg:px-6',
                         selectedIndex === featureIndex
-                          ? 'bg-white lg:bg-white/10 lg:ring-1 lg:ring-inset lg:ring-white/10'
+                          ? 'bg-white dark:bg-white/10 lg:bg-white/10 lg:ring-1 lg:ring-inset lg:ring-white/10'
                           : 'hover:bg-white/10 lg:hover:bg-white/5'
                       )}
                     >
@@ -120,8 +120,8 @@ export function Projects() {
                           className={clsx(
                             'font-display text-lg [&:not(:focus-visible)]:focus:outline-none',
                             selectedIndex === featureIndex
-                              ? 'text-orange-600 lg:text-white'
-                              : 'text-orange-100 hover:text-white lg:text-white'
+                              ? 'text-orange-600 lg:text-white dark:text-orange-500'
+                              : 'text-orange-100 hover:text-white lg:text-white dark:text-slate-400'
                           )}
                         >
                           <span className="absolute inset-0 rounded-full lg:rounded-r-none lg:rounded-l-xl" />
@@ -137,9 +137,9 @@ export function Projects() {
                   <Tab.Panel key={feature.title} unmount={false}>
                     <div className="relative sm:px-6">
                       <div className="" />
-                      <h3 className="text-center text-white text-2xl my-3">{feature.title}</h3>
+                      <h3 className="text-center text-white dark:text-slate-400 text-2xl my-3">{feature.title}</h3>
                         <Image className="w-48 h-48 mx-auto" src={feature.image} alt={feature.title} unoptimized />
-                        <p className="relative mx-auto max-w-2xl text-base text-white sm:text-center">
+                        <p className="relative mx-auto max-w-2xl text-base text-white dark:text-slate-400 sm:text-center">
                           {feature.description}
                         </p>
                     </div>

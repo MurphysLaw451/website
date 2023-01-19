@@ -23,7 +23,7 @@ function MobileNavIcon({ open }) {
   return (
     <svg
       aria-hidden="true"
-      className="h-3.5 w-3.5 overflow-visible stroke-slate-700"
+      className="h-3.5 w-3.5 overflow-visible stroke-slate-700 dark:stroke-slate-200"
       fill="none"
       strokeWidth={2}
       strokeLinecap="round"
@@ -124,7 +124,7 @@ export function Header() {
               className="group"
               target="_blank"
             >
-              <FaTelegramPlane className="w-6 h-6 text-gray-500" />
+              <FaTelegramPlane className="w-6 h-6 text-gray-500 dark:text-slate-400" />
             </Link>
             <Button className="" href="https://app.dgnx.finance/dashboard" color="orange">
               <span>

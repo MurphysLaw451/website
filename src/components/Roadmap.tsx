@@ -10,7 +10,7 @@ const RoadmapItem = (props) => {
                 <div className="hidden sm:flex w-full bg-gray-200 h-0.5 dark:bg-gray-700"></div>
             </div>
             <div className="mt-3 sm:pr-8 lg:ml-2">
-                <h3 className="text-lg text-center md:text-left font-semibold text-gray-900 dark:text-white">{props.title}</h3>
+                <h3 className="text-lg text-center md:text-left font-semibold text-gray-900 dark:text-slate-400">{props.title}</h3>
                 <time className="block text-center md:text-left mb-2 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">{props.time}</time>
                 <div className="text-base text-center md:text-left font-normal text-gray-500 dark:text-gray-400">{props.items.map(item => <div key={item}>{item}</div>)}</div>
             </div>
@@ -20,11 +20,11 @@ const RoadmapItem = (props) => {
 
 export function Roadmap() {
     return (
-        <div className="bg-white" id="roadmap">
+        <div className="" id="roadmap">
             <div className="mx-auto max-w-7xl py-12 px-6 text-center lg:px-8 lg:py-24">
                 <div className="space-y-8 sm:space-y-12">
                     <div className="space-y-5 sm:mx-auto sm:max-w-xl sm:space-y-4 lg:max-w-5xl">
-                        <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Roadmap</h2>
+                        <h2 className="text-3xl tracking-tight sm:text-4xl dark:text-orange-500">Roadmap</h2>
                     </div>
                     <ol className="items-stretch sm:flex">
                         <RoadmapItem title="Phase 1" time="Done!" items={["✓ Token Launch", "✓ Website", "✓ dAPP"]} />

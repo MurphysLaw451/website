@@ -24,24 +24,24 @@ const features = [
   },
 ]
 
-function Feature({ feature, isActive, className, ...props }) {
+function Feature({ feature, className, ...props }) {
   return (
     <div
-      className={clsx(className, !isActive && 'opacity-75 hover:opacity-100')}
+      className={clsx(className, 'opacity-75 hover:opacity-100')}
       {...props}
     >
       <h3
         className={clsx(
           'mt-6 text-sm font-medium',
-          isActive ? 'text-orange-600' : 'text-slate-600'
+          'text-slate-600 dark:text-slate-400'
         )}
       >
         {feature.name}
       </h3>
-      <p className="mt-2 font-display text-xl text-slate-900">
+      <p className="mt-2 font-display text-xl text-slate-900 dark:text-slate-400">
         {feature.summary}
       </p>
-      <p className="mt-4 text-sm text-slate-600">{feature.description}</p>
+      <p className="mt-4 text-sm text-slate-600 dark:text-slate-400">{feature.description}</p>
     </div>
   )
 }
@@ -96,10 +96,10 @@ export function Features() {
     >
       <Container>
         <div className="mx-auto max-w-2xl md:text-center">
-          <h2 className="font-display text-3xl tracking-tight text-slate-900 sm:text-4xl">
+          <h2 className="font-display text-3xl tracking-tight text-slate-900 dark:text-orange-500 sm:text-4xl">
             $DGNX
           </h2>
-          <p className="mt-4 text-lg tracking-tight text-slate-700">
+          <p className="mt-4 text-lg tracking-tight text-slate-700 dark:text-slate-400">
             Three unique features that make us stand out
           </p>
         </div>

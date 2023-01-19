@@ -44,12 +44,12 @@ const people = [
 
 export function Team() {
   return (
-    <div className="bg-white" id="team">
+    <div className="" id="team">
       <div className="mx-auto max-w-7xl py-12 px-6 text-center lg:px-8 lg:py-24">
         <div className="space-y-8 sm:space-y-12">
           <div className="space-y-5 sm:mx-auto sm:max-w-xl sm:space-y-4 lg:max-w-5xl">
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">The team</h2>
-            <p>
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl dark:text-orange-500">The team</h2>
+            <p className="dark:text-slate-400">
               Our team is doxxed through SolidProof, view <a className="text-orange-500" href="https://github.com/solidproof/projects/blob/main/DGNX/KYC_Certificate_DegenX.png">here</a>.
             </p>
           </div>
@@ -63,7 +63,7 @@ export function Team() {
                   <Image className="mx-auto h-20 w-20 rounded-full lg:h-24 lg:w-24" src={person.imageUrl} alt="" width="96" height="96" />
                   <div className="space-y-2">
                     <div className="text-xs font-medium lg:text-sm">
-                      <h3>{person.name}</h3>
+                      <h3 className="dark:text-slate-400">{person.name}</h3>
                       <p className="text-orange-600">{person.role}</p>
                     </div>
                   </div>

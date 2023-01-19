@@ -6,14 +6,14 @@ import { Container } from './Container'
 export function Hero() {
   return (
     <Container className="pt-20 pb-16 text-center lg:pt-32">
-      <h1 className="mx-auto max-w-4xl font-display text-5xl font-medium tracking-tight text-slate-900 sm:text-7xl">
+      <h1 className="mx-auto max-w-4xl font-display text-5xl font-medium tracking-tight text-slate-900 dark:text-slate-200 sm:text-7xl">
         DegenX<br />A{' '}
         <span className="relative whitespace-nowrap text-orange-600">
           <span className="relative">DeFi</span>
         </span>{' '}
         Powerhouse
       </h1>
-      <p className="mx-auto mt-6 max-w-2xl text-lg tracking-tight text-slate-700">
+      <p className="mx-auto mt-6 max-w-2xl text-lg tracking-tight text-slate-700 dark:text-slate-400">
         DegenX is a multichain ecosystem of DeFi products that provides value for both projects and users. Revenue is distributed to stakers of $DGNX, the governance token of DegenX with liquidity backing: a minimum guaranteed price that only grows.
       </p>
       <div className="mt-10 flex justify-center gap-x-6">
