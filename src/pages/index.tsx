@@ -8,8 +8,8 @@ import { Footer } from '../components/Footer'
 import { Header } from '../components/Header'
 import { Hero } from '../components/Hero'
 import { Backing } from '../components/Backing'
-import { PrimaryFeatures } from '../components/PrimaryFeatures'
-import { SecondaryFeatures } from '../components/SecondaryFeatures'
+import { Projects } from '../components/Projects'
+import { Features } from '../components/Features'
 import { Tokenomics } from '../components/Tokenomics'
 
 export default function Home() {
@@ -25,8 +25,8 @@ export default function Home() {
       <Header />
       <main>
         <Hero />
-        <PrimaryFeatures />
-        <SecondaryFeatures />
+        <Projects />
+        <Features />
         <CallToAction />
         <Tokenomics />
         <Backing />

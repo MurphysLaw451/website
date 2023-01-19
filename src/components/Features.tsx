@@ -87,7 +87,7 @@ function FeaturesDesktop() {
   )
 }
 
-export function SecondaryFeatures() {
+export function Features() {
   return (
     <section
       id="secondary-features"
