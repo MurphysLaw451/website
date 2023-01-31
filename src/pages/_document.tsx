@@ -1,11 +1,14 @@
 import { Head, Html, Main, NextScript } from 'next/document'
+import { useEffect, useState } from 'react'
 
 export default function Document(props) {
   let pageProps = props.__NEXT_DATA__?.props?.pageProps
 
+  const [ready, setReady] = useState(false);
+
   return (
     <Html
-      className="dark h-full scroll-smooth antialiased [font-feature-settings:'ss01']"
+      className="h-full scroll-smooth antialiased [font-feature-settings:'ss01']"
       lang="en"
     >
       <Head>

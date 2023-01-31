@@ -5,3 +5,19 @@
 #__next {
   min-height: 100%;
 }
+
+.lifi-container > .MuiBox-root {
+  justify-content: left;
+}
+
+.MuiScopedCssBaseline-root, .MuiInputBase-root {
+  background-color: transparent !important;
+}
+
+.MuiBox-root {
+  background-color: transparent !important;
+}
+
+.MuiBadge-root .MuiBox-root {
+  background-color: #333 !important;
+}

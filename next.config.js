@@ -1,5 +1,15 @@
+const withTM = require('next-transpile-modules')(['@lifi/widget']);
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async rewrites() {
+    return [
+      {
+        source: '/dapp/:path*',
+        destination: '/dapp/',
+      },
+    ]
+  },
   reactStrictMode: true,
   experimental: {
     scrollRestoration: true,
@@ -9,4 +19,4 @@ const nextConfig = {
   }
 }
 
-module.exports = nextConfig
+module.exports = withTM(nextConfig)

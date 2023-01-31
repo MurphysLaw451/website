@@ -10,6 +10,7 @@ import { Container } from './Container'
 import { NavLink } from './NavLink'
 
 import logoImage from '../images/logo.png'
+import { DarkmodeToggle } from './DarkmodeToggle';
 
 function MobileNavLink({ href, children, ...props }) {
   return (
@@ -126,7 +127,8 @@ export function Header() {
             >
               <FaTelegramPlane className="w-6 h-6 text-gray-500 dark:text-slate-400" />
             </Link>
-            <Button className="" href="https://app.dgnx.finance/dashboard" color="orange">
+            <DarkmodeToggle />
+            <Button className="" href="/dapp" color="orange">
               <span>
                 Launch app
               </span>
