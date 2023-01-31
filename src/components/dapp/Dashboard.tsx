@@ -1,4 +1,5 @@
 import clsx from "clsx"
+import { useTheme } from "next-themes"
 import { useEffect, useRef, useState } from "react"
 import { HiOutlineExternalLink } from "react-icons/hi"
 import { RouteObject } from "react-router-dom"
@@ -49,6 +50,8 @@ const TradingViewWidget = () => {
     let tvScriptLoadingPromise;
     const onLoadScriptRef = useRef<any>();
 
+    const { theme } = useTheme()
+
     useEffect(
         () => {
             onLoadScriptRef.current = createWidget;
@@ -78,7 +81,7 @@ const TradingViewWidget = () => {
                         width: "100%",
                         height: "100%",
                         locale: "en",
-                        colorTheme: "dark",
+                        colorTheme: theme === 'light' ? 'light' : 'dark',
                         autosize: true,
                         showVolume: false,
                         hideDateRanges: false,
@@ -112,7 +115,7 @@ const TradingViewWidget = () => {
                         width: "100%",
                         height: "100%",
                         locale: "en",
-                        colorTheme: "dark",
+                        colorTheme: theme === 'light' ? 'light' : 'dark',
                         autosize: true,
                         showVolume: false,
                         hideDateRanges: false,

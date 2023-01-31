@@ -15,6 +15,10 @@ export const DarkmodeToggle = () => {
     }
 
     useEffect(() => {
+        if (theme === 'system' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            setTheme('dark')
+        }
+
         setReady(true);
     }, [])
 
