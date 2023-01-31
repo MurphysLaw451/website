@@ -87,7 +87,7 @@ function MobileNavigation() {
             <MobileNavLink href="#team">Team</MobileNavLink>
             <MobileNavLink href="#roadmap">Roadmap</MobileNavLink>
             <hr className="m-2 border-slate-300/40" />
-            <MobileNavLink target="_blank" href="https://app.xy.finance/?amount=1&fromTokenAddress=0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE&sourceChainId=1&targetChainId=43114&toTokenAddress=0x51e48670098173025C477D9AA3f0efF7BF9f7812&slippage=15">Buy</MobileNavLink>
+            <MobileNavLink href="/dapp/buy">Buy</MobileNavLink>
           </Popover.Panel>
         </Transition.Child>
       </Transition.Root>
@@ -116,7 +116,7 @@ export function Header() {
               <NavLink href="#backing">Backing</NavLink>
               <NavLink href="#team">Team</NavLink>
               <NavLink href="#roadmap">Roadmap</NavLink>
-              <NavLink target="_blank" href="https://app.xy.finance/?amount=1&fromTokenAddress=0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE&sourceChainId=1&targetChainId=43114&toTokenAddress=0x51e48670098173025C477D9AA3f0efF7BF9f7812&slippage=15">Buy</NavLink>
+              <NavLink href="/dapp/buy">Buy</NavLink>
             </div>
           </div>
           <div className="flex items-center gap-x-5 md:gap-x-8">

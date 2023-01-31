@@ -17,7 +17,7 @@ export function Hero() {
         DegenX is a multichain ecosystem of DeFi products that provides value for both projects and users. Revenue is distributed to stakers of $DGNX, the governance token of DegenX with liquidity backing: a minimum guaranteed price that only grows.
       </p>
       <div className="mt-10 flex justify-center gap-x-6">
-        <Button className="" href="https://app.xy.finance/?amount=1&fromTokenAddress=0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE&sourceChainId=1&targetChainId=43114&toTokenAddress=0x51e48670098173025C477D9AA3f0efF7BF9f7812&slippage=15" target="_blank">Buy $DGNX now</Button>
+        <Button className="" href="/dapp/buy">Buy $DGNX now</Button>
         <Button
           className=""
           href="https://docs.dgnx.finance/"
