@@ -328,13 +328,17 @@ export const Dashboard = (props: RouteObject) => {
             <div className="flex flex-col lg:flex-row w-full">
                 <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
                     <h3 className="text-xl mb-3">Supply</h3>
-                    <div className="flex">
+                    {/* <div className="flex">
                         <div className="flex-grow">Minted supply</div>
                         <div>21,000,000.00</div>
-                    </div>
+                    </div> */}
                     <div className="flex">
                         <div className="flex-grow">Total supply</div>
                         <div>{burnAmount ? numberFormatter2.format(21000000 - burnAmount) : '...'}</div>
+                    </div>
+                    <div className="flex">
+                        <div className="flex-grow">DGNX Burnt</div>
+                        <div>{burnAmount ? numberFormatter2.format(burnAmount) : '...'}</div>
                     </div>
                     <div className="flex">
                         <div className="flex-grow">Circulating supply</div>
@@ -361,15 +365,15 @@ export const Dashboard = (props: RouteObject) => {
                     </div> : null}
                     {dexData ? <div className="flex">
                         <div className="flex-grow">Market price</div>
-                        <div>{numberFormatter2.format((dexData.traderJoe.liquidity.usd * parseFloat(dexData.traderJoe.priceUsd) + dexData.pangolin.liquidity.usd * parseFloat(dexData.pangolin.priceUsd)) / (dexData.traderJoe.liquidity.usd + dexData.pangolin.liquidity.usd))}</div>
+                        <div>{numberFormatter4.format((dexData.traderJoe.liquidity.usd * parseFloat(dexData.traderJoe.priceUsd) + dexData.pangolin.liquidity.usd * parseFloat(dexData.pangolin.priceUsd)) / (dexData.traderJoe.liquidity.usd + dexData.pangolin.liquidity.usd))}</div>
                     </div> : null}
                     {dexData ? <div className="flex">
                         <div className="flex-grow">Native price</div>
-                        <div>{numberFormatter2.format((dexData.traderJoe.liquidity.base * parseFloat(dexData.traderJoe.priceNative) + dexData.pangolin.liquidity.base * parseFloat(dexData.pangolin.priceNative)) / (dexData.traderJoe.liquidity.base + dexData.pangolin.liquidity.base))} AVAX</div>
+                        <div>{numberFormatter4.format((dexData.traderJoe.liquidity.base * parseFloat(dexData.traderJoe.priceNative) + dexData.pangolin.liquidity.base * parseFloat(dexData.pangolin.priceNative)) / (dexData.traderJoe.liquidity.base + dexData.pangolin.liquidity.base))} AVAX</div>
                     </div> : null}
                     {dexData ? <div className="flex">
                         <div className="flex-grow">Liquidity backing price</div>
-                        <div>${(backingAmountUsd && burnAmount ? numberFormatter2.format(backingAmountUsd / (21000000 - burnAmount)) : '...')}</div>
+                        <div>${(backingAmountUsd && burnAmount ? numberFormatter4.format(backingAmountUsd / (21000000 - burnAmount)) : '...')}</div>
                     </div> : null}
                 </div>
             </div>
@@ -472,19 +476,19 @@ export const Dashboard = (props: RouteObject) => {
             
             <div className="flex flex-col lg:flex-row w-full">
                 <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
-                    <WalletInfo name="Marketing wallet" address="0x16eF18E42A7d72E52E9B213D7eABA269B90A4643" />
+                    <WalletInfo name="Marketing" address="0x16eF18E42A7d72E52E9B213D7eABA269B90A4643" />
                 </div>
                 <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
-                    <WalletInfo name="Liquidity backing wallet" address="0x31CE1540414361cFf99e83a05e4ad6d35D425202" />
+                    <WalletInfo name="Liquidity Backing" address="0x31CE1540414361cFf99e83a05e4ad6d35D425202" />
                 </div>
             </div>
 
             <div className="flex flex-col lg:flex-row w-full">
                 <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
-                    <WalletInfo name="Investment fund wallet" address="0x829619513F202e1bFD8929f656EF96bac73BDAe8" />
+                    <WalletInfo name="Investment Fund" address="0x829619513F202e1bFD8929f656EF96bac73BDAe8" />
                 </div>
                 <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
-                    <WalletInfo name="Platform wallet" address="0xcA01A9d36F47561F03226B6b697B14B9274b1B10" />
+                    <WalletInfo name="Platform" address="0xcA01A9d36F47561F03226B6b697B14B9274b1B10" />
                 </div>
             </div>
         </div>

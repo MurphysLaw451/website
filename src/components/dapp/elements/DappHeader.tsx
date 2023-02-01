@@ -14,7 +14,7 @@ export function DappHeader() {
       <DappContainer>
         <nav className="relative z-50 flex justify-between">
           <div className="flex items-center md:gap-x-12">
-            <div className="sm:hidden mr-3">
+            <div className="lg:hidden mr-3">
               <Sidebar mobile />
             </div>
             <Link href="/" aria-label="Home">

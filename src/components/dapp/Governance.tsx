@@ -36,7 +36,7 @@ export const Governance = (props: RouteObject) => {
                 </div>
             </div>
 
-            <div className="flex items-center justify-center w-full">
+            <div className="flex items-center justify-center w-full mb-6">
                 <Button target="_blank" color="orange" href="https://www.tally.xyz/gov/degenx-ecosystem">
                     Go to governance page
                 </Button>
