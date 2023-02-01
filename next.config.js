@@ -10,6 +10,7 @@ const nextConfig = {
       },
     ]
   },
+  trailingSlash: true,
   reactStrictMode: true,
   experimental: {
     scrollRestoration: true,

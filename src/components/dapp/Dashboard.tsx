@@ -5,7 +5,8 @@ import { HiOutlineExternalLink } from "react-icons/hi"
 import { RouteObject } from "react-router-dom"
 import { Button } from "../Button"
 
-const numberFormatter = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 })
+const numberFormatter2 = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+const numberFormatter4 = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 })
 const percentFormatter = new Intl.NumberFormat('en-US', { style: 'percent', minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
 const showAmount = (walletData: any, tokenAddress: string) => {
@@ -17,7 +18,7 @@ const showAmount = (walletData: any, tokenAddress: string) => {
         balance += parseInt(walletData.find((item) => !item.tokenAddress)?.balance)
     }
 
-    return numberFormatter.format(balance / 10 ** token.token.decimals)
+    return numberFormatter2.format(balance / 10 ** token.token.decimals)
 }
 
 const showFiatAmount = (walletData: any, tokenAddress: string, returnRaw: boolean = false) => {
@@ -33,7 +34,7 @@ const showFiatAmount = (walletData: any, tokenAddress: string, returnRaw: boolea
         return fiatBalance
     }
 
-    return numberFormatter.format(fiatBalance)
+    return numberFormatter2.format(fiatBalance)
 }
 
 let addressDataCache = {}
@@ -146,7 +147,7 @@ const TradingViewWidget = () => {
     return (
         <div className="flex flex-col lg:flex-row w-full">
             <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full h-[500px]">
-                <h3 className="text-2xl mb-4">DGNX / wAVAX chart</h3>
+                <h3 className="text-xl mb-4">DGNX / wAVAX chart</h3>
                 <div className='tradingview-widget-container'>
                     <div id='tradingview_4246e' />
                     <div className="tradingview-widget-copyright">
@@ -155,7 +156,7 @@ const TradingViewWidget = () => {
                 </div>
             </div>
             <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full h-[500px]">
-                <h3 className="text-2xl mb-4">DGNX / USD chart</h3>
+                <h3 className="text-xl mb-4">DGNX / USD chart</h3>
                 <div className='tradingview-widget-container'>
                     <div id='tradingview_4246f' />
                     <div className="tradingview-widget-copyright">
@@ -177,7 +178,7 @@ const WalletInfo = (props: any) => {
     
     return (
         <>
-            <h3 className="text-2xl mb-4">{props.name} <a rel="noreferrer" href={`https://snowtrace.io/address/${props.address}`} target="_blank"><HiOutlineExternalLink className="inline text-gray-400" /></a></h3>
+            <h3 className="text-xl mb-4">{props.name} <a rel="noreferrer" href={`https://snowtrace.io/address/${props.address}`} target="_blank"><HiOutlineExternalLink className="inline text-gray-400" /></a></h3>
             {walletData
             ? (
                 <>
@@ -269,11 +270,11 @@ export const Dashboard = (props: RouteObject) => {
             <h1 className="text-4xl mb-4">Dashboard</h1>
             <div className="flex flex-col lg:flex-row w-full">
                 <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
-                    <h3 className="text-2xl">TraderJoe</h3>
+                    <h3 className="text-xl">TraderJoe</h3>
                     {dexData
                         ? (
                             <>
-                                <p className="text-right text-4xl">${dexData.traderJoe.priceUsd}</p>
+                                <p className="text-right text-2xl">${dexData.traderJoe.priceUsd}</p>
                                 <p className="text-right">{dexData.traderJoe.priceNative} AVAX</p>
                                 <p className={clsx("text-right mb-3", dexData.traderJoe.priceChange.h24 > 0 ? 'text-green-600' : 'text-red-600')}>
                                     {dexData.traderJoe.priceChange.h24 > 0 ? '↑' : '↓'}
@@ -288,11 +289,11 @@ export const Dashboard = (props: RouteObject) => {
                     }
                 </div>
                 <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
-                    <h3 className="text-2xl">Pangolin</h3>
+                    <h3 className="text-xl">Pangolin</h3>
                     {dexData
                         ? (
                             <>
-                                <p className="text-right text-4xl">${dexData.pangolin.priceUsd}</p>
+                                <p className="text-right text-2xl">${dexData.pangolin.priceUsd}</p>
                                 <p className="text-right">{dexData.pangolin.priceNative} AVAX</p>
                                 <p className={clsx("text-right mb-3", dexData.pangolin.priceChange.h24 > 0 ? 'text-green-600' : 'text-red-600')}>
                                     {dexData.pangolin.priceChange.h24 > 0 ? '↑' : '↓'}
@@ -307,12 +308,12 @@ export const Dashboard = (props: RouteObject) => {
                     }
                 </div>
                 <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
-                    <h3 className="text-2xl">Burnt</h3>
+                    <h3 className="text-xl">Burnt</h3>
                     {burnAmount && dexData
                         ? (
                             <>
-                                <p className="text-right text-4xl">{numberFormatter.format(burnAmount)}</p>
-                                <p className="text-right">${numberFormatter.format(dexData.pangolin.priceUsd * burnAmount)}</p>
+                                <p className="text-right text-2xl">{numberFormatter2.format(burnAmount)}</p>
+                                <p className="text-right">${numberFormatter2.format(dexData.pangolin.priceUsd * burnAmount)}</p>
                                 <p className={clsx("text-right mb-3")}>
                                     {percentFormatter.format(burnAmount / 21000000)}%
                                 </p>
@@ -326,56 +327,56 @@ export const Dashboard = (props: RouteObject) => {
 
             <div className="flex flex-col lg:flex-row w-full">
                 <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
-                    <h3 className="text-2xl mb-3">Supply</h3>
+                    <h3 className="text-xl mb-3">Supply</h3>
                     <div className="flex">
                         <div className="flex-grow">Minted supply</div>
                         <div>21,000,000.00</div>
                     </div>
                     <div className="flex">
                         <div className="flex-grow">Total supply</div>
-                        <div>{burnAmount ? numberFormatter.format(21000000 - burnAmount) : '...'}</div>
+                        <div>{burnAmount ? numberFormatter2.format(21000000 - burnAmount) : '...'}</div>
                     </div>
                     <div className="flex">
                         <div className="flex-grow">Circulating supply</div>
-                        <div>{(burnAmount && disburserAmount && lockerAmount) ? numberFormatter.format(21000000 - burnAmount - disburserAmount - lockerAmount) : '...'}</div>
+                        <div>{(burnAmount && disburserAmount && lockerAmount) ? numberFormatter2.format(21000000 - burnAmount - disburserAmount - lockerAmount) : '...'}</div>
                     </div>
                     <div className="flex">
                         <div className="flex-grow">Locked in Disburser</div>
-                        <div>{disburserAmount ? numberFormatter.format(disburserAmount) : '...'}</div>
+                        <div>{disburserAmount ? numberFormatter2.format(disburserAmount) : '...'}</div>
                     </div>
                     <div className="flex">
                         <div className="flex-grow">Locked in DAO Locker</div>
-                        <div>{lockerAmount? numberFormatter.format(lockerAmount) : '...'}</div>
+                        <div>{lockerAmount? numberFormatter2.format(lockerAmount) : '...'}</div>
                     </div>
                 </div>
                 <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
-                    <h3 className="text-2xl mb-3">Ø Averages</h3>
+                    <h3 className="text-xl mb-3">Ø Averages</h3>
                     {dexData ? <div className="flex">
                         <div className="flex-grow">Market cap</div>
-                        <div>{(burnAmount && disburserAmount && lockerAmount) ? numberFormatter.format((21000000 - burnAmount - disburserAmount - lockerAmount) * parseFloat(dexData.traderJoe.priceUsd)) : '...'}</div>
+                        <div>{(burnAmount && disburserAmount && lockerAmount) ? numberFormatter2.format((21000000 - burnAmount - disburserAmount - lockerAmount) * parseFloat(dexData.traderJoe.priceUsd)) : '...'}</div>
                     </div> : null}
                     {dexData ? <div className="flex">
                         <div className="flex-grow">Market cap FDV</div>
-                        <div>{burnAmount ? numberFormatter.format((21000000 - burnAmount) * parseFloat(dexData.traderJoe.priceUsd)) : '...'}</div>
+                        <div>{burnAmount ? numberFormatter2.format((21000000 - burnAmount) * parseFloat(dexData.traderJoe.priceUsd)) : '...'}</div>
                     </div> : null}
                     {dexData ? <div className="flex">
                         <div className="flex-grow">Market price</div>
-                        <div>{numberFormatter.format((dexData.traderJoe.liquidity.usd * parseFloat(dexData.traderJoe.priceUsd) + dexData.pangolin.liquidity.usd * parseFloat(dexData.pangolin.priceUsd)) / (dexData.traderJoe.liquidity.usd + dexData.pangolin.liquidity.usd))}</div>
+                        <div>{numberFormatter2.format((dexData.traderJoe.liquidity.usd * parseFloat(dexData.traderJoe.priceUsd) + dexData.pangolin.liquidity.usd * parseFloat(dexData.pangolin.priceUsd)) / (dexData.traderJoe.liquidity.usd + dexData.pangolin.liquidity.usd))}</div>
                     </div> : null}
                     {dexData ? <div className="flex">
                         <div className="flex-grow">Native price</div>
-                        <div>{numberFormatter.format((dexData.traderJoe.liquidity.base * parseFloat(dexData.traderJoe.priceNative) + dexData.pangolin.liquidity.base * parseFloat(dexData.pangolin.priceNative)) / (dexData.traderJoe.liquidity.base + dexData.pangolin.liquidity.base))} AVAX</div>
+                        <div>{numberFormatter2.format((dexData.traderJoe.liquidity.base * parseFloat(dexData.traderJoe.priceNative) + dexData.pangolin.liquidity.base * parseFloat(dexData.pangolin.priceNative)) / (dexData.traderJoe.liquidity.base + dexData.pangolin.liquidity.base))} AVAX</div>
                     </div> : null}
                     {dexData ? <div className="flex">
                         <div className="flex-grow">Liquidity backing price</div>
-                        <div>${(backingAmountUsd && burnAmount ? numberFormatter.format(backingAmountUsd / (21000000 - burnAmount)) : '...')}</div>
+                        <div>${(backingAmountUsd && burnAmount ? numberFormatter2.format(backingAmountUsd / (21000000 - burnAmount)) : '...')}</div>
                     </div> : null}
                 </div>
             </div>
 
             <div className="flex flex-col lg:flex-row w-full">
                 <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
-                    <h3 className="text-2xl mb-3">Decentralized Exchanges (DEX)</h3>
+                    <h3 className="text-xl mb-3">Decentralized Exchanges (DEX)</h3>
                     {dexData ? <div className="flex">
                         <div className="flex-grow">Price diff. USD</div>
                         <div>{percentFormatter.format(1 - parseFloat(dexData.traderJoe.priceUsd) / parseFloat(dexData.pangolin.priceUsd))}</div>
@@ -386,78 +387,86 @@ export const Dashboard = (props: RouteObject) => {
                     </div> : null}
                 </div>
                 <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
-                    <h3 className="text-2xl mb-3">Volume 24h</h3>
+                    <h3 className="text-xl mb-3">Volume 24h</h3>
                     {dexData ? <div className="flex">
                         <div className="flex-grow">TraderJoe</div>
-                        <div>${numberFormatter.format(parseFloat(dexData.traderJoe.volume.h24))}</div>
+                        <div>${numberFormatter2.format(parseFloat(dexData.traderJoe.volume.h24))}</div>
                     </div> : null}
                     {dexData ? <div className="flex">
                         <div className="flex-grow">Pangolin</div>
-                        <div>${numberFormatter.format(parseFloat(dexData.pangolin.volume.h24))}</div>
+                        <div>${numberFormatter2.format(parseFloat(dexData.pangolin.volume.h24))}</div>
                     </div> : null}
                     {dexData ? <div className="flex">
                         <div className="flex-grow">Total</div>
-                        <div>${numberFormatter.format(parseFloat(dexData.pangolin.volume.h24) + parseFloat(dexData.traderJoe.volume.h24))}</div>
+                        <div>${numberFormatter2.format(parseFloat(dexData.pangolin.volume.h24) + parseFloat(dexData.traderJoe.volume.h24))}</div>
                     </div> : null}
                 </div>
             </div>
 
             <div className="flex flex-col lg:flex-row w-full">
                 <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
-                    <h3 className="text-2xl">Price change</h3>
-                    <table className="min-w-full">
+                    <h3 className="text-xl">Price change</h3>
+                    {dexData ? <table className="min-w-full">
                         <tbody className="">
                             <tr>
-                                <td className="w-full"></td>
-                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right font-bold">5m</td>
-                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right font-bold">1h</td>
-                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right font-bold">6h</td>
-                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right font-bold">24h</td>
+                                <td className=""></td>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left font-bold">TraderJoe</td>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left font-bold">Pangolin</td>
                             </tr>
-                            {dexData && <tr>
-                                <td>TraderJoe</td>
+                            <tr>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right font-bold">5m</td>
                                 <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><PriceChange item={dexData.traderJoe.priceChange.m5} /></td>
-                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><PriceChange item={dexData.traderJoe.priceChange.h1} /></td>
-                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><PriceChange item={dexData.traderJoe.priceChange.h6} /></td>
-                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><PriceChange item={dexData.traderJoe.priceChange.h24} /></td>
-                            </tr>}
-                            {dexData && <tr>
-                                <td>Pangolin</td>
                                 <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><PriceChange item={dexData.pangolin.priceChange.m5} /></td>
+                            </tr>
+                            <tr>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right font-bold">1h</td>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><PriceChange item={dexData.traderJoe.priceChange.h1} /></td>
                                 <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><PriceChange item={dexData.pangolin.priceChange.h1} /></td>
+                            </tr>
+                            <tr>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right font-bold">6h</td>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><PriceChange item={dexData.traderJoe.priceChange.h6} /></td>
                                 <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><PriceChange item={dexData.pangolin.priceChange.h6} /></td>
+                            </tr>
+                            <tr>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right font-bold">24h</td>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><PriceChange item={dexData.traderJoe.priceChange.h24} /></td>
                                 <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><PriceChange item={dexData.pangolin.priceChange.h24} /></td>
-                            </tr>}
+                            </tr>
                         </tbody>
-                    </table>
+                    </table> : null}
                 </div>
                 <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
-                    <h3 className="text-2xl">Transactions (buys / sells)</h3>
-                    <table className="min-w-full">
+                    <h3 className="text-xl">Transactions (buys / sells)</h3>
+                    {dexData ? <table className="min-w-full">
                         <tbody className="">
                             <tr>
-                                <td className="w-full"></td>
-                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right font-bold">5m</td>
-                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right font-bold">1h</td>
-                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right font-bold">6h</td>
-                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right font-bold">24h</td>
+                                <td className=""></td>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left font-bold">TraderJoe</td>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left font-bold">Pangolin</td>
                             </tr>
-                            {dexData ? <tr>
-                                <td>TraderJoe</td>
+                            <tr>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right font-bold">5m</td>
                                 <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><TxnsCount item={dexData.traderJoe.txns.m5} /></td>
-                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><TxnsCount item={dexData.traderJoe.txns.h1} /></td>
-                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><TxnsCount item={dexData.traderJoe.txns.h6} /></td>
-                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><TxnsCount item={dexData.traderJoe.txns.h24} /></td>
-                            </tr> : null}
-                            {dexData ? <tr>
-                                <td>Pangolin</td>
                                 <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><TxnsCount item={dexData.pangolin.txns.m5} /></td>
+                            </tr>
+                            <tr>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right font-bold">1h</td>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><TxnsCount item={dexData.traderJoe.txns.h1} /></td>
                                 <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><TxnsCount item={dexData.pangolin.txns.h1} /></td>
+                            </tr>
+                            <tr>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right font-bold">6h</td>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><TxnsCount item={dexData.traderJoe.txns.h6} /></td>
                                 <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><TxnsCount item={dexData.pangolin.txns.h6} /></td>
+                            </tr>
+                            <tr>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right font-bold">24h</td>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><TxnsCount item={dexData.traderJoe.txns.h24} /></td>
                                 <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><TxnsCount item={dexData.pangolin.txns.h24} /></td>
-                            </tr> : null}
+                            </tr>
                         </tbody>
-                    </table>
+                    </table> : null}
                 </div>
             </div>
             

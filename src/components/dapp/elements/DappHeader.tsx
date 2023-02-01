@@ -17,7 +17,7 @@ export function DappHeader() {
             <div className="sm:hidden mr-3">
               <Sidebar mobile />
             </div>
-            <Link href="#" aria-label="Home">
+            <Link href="/" aria-label="Home">
               <Image
                 className="h-12 w-12"
                 src={logoImage}
