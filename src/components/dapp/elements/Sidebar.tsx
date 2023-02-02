@@ -102,9 +102,9 @@ export default function Sidebar(props: { mobile?: boolean }) {
             <div className="flex flex-grow flex-col">
                 <nav className="flex-1 space-y-1  px-2" aria-label="Sidebar">
                     {navigation.map((item) => {
-                        const current = `/dapp/${item.href}` === location.pathname
-                            || `/dapp/${item.href}/` === location.pathname
+                        const current = (item.href && location.pathname.includes(item.href))
                             || (`/dapp` === location.pathname && item.href === '')
+                            || (`/dapp/` === location.pathname && item.href === '')
 
                         return (
                             <Link
