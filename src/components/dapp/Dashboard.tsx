@@ -414,28 +414,28 @@ export const Dashboard = (props: RouteObject) => {
                         <tbody className="">
                             <tr>
                                 <td className=""></td>
-                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left font-bold">TraderJoe</td>
-                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left font-bold">Pangolin</td>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right font-bold">TraderJoe</td>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right font-bold">Pangolin</td>
                             </tr>
                             <tr>
                                 <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right font-bold">5m</td>
-                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><PriceChange item={dexData.traderJoe.priceChange.m5} /></td>
-                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><PriceChange item={dexData.pangolin.priceChange.m5} /></td>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right"><PriceChange item={dexData.traderJoe.priceChange.m5} /></td>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right"><PriceChange item={dexData.pangolin.priceChange.m5} /></td>
                             </tr>
                             <tr>
                                 <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right font-bold">1h</td>
-                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><PriceChange item={dexData.traderJoe.priceChange.h1} /></td>
-                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><PriceChange item={dexData.pangolin.priceChange.h1} /></td>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right"><PriceChange item={dexData.traderJoe.priceChange.h1} /></td>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right"><PriceChange item={dexData.pangolin.priceChange.h1} /></td>
                             </tr>
                             <tr>
                                 <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right font-bold">6h</td>
-                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><PriceChange item={dexData.traderJoe.priceChange.h6} /></td>
-                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><PriceChange item={dexData.pangolin.priceChange.h6} /></td>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right"><PriceChange item={dexData.traderJoe.priceChange.h6} /></td>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right"><PriceChange item={dexData.pangolin.priceChange.h6} /></td>
                             </tr>
                             <tr>
                                 <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right font-bold">24h</td>
-                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><PriceChange item={dexData.traderJoe.priceChange.h24} /></td>
-                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><PriceChange item={dexData.pangolin.priceChange.h24} /></td>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right"><PriceChange item={dexData.traderJoe.priceChange.h24} /></td>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right"><PriceChange item={dexData.pangolin.priceChange.h24} /></td>
                             </tr>
                         </tbody>
                     </table> : null}
@@ -446,28 +446,28 @@ export const Dashboard = (props: RouteObject) => {
                         <tbody className="">
                             <tr>
                                 <td className=""></td>
-                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left font-bold">TraderJoe</td>
-                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left font-bold">Pangolin</td>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right font-bold">TraderJoe</td>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right font-bold">Pangolin</td>
                             </tr>
                             <tr>
                                 <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right font-bold">5m</td>
-                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><TxnsCount item={dexData.traderJoe.txns.m5} /></td>
-                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><TxnsCount item={dexData.pangolin.txns.m5} /></td>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right"><TxnsCount item={dexData.traderJoe.txns.m5} /></td>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right"><TxnsCount item={dexData.pangolin.txns.m5} /></td>
                             </tr>
                             <tr>
                                 <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right font-bold">1h</td>
-                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><TxnsCount item={dexData.traderJoe.txns.h1} /></td>
-                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><TxnsCount item={dexData.pangolin.txns.h1} /></td>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right"><TxnsCount item={dexData.traderJoe.txns.h1} /></td>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right"><TxnsCount item={dexData.pangolin.txns.h1} /></td>
                             </tr>
                             <tr>
                                 <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right font-bold">6h</td>
-                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><TxnsCount item={dexData.traderJoe.txns.h6} /></td>
-                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><TxnsCount item={dexData.pangolin.txns.h6} /></td>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right"><TxnsCount item={dexData.traderJoe.txns.h6} /></td>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right"><TxnsCount item={dexData.pangolin.txns.h6} /></td>
                             </tr>
                             <tr>
                                 <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right font-bold">24h</td>
-                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><TxnsCount item={dexData.traderJoe.txns.h24} /></td>
-                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-left"><TxnsCount item={dexData.pangolin.txns.h24} /></td>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right"><TxnsCount item={dexData.traderJoe.txns.h24} /></td>
+                                <td className="px-6 lg:px-1 xl:px-2 2xl:px-6 text-right"><TxnsCount item={dexData.pangolin.txns.h24} /></td>
                             </tr>
                         </tbody>
                     </table> : null}
