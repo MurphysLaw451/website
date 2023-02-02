@@ -16,7 +16,7 @@ export const BuyDGNX = (props: RouteObject) => {
     return (
         <div className="lifi-container">
             <h1 className="text-4xl mb-4">Buy $DGNX</h1>
-            <p>Note that the 10% tokenomics tax is not included in the calculations below!</p>
+            <p className="text-sm">Note: the <a href="https://docs.dgnx.finance/whitepaper/tokenomics/tax" target="_blank" rel="noreferrer" className="text-orange-500 underline">10% tax</a> is not included below!</p>
             <LiFiWidgetDynamic
                 config={{
                     fee: 0,
