@@ -120,7 +120,7 @@ export const BuyDGNX = (props: RouteObject) => {
                         }}
                     />
                 </div>
-                <div className="flex-grow">
+                <div className="flex-grow hidden md:block">
                     <TradingViewWidget />
                 </div>
             </div>
