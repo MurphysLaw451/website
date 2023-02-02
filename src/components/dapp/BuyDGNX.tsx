@@ -73,7 +73,7 @@ const TradingViewWidget = () => {
                 }
             }
         },
-        []
+        [theme]
     );
 
     return (

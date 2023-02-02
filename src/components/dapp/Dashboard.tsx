@@ -141,7 +141,7 @@ const TradingViewWidget = () => {
                 }
             }
         },
-        []
+        [theme]
     );
 
     return (
