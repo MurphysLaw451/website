@@ -39,12 +39,19 @@ const showFiatAmount = (walletData: any, tokenAddress: string, returnRaw: boolea
 
 let addressDataCache = {}
 
-const getAddressData = async (address: string) => {
-    if (addressDataCache[address]) return addressDataCache[address]
+const getAddressData = async (address: string, retryNum: number = 0) => {
+    try {
 
-    const dataRaw = await fetch(`https://safe-transaction-avalanche.safe.global/api/v1/safes/${address}/balances/usd/?trusted=false&exclude_spam=true`)
-    addressDataCache[address] = dataRaw.json()
-    return addressDataCache[address]
+        if (addressDataCache[address]) return addressDataCache[address]
+
+        const dataRaw = await fetch(`https://safe-transaction-avalanche.safe.global/api/v1/safes/${address}/balances/usd/?trusted=false&exclude_spam=true`)
+        addressDataCache[address] = dataRaw.json()
+        return addressDataCache[address]
+    } catch (e) {
+        if (retryNum < 3) {
+            return getAddressData(address, retryNum + 1)
+        }
+    }
 }
 
 const TradingViewWidget = () => {
@@ -102,7 +109,8 @@ const TradingViewWidget = () => {
                         borderDownColor: "#f7525f",
                         wickUpColor: "#22ab94",
                         wickDownColor: "#f7525f",
-                        container_id: "tradingview_4246e"
+                        container_id: "tradingview_4246e",
+                        backgroundColor: theme === 'light' ? '#F3F4F6' : '#20293A'
                     });
                 }
 
@@ -136,7 +144,8 @@ const TradingViewWidget = () => {
                         borderDownColor: "#f7525f",
                         wickUpColor: "#22ab94",
                         wickDownColor: "#f7525f",
-                        container_id: "tradingview_4246f"
+                        container_id: "tradingview_4246f",
+                        backgroundColor: theme === 'light' ? '#F3F4F6' : '#20293A'
                     });
                 }
             }
@@ -276,6 +285,7 @@ export const Dashboard = (props: RouteObject) => {
                             <>
                                 <p className="text-right text-2xl">${dexData.traderJoe.priceUsd}</p>
                                 <p className="text-right">{dexData.traderJoe.priceNative} AVAX</p>
+                                <p className="text-right">{dexData.traderJoe.liquidity.base} DGNX in pool</p>
                                 <p className={clsx("text-right mb-3", dexData.traderJoe.priceChange.h24 > 0 ? 'text-green-600' : 'text-red-600')}>
                                     {dexData.traderJoe.priceChange.h24 > 0 ? '↑' : '↓'}
                                     {dexData.traderJoe.priceChange.h24}%
@@ -295,6 +305,7 @@ export const Dashboard = (props: RouteObject) => {
                             <>
                                 <p className="text-right text-2xl">${dexData.pangolin.priceUsd}</p>
                                 <p className="text-right">{dexData.pangolin.priceNative} AVAX</p>
+                                <p className="text-right">{dexData.pangolin.liquidity.base} DGNX in pool</p>
                                 <p className={clsx("text-right mb-3", dexData.pangolin.priceChange.h24 > 0 ? 'text-green-600' : 'text-red-600')}>
                                     {dexData.pangolin.priceChange.h24 > 0 ? '↑' : '↓'}
                                     {dexData.pangolin.priceChange.h24}%
@@ -308,19 +319,27 @@ export const Dashboard = (props: RouteObject) => {
                     }
                 </div>
                 <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
-                    <h3 className="text-xl">Burnt</h3>
-                    {burnAmount && dexData
-                        ? (
-                            <>
-                                <p className="text-right text-2xl">{numberFormatter2.format(burnAmount)}</p>
-                                <p className="text-right">${numberFormatter2.format(dexData.pangolin.priceUsd * burnAmount)}</p>
-                                <p className={clsx("text-right mb-3")}>
-                                    {percentFormatter.format(burnAmount / 21000000)}%
-                                </p>
-                            </>
-                        )
-                        : '...'
-                    }
+                    <h3 className="text-xl mb-3">Ø Averages</h3>
+                    {dexData ? <div className="flex">
+                        <div className="flex-grow">Market cap</div>
+                        <div>{(burnAmount && disburserAmount && lockerAmount) ? numberFormatter2.format((21000000 - burnAmount - disburserAmount - lockerAmount) * parseFloat(dexData.traderJoe.priceUsd)) : '...'}</div>
+                    </div> : null}
+                    {dexData ? <div className="flex">
+                        <div className="flex-grow">Market cap FDV</div>
+                        <div>{burnAmount ? numberFormatter2.format((21000000 - burnAmount) * parseFloat(dexData.traderJoe.priceUsd)) : '...'}</div>
+                    </div> : null}
+                    {dexData ? <div className="flex">
+                        <div className="flex-grow">Market price</div>
+                        <div>{numberFormatter4.format((dexData.traderJoe.liquidity.usd * parseFloat(dexData.traderJoe.priceUsd) + dexData.pangolin.liquidity.usd * parseFloat(dexData.pangolin.priceUsd)) / (dexData.traderJoe.liquidity.usd + dexData.pangolin.liquidity.usd))}</div>
+                    </div> : null}
+                    {dexData ? <div className="flex">
+                        <div className="flex-grow">Native price</div>
+                        <div>{numberFormatter4.format((dexData.traderJoe.liquidity.base * parseFloat(dexData.traderJoe.priceNative) + dexData.pangolin.liquidity.base * parseFloat(dexData.pangolin.priceNative)) / (dexData.traderJoe.liquidity.base + dexData.pangolin.liquidity.base))} AVAX</div>
+                    </div> : null}
+                    {dexData ? <div className="flex">
+                        <div className="flex-grow">Liquidity backing price</div>
+                        <div>${(backingAmountUsd && burnAmount ? numberFormatter4.format(backingAmountUsd / (21000000 - burnAmount)) : '...')}</div>
+                    </div> : null}
                 </div>
             </div>
             <TradingViewWidget />
@@ -354,43 +373,6 @@ export const Dashboard = (props: RouteObject) => {
                     </div>
                 </div>
                 <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
-                    <h3 className="text-xl mb-3">Ø Averages</h3>
-                    {dexData ? <div className="flex">
-                        <div className="flex-grow">Market cap</div>
-                        <div>{(burnAmount && disburserAmount && lockerAmount) ? numberFormatter2.format((21000000 - burnAmount - disburserAmount - lockerAmount) * parseFloat(dexData.traderJoe.priceUsd)) : '...'}</div>
-                    </div> : null}
-                    {dexData ? <div className="flex">
-                        <div className="flex-grow">Market cap FDV</div>
-                        <div>{burnAmount ? numberFormatter2.format((21000000 - burnAmount) * parseFloat(dexData.traderJoe.priceUsd)) : '...'}</div>
-                    </div> : null}
-                    {dexData ? <div className="flex">
-                        <div className="flex-grow">Market price</div>
-                        <div>{numberFormatter4.format((dexData.traderJoe.liquidity.usd * parseFloat(dexData.traderJoe.priceUsd) + dexData.pangolin.liquidity.usd * parseFloat(dexData.pangolin.priceUsd)) / (dexData.traderJoe.liquidity.usd + dexData.pangolin.liquidity.usd))}</div>
-                    </div> : null}
-                    {dexData ? <div className="flex">
-                        <div className="flex-grow">Native price</div>
-                        <div>{numberFormatter4.format((dexData.traderJoe.liquidity.base * parseFloat(dexData.traderJoe.priceNative) + dexData.pangolin.liquidity.base * parseFloat(dexData.pangolin.priceNative)) / (dexData.traderJoe.liquidity.base + dexData.pangolin.liquidity.base))} AVAX</div>
-                    </div> : null}
-                    {dexData ? <div className="flex">
-                        <div className="flex-grow">Liquidity backing price</div>
-                        <div>${(backingAmountUsd && burnAmount ? numberFormatter4.format(backingAmountUsd / (21000000 - burnAmount)) : '...')}</div>
-                    </div> : null}
-                </div>
-            </div>
-
-            <div className="flex flex-col lg:flex-row w-full">
-                <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
-                    <h3 className="text-xl mb-3">Decentralized Exchanges (DEX)</h3>
-                    {dexData ? <div className="flex">
-                        <div className="flex-grow">Price diff. USD</div>
-                        <div>{percentFormatter.format(1 - parseFloat(dexData.traderJoe.priceUsd) / parseFloat(dexData.pangolin.priceUsd))}</div>
-                    </div> : null}
-                    {dexData ? <div className="flex">
-                        <div className="flex-grow">Price diff. AVAX</div>
-                        <div>{percentFormatter.format(1 - parseFloat(dexData.traderJoe.priceNative) / parseFloat(dexData.pangolin.priceNative))}</div>
-                    </div> : null}
-                </div>
-                <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
                     <h3 className="text-xl mb-3">Volume 24h</h3>
                     {dexData ? <div className="flex">
                         <div className="flex-grow">TraderJoe</div>
@@ -403,6 +385,14 @@ export const Dashboard = (props: RouteObject) => {
                     {dexData ? <div className="flex">
                         <div className="flex-grow">Total</div>
                         <div>${numberFormatter2.format(parseFloat(dexData.pangolin.volume.h24) + parseFloat(dexData.traderJoe.volume.h24))}</div>
+                    </div> : null}
+                    {dexData ? <div className="flex">
+                        <div className="flex-grow">Price diff. USD</div>
+                        <div>{percentFormatter.format(1 - parseFloat(dexData.traderJoe.priceUsd) / parseFloat(dexData.pangolin.priceUsd))}</div>
+                    </div> : null}
+                    {dexData ? <div className="flex">
+                        <div className="flex-grow">Price diff. AVAX</div>
+                        <div>{percentFormatter.format(1 - parseFloat(dexData.traderJoe.priceNative) / parseFloat(dexData.pangolin.priceNative))}</div>
                     </div> : null}
                 </div>
             </div>
@@ -485,10 +475,29 @@ export const Dashboard = (props: RouteObject) => {
 
             <div className="flex flex-col lg:flex-row w-full">
                 <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
-                    <WalletInfo name="Investment Fund" address="0x829619513F202e1bFD8929f656EF96bac73BDAe8" />
+                    <WalletInfo name="Platform" address="0xcA01A9d36F47561F03226B6b697B14B9274b1B10" />
                 </div>
                 <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
-                    <WalletInfo name="Platform" address="0xcA01A9d36F47561F03226B6b697B14B9274b1B10" />
+                    <h3 className="text-xl">Burnt</h3>
+                    {burnAmount && dexData
+                        ? (
+                            <>
+                                <div className="flex">
+                                    <div className="flex-grow">Amount DGNX burnt</div>
+                                    <div className="flex">{numberFormatter2.format(burnAmount)}</div>
+                                </div>
+                                <div className="flex">
+                                    <div className="flex-grow">$ value</div>
+                                    <div className="flex">${numberFormatter2.format(dexData.pangolin.priceUsd * burnAmount)}</div>
+                                </div>
+                                <div className="flex">
+                                    <div className="flex-grow">% of supply</div>
+                                    <div className="flex">{percentFormatter.format(burnAmount / 21000000)}%</div>
+                                </div>
+                            </>
+                        )
+                        : '...'
+                    }
                 </div>
             </div>
         </div>

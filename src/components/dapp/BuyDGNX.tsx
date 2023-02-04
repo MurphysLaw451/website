@@ -68,7 +68,8 @@ const TradingViewWidget = () => {
                         borderDownColor: "#f7525f",
                         wickUpColor: "#22ab94",
                         wickDownColor: "#f7525f",
-                        container_id: "tradingview_4246f"
+                        container_id: "tradingview_4246f",
+                        backgroundColor: theme === 'light' ? '#ffffff' : '#121826'
                     });
                 }
             }
