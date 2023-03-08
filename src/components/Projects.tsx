@@ -2,69 +2,83 @@ import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { Tab } from '@headlessui/react'
 import clsx from 'clsx'
+import { useTheme } from "next-themes"
 
 import projectSwap from '../images/projects/swap.png'
-import projectDgnx from '../images/projects/dgnx.png'
+import projectLiqBack from '../images/projects/liqback.png'
 import projectDao from '../images/projects/dao.png'
 import projectBridge from '../images/projects/bridge.png'
 import projectLocker from '../images/projects/locker.png'
 import projectStake from '../images/projects/stake.png'
 import projectFactor from '../images/projects/factor.png'
-import projectNFT from '../images/projects/nft.png'
 import projectClinic from '../images/projects/clinic.png'
+
+import projectSwapDark from '../images/projects/swap-dark.png'
+import projectLiqBackDark from '../images/projects/liqback-dark.png'
+import projectDaoDark from '../images/projects/dao-dark.png'
+import projectBridgeDark from '../images/projects/bridge-dark.png'
+import projectLockerDark from '../images/projects/locker-dark.png'
+import projectStakeDark from '../images/projects/stake-dark.png'
+import projectFactorDark from '../images/projects/factor-dark.png'
+import projectClinicDark from '../images/projects/clinic-dark.png'
 
 import { Container } from './Container'
 
 const features = [
   {
-    title: '$DGNX',
-    image: projectDgnx,
+    title: 'Liquidity Backing',
+    image: projectLiqBack,
+    imageDark: projectLiqBackDark,
     description: '$DGNX is the driving force behind the revolutionary DegenX ecosystem. With its solid foundation in a base asset, the DGNX token boasts an ever-growing intrinsic value and is further strengthened by the power of onchain DAO governance.'
   },
   {
     title: 'Swap',
     image: projectSwap,
+    imageDark: projectSwapDark,
     description: 'Our upcoming swap is the ultimate user-friendly decentralized exchange. With compatibility across EVM networks, our DEX is built on a cutting-edge decentralized AMM system, which allows for seamless and effortless trading of multiple cryptocurrencies across multiple chains. Get ready to experience the future of decentralized trading with our upcoming Swap.',
   },
   {
     title: 'DAO',
     image: projectDao,
+    imageDark: projectDaoDark,
     description: 'Be a part of something truly exciting and join the DGNX token holder community, where you will become a true owner of the DegenX ecosystem. We are revolutionizing the way organizations are run by offering an alternative to centralized structures, operations, and decision-making processes. With DGNX token, you can truly be in control of the future of the project.'
   },
   {
     title: 'Bridge',
     image: projectBridge,
+    imageDark: projectBridgeDark,
     description: 'DGNX will be bridged across several EVM chains including Ethereum and BSC. This allows for a wider distribution of the limited supply of 21 million tokens across multiple blockchain networks, providing greater accessibility and utility for users.'
   },
   {
     title: 'LockeR',
     image: projectLocker,
+    imageDark: projectLockerDark,
     description: 'Experience the future of token management with LockeR, the most advanced multichain token locker on the blockchain. With just a few simple steps, easily lock up liquidity, developer tokens, or your own tokens for added security. Our process is fast, easy, and secure, and includes unique options such as contract-based unlocking through voting.'
   },
   {
     title: 'StakeX',
     image: projectStake,
+    imageDark: projectStakeDark,
     description: 'StakeX is the ultimate multichain staking smart contract. Whether you\'re looking to stake $DGNX or add a staking protocol to your project, StakeX has you covered. With its unparalleled security and innovation, StakeX sets a new standard in the blockchain world. Take your project to the next level with DegenX StakeX.'
   },
   {
     title: 'Factor',
     image: projectFactor,
+    imageDark: projectFactorDark,
     description: 'Advance your project with DegenX Factor, a top-of-the-line blockchain service for projects looking to implement unique features for their tokens. Our technology guarantees a steady increase in the floor price for your tokens, bringing security and stability to your holders. Whether you\'re starting a new venture or upgrading an existing one, DegenX Factor is the perfect solution to take your token to the next level.'
-  },
-  {
-    title: 'NFT',
-    image: projectNFT,
-    description: 'The DegenX NFT project merges the worlds of art and the "degen" mentality with our state-of-the-art blockchain technology, bringing you a truly unique and one-of-a-kind utility NFT experience. With different possibilities available depending on the level or amount of NFT holding, this project is set to revolutionize the world of NFTs. Join us in this exciting new frontier and discover the endless possibilities of DegenX NFTs.'
   },
   {
     title: 'Clinic',
     image: projectClinic,
+    imageDark: projectClinicDark,
     description: 'DegenX Clinic is a unique project that will serve as a real-world example for our community to come together in a resort-like environment. Designed to help recover from rugpulls in other projects, DegenX Clinic will also be able to generate income by renting it out when not in use. These profits will be used to maintain the facility and further increase the value of our token. Join us in creating a safe haven for the crypto community with DegenX Clinic.'
   },
 ]
 
 export function Projects() {
   let [tabOrientation, setTabOrientation] = useState('horizontal')
+
+  const { theme } = useTheme()
 
   useEffect(() => {
     let lgMediaQuery = window.matchMedia('(min-width: 1024px)')
@@ -138,7 +152,7 @@ export function Projects() {
                     <div className="relative sm:px-6">
                       <div className="" />
                       <h3 className="text-center text-white dark:text-slate-400 text-2xl my-3">{feature.title}</h3>
-                        <Image className="w-48 h-48 mx-auto" src={feature.image} alt={feature.title} unoptimized />
+                        <Image className="w-48 h-48 mx-auto" src={theme === 'light' ? feature.image : feature.imageDark} alt={feature.title} unoptimized />
                         <p className="relative mx-auto max-w-2xl text-base text-white dark:text-slate-400 sm:text-center">
                           {feature.description}
                         </p>
