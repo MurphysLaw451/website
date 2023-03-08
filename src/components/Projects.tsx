@@ -152,7 +152,7 @@ export function Projects() {
                     <div className="relative sm:px-6">
                       <div className="" />
                       <h3 className="text-center text-white dark:text-slate-400 text-2xl my-3">{feature.title}</h3>
-                        <Image className="w-48 h-48 mx-auto" src={theme === 'light' ? feature.image : feature.imageDark} alt={feature.title} unoptimized />
+                        <Image className="w-48 h-48 mx-auto" src={theme === 'light' ? feature.imageDark : feature.image} alt={feature.title} unoptimized />
                         <p className="relative mx-auto max-w-2xl text-base text-white dark:text-slate-400 sm:text-center">
                           {feature.description}
                         </p>
