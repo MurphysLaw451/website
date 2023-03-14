@@ -34,7 +34,7 @@ const features = [
   {
     title: 'Swap',
     image: projectSwap,
-    imageDark: projectSwap,
+    imageDark: projectSwapDark,
     description: 'Our upcoming swap is the ultimate user-friendly decentralized exchange. With compatibility across EVM networks, our DEX is built on a cutting-edge decentralized AMM system, which allows for seamless and effortless trading of multiple cryptocurrencies across multiple chains. Get ready to experience the future of decentralized trading with our upcoming Swap.',
   },
   {
@@ -152,7 +152,7 @@ export function Projects() {
                     <div className="relative sm:px-6">
                       <div className="" />
                       <h3 className="text-center text-white dark:text-slate-400 text-2xl my-3">{feature.title}</h3>
-                        <Image className="w-48 h-48 mx-auto" src={theme === 'light' ? feature.imageDark : feature.image} alt={feature.title} unoptimized />
+                        <Image className="w-48 h-48 mx-auto" src={theme === 'dark' ? feature.image : feature.imageDark} alt={feature.title} unoptimized />
                         <p className="relative mx-auto max-w-2xl text-base text-white dark:text-slate-400 sm:text-center">
                           {feature.description}
                         </p>
