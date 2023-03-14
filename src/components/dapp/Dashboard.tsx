@@ -511,7 +511,7 @@ export const Dashboard = (props: RouteObject) => {
                                 </div>
                                 <div className="flex">
                                     <div className="flex-grow">% of supply</div>
-                                    <div className="flex">{percentFormatter.format(burnAmount / 21000000)}%</div>
+                                    <div className="flex">{percentFormatter.format(burnAmount / 21000000)}</div>
                                 </div>
                             </>
                         )
