@@ -34,7 +34,7 @@ const features = [
   {
     title: 'Swap',
     image: projectSwap,
-    imageDark: projectSwapDark,
+    imageDark: projectSwap,
     description: 'Our upcoming swap is the ultimate user-friendly decentralized exchange. With compatibility across EVM networks, our DEX is built on a cutting-edge decentralized AMM system, which allows for seamless and effortless trading of multiple cryptocurrencies across multiple chains. Get ready to experience the future of decentralized trading with our upcoming Swap.',
   },
   {

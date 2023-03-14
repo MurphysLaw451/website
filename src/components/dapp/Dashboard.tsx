@@ -9,32 +9,45 @@ const numberFormatter2 = new Intl.NumberFormat('en-US', { minimumFractionDigits:
 const numberFormatter4 = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 })
 const percentFormatter = new Intl.NumberFormat('en-US', { style: 'percent', minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
-const showAmount = (walletData: any, tokenAddress: string) => {
-    const token = walletData.find((item) => item.tokenAddress === tokenAddress)
-    if (!token) return 0
+const showAmount = (walletData: any, tokenAddresses: string[]) => {
+    let totalBalance = 0
 
-    let balance = parseInt(token.balance)
-    if (tokenAddress === '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7') {
-        balance += parseInt(walletData.find((item) => !item.tokenAddress)?.balance)
-    }
+    tokenAddresses.forEach(tokenAddress => {
+        const token = walletData.find((item) => item.tokenAddress === tokenAddress)
+        if (!token) return 0
 
-    return numberFormatter2.format(balance / 10 ** token.token.decimals)
+        let balance = parseInt(token.balance)
+        if (tokenAddress === '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7') {
+            balance += parseInt(walletData.find((item) => !item.tokenAddress)?.balance)
+        }
+
+        totalBalance += balance / 10 ** token.token.decimals
+    })
+    
+
+    return numberFormatter2.format(totalBalance)
 }
 
-const showFiatAmount = (walletData: any, tokenAddress: string, returnRaw: boolean = false) => {
-    const token = walletData.find((item) => item.tokenAddress === tokenAddress)
-    if (!token) return 0
+const showFiatAmount = (walletData: any, tokenAddresses: string[], returnRaw: boolean = false) => {
+    let totalBalance = 0
+    tokenAddresses.forEach((tokenAddress) => {
+        const token = walletData.find((item) => item.tokenAddress === tokenAddress)
+        if (!token) return 0
 
-    let fiatBalance = parseInt(token.fiatBalance)
-    if (tokenAddress === '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7') {
-        fiatBalance += parseInt(walletData.find((item) => !item.tokenAddress)?.fiatBalance)
-    }
+        let fiatBalance = parseInt(token.fiatBalance)
+        if (tokenAddress === '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7') {
+            fiatBalance += parseInt(walletData.find((item) => !item.tokenAddress)?.fiatBalance)
+        }
+
+        totalBalance += fiatBalance
+    })
+    
 
     if (returnRaw) {
-        return fiatBalance
+        return totalBalance
     }
 
-    return numberFormatter2.format(fiatBalance)
+    return numberFormatter2.format(totalBalance)
 }
 
 let addressDataCache = {}
@@ -193,18 +206,24 @@ const WalletInfo = (props: any) => {
                 <>
                     <div className="flex">
                         <div className="flex-grow">DGNX</div>
-                        <div>{showAmount(walletData, '0x51e48670098173025C477D9AA3f0efF7BF9f7812')}</div>
+                        <div>{showAmount(walletData, ['0x51e48670098173025C477D9AA3f0efF7BF9f7812'])}</div>
                     </div>
                     <div className="flex">
                         <div className="flex-grow">AVAX</div>
                         <div>
-                            {showAmount(walletData, '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7')}{' '}
-                            (${showFiatAmount(walletData, '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7')})
+                            {showAmount(walletData, ['0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7'])}{' '}
+                            (${showFiatAmount(walletData, ['0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7'])})
+                        </div>
+                    </div>
+                    <div className="flex">
+                        <div className="flex-grow">BTC</div>
+                        <div>
+                            {showAmount(walletData, ['0x152b9d0FdC40C096757F570A51E494bd4b943E50'])}{' '}
                         </div>
                     </div>
                     <div className="flex">
                         <div className="flex-grow">Stablecoins</div>
-                        <div>${showAmount(walletData, '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E')}</div>
+                        <div>${showAmount(walletData, ['0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E'])}</div>
                     </div>
                 </>
                     )
@@ -268,8 +287,8 @@ export const Dashboard = (props: RouteObject) => {
         getDgnxAmount('0x2c7d8bb6aba4fff56cddbf9ea47ed270a10098f7').then(amount => setLockerAmount(amount as number))
 
         getAddressData('0x31CE1540414361cFf99e83a05e4ad6d35D425202').then(data => {
-            const fiatAvax = showFiatAmount(data, '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7', true) as number
-            const fiatUsd = showFiatAmount(data, '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E', true) as number
+            const fiatAvax = showFiatAmount(data, ['0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7'], true) as number
+            const fiatUsd = showFiatAmount(data, ['0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E'], true) as number
             setBackingAmountUsd(fiatAvax + fiatUsd)
         })
     }, [])
