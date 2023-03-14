@@ -234,7 +234,7 @@ const WalletInfo = (props: any) => {
 }
 
 const getDgnxAmount = async (address: string) => {
-    const dataRaw = await fetch(`https://api.snowtrace.io/api?module=account&action=tokenbalance&contractaddress=0x51e48670098173025c477d9aa3f0eff7bf9f7812&address=${address}`)
+    const dataRaw = await fetch(`https://eoyuad8uvibmehw.m.pipedream.net?module=account&action=tokenbalance&contractaddress=0x51e48670098173025c477d9aa3f0eff7bf9f7812&address=${address}`)
     const data = await dataRaw.json()
 
     if (data.message !== 'OK') {
