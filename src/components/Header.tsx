@@ -12,6 +12,8 @@ import { NavLink } from './NavLink'
 import logoImage from '../images/logo.png'
 import { DarkmodeToggle } from './DarkmodeToggle';
 
+import translations from '../translations/site.json'
+
 function MobileNavLink({ href, children, ...props }) {
   return (
     <Popover.Button as={Link} href={href} className="block w-full p-2" {...props}>
@@ -81,13 +83,13 @@ function MobileNavigation() {
             as="div"
             className="absolute inset-x-0 top-full mt-4 flex origin-top flex-col rounded-2xl bg-white p-4 text-lg tracking-tight text-slate-900 shadow-xl ring-1 ring-slate-900/5"
           >
-            <MobileNavLink href="#projects">Projects</MobileNavLink>
-            <MobileNavLink href="#tokenomics">Tokenomics</MobileNavLink>
-            <MobileNavLink href="#backing">Backing</MobileNavLink>
-            <MobileNavLink href="#team">Team</MobileNavLink>
-            <MobileNavLink href="#roadmap">Roadmap</MobileNavLink>
+            <MobileNavLink href="#projects">{translations.header.projects.en}</MobileNavLink>
+            <MobileNavLink href="#tokenomics">{translations.header.tokenomics.en}</MobileNavLink>
+            <MobileNavLink href="#backing">{translations.header.backing.en}</MobileNavLink>
+            <MobileNavLink href="#team">{translations.header.team.en}</MobileNavLink>
+            <MobileNavLink href="#roadmap">{translations.header.roadmap.en}</MobileNavLink>
             <hr className="m-2 border-slate-300/40" />
-            <MobileNavLink href="/dapp/buy">Buy</MobileNavLink>
+            <MobileNavLink href="/dapp/buy">{translations.header.buy.en}</MobileNavLink>
           </Popover.Panel>
         </Transition.Child>
       </Transition.Root>
@@ -111,12 +113,12 @@ export function Header() {
               />
             </Link>
             <div className="hidden md:flex md:gap-x-6">
-              <NavLink href="#projects">Projects</NavLink>
-              <NavLink href="#tokenomics">Tokenomics</NavLink>
-              <NavLink href="#backing">Backing</NavLink>
-              <NavLink href="#team">Team</NavLink>
-              <NavLink href="#roadmap">Roadmap</NavLink>
-              <NavLink href="/dapp/buy">Buy</NavLink>
+              <NavLink href="#projects">{translations.header.projects.en}</NavLink>
+              <NavLink href="#tokenomics">{translations.header.tokenomics.en}</NavLink>
+              <NavLink href="#backing">{translations.header.backing.en}</NavLink>
+              <NavLink href="#team">{translations.header.team.en}</NavLink>
+              <NavLink href="#roadmap">{translations.header.roadmap.en}</NavLink>
+              <NavLink href="/dapp/buy">{translations.header.buy.en}</NavLink>
             </div>
           </div>
           <div className="flex items-center gap-x-5 md:gap-x-8">
@@ -130,7 +132,7 @@ export function Header() {
             <DarkmodeToggle />
             <Button className="" href="/dapp" color="orange">
               <span>
-                Launch app
+                {translations.header.launchApp.en}
               </span>
             </Button>
             <div className="-mr-1 md:hidden">

@@ -1,5 +1,7 @@
 import react from 'react'
 
+import translations from '../translations/site.json'
+
 const RoadmapItem = (props) => {
     return (
         <li className="w-full mb-6 sm:mb-0">
@@ -24,15 +26,61 @@ export function Roadmap() {
             <div className="mx-auto max-w-7xl py-12 px-6 text-center lg:px-8 lg:py-24">
                 <div className="space-y-8 sm:space-y-12">
                     <div className="space-y-5 sm:mx-auto sm:max-w-xl sm:space-y-4 lg:max-w-5xl">
-                        <h2 className="text-3xl tracking-tight sm:text-4xl dark:text-orange-500">Roadmap</h2>
+                        <h2 className="text-3xl tracking-tight sm:text-4xl dark:text-orange-500">{translations.roadmap.title.en}</h2>
                     </div>
                     <ol className="items-stretch sm:flex">
-                        <RoadmapItem title="Phase 1" time="Done!" items={["✓ Token Launch", "✓ Website", "✓ dAPP"]} />
-                        <RoadmapItem title="Phase 2" time="Ongoing" items={["✓ DAO ", "Liquidity Backing", "Bridge"]} />
-                        <RoadmapItem title="Phase 3" time="Future" items={["LockeR", "StakeR", "D&P"]} />
-                        <RoadmapItem title="Phase 4" time="Future" items={["DEX", "Swap", "NFT V2"]} />
-                        <RoadmapItem title="Phase 5" time="Future" items={["NFT Marketplace", "Factor"]} />
-                        <RoadmapItem title="Phase 6" time="Future" items={["Clinic", "TBD..."]} />
+                        <RoadmapItem
+                            title={`${translations.roadmap.phase.en} 1`}
+                            time={translations.roadmap.done.en}
+                            items={[
+                                `✓ ${translations.roadmap.tokenLaunch.en}`,
+                                `✓ ${translations.roadmap.website.en}`,
+                                `✓ ${translations.roadmap.dAPP.en}`
+                            ]}
+                        />
+                        <RoadmapItem
+                            title={`${translations.roadmap.phase.en} 2`}
+                            time={translations.roadmap.ongoing.en}
+                            items={[
+                                `✓ ${translations.roadmap.dao.en}`,
+                                `${translations.roadmap.liqBacking.en}`,
+                                `${translations.roadmap.bridge.en}`
+                            ]}
+                        />
+                        <RoadmapItem
+                            title={`${translations.roadmap.phase.en} 3`}
+                            time={translations.roadmap.future.en}
+                            items={[
+                                `${translations.roadmap.locker.en}`,
+                                `${translations.roadmap.stake.en}`,
+                                `${translations.roadmap.dp.en}`
+                            ]}
+                        />
+                        <RoadmapItem
+                            title={`${translations.roadmap.phase.en} 4`}
+                            time={translations.roadmap.future.en}
+                            items={[
+                                `${translations.roadmap.dex.en}`,
+                                `${translations.roadmap.swap.en}`,
+                                `${translations.roadmap.nftv2.en}`
+                            ]}
+                        />
+                        <RoadmapItem
+                            title={`${translations.roadmap.phase.en} 5`}
+                            time={translations.roadmap.future.en}
+                            items={[
+                                `${translations.roadmap.nftMarketplace.en}`,
+                                `${translations.roadmap.factor.en}`
+                            ]}
+                        />
+                        <RoadmapItem
+                            title={`${translations.roadmap.phase.en} 6`}
+                            time={translations.roadmap.future.en}
+                            items={[
+                                `${translations.roadmap.clinic.en}`,
+                                `${translations.roadmap.tbd.en}`
+                            ]}
+                        />
                     </ol>
                 </div>
             </div>

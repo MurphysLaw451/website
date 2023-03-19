@@ -1,31 +1,26 @@
 import { Container } from './Container'
 
+import translations from '../translations/site.json'
+
 const faqs = [
   [
     {
-      question: 'Are you doxxed?',
-      answer:
-        `Our team is doxxed through SolidProof. You can view the certificate
-        <a class="text-orange-500" href="https://github.com/solidproof/projects/blob/main/DGNX/KYC_Certificate_DegenX.png">here</a>.`,
+      question: translations.faq.questionDoxxed.question.en,
+      answer: translations.faq.questionDoxxed.answer.en,
     },
     {
-      question: 'Are the contracts audited?',
-      answer: 
-        `Yes! All current contracts can be viewed 
-        <a class="text-orange-500" href="https://github.com/solidproof/projects/tree/main/DGNX">here</a>. New contracts
-        will be audited before launch, which one of the reasons of the development fund.`,
+      question: translations.faq.questionAudit.question.en,
+      answer: translations.faq.questionAudit.answer.en,
     },
   ],
   [
     {
-      question: 'What is the roadmap?',
-      answer:
-        'Our token and DAO are launched and we are now developing the liquidity backing and bridge.',
+      question: translations.faq.questionRoadmap.question.en,
+      answer: translations.faq.questionRoadmap.answer.en,
     },
     {
-      question: 'Who is the team?',
-      answer:
-        'We are a group of around 20 degens, specialised in development, marketing and even construction!',
+      question: translations.faq.questionTeam.question.en,
+      answer: translations.faq.questionTeam.answer.en,
     },
   ],
 ]
@@ -43,7 +38,7 @@ export function Faqs() {
             id="faq-title"
             className="font-display text-3xl tracking-tight text-slate-900 dark:text-orange-500 text-center sm:text-4xl"
           >
-            More info
+            {translations.faq.title.en}
           </h2>
         </div>
         <ul

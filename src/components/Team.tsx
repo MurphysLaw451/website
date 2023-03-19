@@ -21,25 +21,27 @@ import teamTrokeLatu from '../images/team/trokeLatu.jpeg'
 import teamWeizenstar from '../images/team/weizenstar.jpeg'
 import teamRock from '../images/team/rock.jpg'
 
+import translations from '../translations/site.json'
+
 const people = [
-  { name: 'Bomba', role: 'Community Management', imageUrl: teamBomba },
-  { name: 'Chief Jawa', role: 'Design', imageUrl: teamChiefJawa },
-  { name: 'Crypto Stiggy', role: 'Blockchain Analytics & Security', imageUrl: teamCryptoStiggy },
-  { name: 'Daniel', role: 'Lead Solidity Dev', imageUrl: teamDaniel },
-  { name: 'DB', role: 'Operations', imageUrl: teamDB },
-  { name: 'Degen Comedian', role: 'Developer', imageUrl: teamDegenComedian },
-  { name: 'Degen Joker', role: 'Marketing & Community Management', imageUrl: teamDegenJoker },
-  { name: 'Degen Trader', role: 'Operations & Marketing', imageUrl: teamDegenTrader },
-  { name: 'Eric', role: 'Community Management', imageUrl: teamEric },
-  { name: 'JC', role: 'Marketing & Community Management', imageUrl: teamJC },
-  { name: 'K9', role: 'Operations', imageUrl: teamK9 },
-  { name: 'Lex', role: 'Marketing', imageUrl: teamLex },
-  { name: 'Morty', role: 'Design', imageUrl: teamMorty },
-  { name: 'Stuart', role: 'Marketing', imageUrl: teamStuart },
-  { name: 'The Master Xi', role: 'Design', imageUrl: teamMasterXi },
-  { name: 'Troke Latu', role: 'Community Management', imageUrl: teamTrokeLatu },
-  { name: 'Weizenstar', role: 'Product Manager & Developer', imageUrl: teamWeizenstar },
-  { name: 'Rock', role: 'Frontend Dev', imageUrl: teamRock },
+  { name: 'Bomba', role: translations.team.roles.communityManagement.en, imageUrl: teamBomba },
+  { name: 'Chief Jawa', role: translations.team.roles.design.en, imageUrl: teamChiefJawa },
+  { name: 'Crypto Stiggy', role: translations.team.roles.blockchainAnalyticsSecurity.en, imageUrl: teamCryptoStiggy },
+  { name: 'Daniel', role: translations.team.roles.leadSolidityDev.en, imageUrl: teamDaniel },
+  { name: 'DB', role: translations.team.roles.operations.en, imageUrl: teamDB },
+  { name: 'Degen Comedian', role: translations.team.roles.developer.en, imageUrl: teamDegenComedian },
+  { name: 'Degen Joker', role: translations.team.roles.marcom.en, imageUrl: teamDegenJoker },
+  { name: 'Degen Trader', role: translations.team.roles.operationsMarketing.en, imageUrl: teamDegenTrader },
+  { name: 'Eric', role: translations.team.roles.communityManagement.en, imageUrl: teamEric },
+  { name: 'JC', role: translations.team.roles.marcom.en, imageUrl: teamJC },
+  { name: 'K9', role: translations.team.roles.operations.en, imageUrl: teamK9 },
+  { name: 'Lex', role: translations.team.roles.marketing.en, imageUrl: teamLex },
+  { name: 'Morty', role: translations.team.roles.design.en, imageUrl: teamMorty },
+  { name: 'Stuart', role: translations.team.roles.marketing.en, imageUrl: teamStuart },
+  { name: 'The Master Xi', role: translations.team.roles.design.en, imageUrl: teamMasterXi },
+  { name: 'Troke Latu', role: translations.team.roles.communityManagement.en, imageUrl: teamTrokeLatu },
+  { name: 'Weizenstar', role: translations.team.roles.productManagerDeveloper.en, imageUrl: teamWeizenstar },
+  { name: 'Rock', role: translations.team.roles.frontendDev.en, imageUrl: teamRock },
 ]
 
 export function Team() {
@@ -48,9 +50,9 @@ export function Team() {
       <div className="mx-auto max-w-7xl py-12 px-6 text-center lg:px-8 lg:py-24">
         <div className="space-y-8 sm:space-y-12">
           <div className="space-y-5 sm:mx-auto sm:max-w-xl sm:space-y-4 lg:max-w-5xl">
-            <h2 className="text-3xl tracking-tight sm:text-4xl dark:text-orange-500">The team</h2>
+            <h2 className="text-3xl tracking-tight sm:text-4xl dark:text-orange-500">{translations.team.title.en}</h2>
             <p className="dark:text-slate-400">
-              Our team is doxxed through SolidProof, view <a className="text-orange-500" href="https://github.com/solidproof/projects/blob/main/DGNX/KYC_Certificate_DegenX.png">here</a>.
+              {translations.team.doxxedThroughSolidProof.en} <a className="text-orange-500" href="https://github.com/solidproof/projects/blob/main/DGNX/KYC_Certificate_DegenX.png">{translations.team.here.en}</a>.
             </p>
           </div>
           <ul

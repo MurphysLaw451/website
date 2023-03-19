@@ -24,54 +24,56 @@ import projectClinicDark from '../images/projects/clinic-dark.png'
 
 import { Container } from './Container'
 
+import translations from '../translations/site.json'
+
 const features = [
   {
-    title: 'Liquidity Backing',
+    title: translations.projects.features.liqBacking.title.en,
     image: projectLiqBack,
     imageDark: projectLiqBackDark,
-    description: '$DGNX is the driving force behind the revolutionary DegenX ecosystem. With its solid foundation in a base asset, the DGNX token boasts an ever-growing intrinsic value and is further strengthened by the power of onchain DAO governance.'
+    description: translations.projects.features.liqBacking.description.en
   },
   {
-    title: 'Swap',
+    title: translations.projects.features.swap.title.en,
     image: projectSwap,
     imageDark: projectSwapDark,
-    description: 'Our upcoming swap is the ultimate user-friendly decentralized exchange. With compatibility across EVM networks, our DEX is built on a cutting-edge decentralized AMM system, which allows for seamless and effortless trading of multiple cryptocurrencies across multiple chains. Get ready to experience the future of decentralized trading with our upcoming Swap.',
+    description: translations.projects.features.swap.description.en,
   },
   {
-    title: 'DAO',
+    title: translations.projects.features.dao.title.en,
     image: projectDao,
     imageDark: projectDaoDark,
-    description: 'Be a part of something truly exciting and join the DGNX token holder community, where you will become a true owner of the DegenX ecosystem. We are revolutionizing the way organizations are run by offering an alternative to centralized structures, operations, and decision-making processes. With DGNX token, you can truly be in control of the future of the project.'
+    description: translations.projects.features.dao.description.en
   },
   {
-    title: 'Bridge',
+    title: translations.projects.features.bridge.title.en,
     image: projectBridge,
     imageDark: projectBridgeDark,
-    description: 'DGNX will be bridged across several EVM chains including Ethereum and BSC. This allows for a wider distribution of the limited supply of 21 million tokens across multiple blockchain networks, providing greater accessibility and utility for users.'
+    description: translations.projects.features.bridge.description.en
   },
   {
-    title: 'LockeR',
+    title: translations.projects.features.locker.title.en,
     image: projectLocker,
     imageDark: projectLockerDark,
-    description: 'Experience the future of token management with LockeR, the most advanced multichain token locker on the blockchain. With just a few simple steps, easily lock up liquidity, developer tokens, or your own tokens for added security. Our process is fast, easy, and secure, and includes unique options such as contract-based unlocking through voting.'
+    description: translations.projects.features.locker.description.en
   },
   {
-    title: 'StakeX',
+    title: translations.projects.features.stake.title.en,
     image: projectStake,
     imageDark: projectStakeDark,
-    description: 'StakeX is the ultimate multichain staking smart contract. Whether you\'re looking to stake $DGNX or add a staking protocol to your project, StakeX has you covered. With its unparalleled security and innovation, StakeX sets a new standard in the blockchain world. Take your project to the next level with DegenX StakeX.'
+    description: translations.projects.features.stake.description.en
   },
   {
-    title: 'Factor',
+    title: translations.projects.features.factor.title.en,
     image: projectFactor,
     imageDark: projectFactorDark,
-    description: 'Advance your project with DegenX Factor, a top-of-the-line blockchain service for projects looking to implement unique features for their tokens. Our technology guarantees a steady increase in the floor price for your tokens, bringing security and stability to your holders. Whether you\'re starting a new venture or upgrading an existing one, DegenX Factor is the perfect solution to take your token to the next level.'
+    description: translations.projects.features.factor.description.en
   },
   {
-    title: 'Clinic',
+    title: translations.projects.features.clinic.title.en,
     image: projectClinic,
     imageDark: projectClinicDark,
-    description: 'DegenX Clinic is a unique project that will serve as a real-world example for our community to come together in a resort-like environment. Designed to help recover from rugpulls in other projects, DegenX Clinic will also be able to generate income by renting it out when not in use. These profits will be used to maintain the facility and further increase the value of our token. Join us in creating a safe haven for the crypto community with DegenX Clinic.'
+    description: translations.projects.features.clinic.description.en
   },
 ]
 
@@ -104,10 +106,10 @@ export function Projects() {
       <Container className="relative">
         <div className="max-w-2xl md:mx-auto md:text-center xl:max-w-none">
           <h2 className="font-display text-3xl dark:text-orange-500 tracking-tight text-white sm:text-4xl md:text-5xl">
-            Nine projects to rule them all
+            {translations.projects.title.en}
           </h2>
           <p className="mt-6 text-lg tracking-tight text-white dark:text-slate-400">
-            Meet the DegenX ecosystem
+            {translations.projects.meetEcosystem.en}
           </p>
         </div>
         <Tab.Group

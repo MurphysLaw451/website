@@ -3,24 +3,23 @@ import clsx from 'clsx'
 
 import { Container } from './Container'
 
+import translations from '../translations/site.json'
+
 const features = [
   {
-    name: 'Baseline value',
-    summary: 'Ever increasing minimum value of $DGNX.',
-    description:
-      'You can always burn your $DGNX to get the backing back, even if the market price is lower than the backing price.',
+    name: translations.features.baselineName.en,
+    summary: translations.features.baselineSummary.en,
+    description: translations.features.baselineDesc.en,
   },
   {
-    name: 'DAO token',
-    summary: 'Vote in our DAO and be part of the direction DegenX takes.',
-    description:
-      'All contracts are owned by the DAO and the project is truly community-led.',
+    name: translations.features.daoName.en,
+    summary: translations.features.daoSummary.en,
+    description: translations.features.daoDesc.en,
   },
   {
-    name: 'Rewards',
-    summary: 'Earn by staking $DGNX.',
-    description:
-      'We are developing several revenue generating services, like StakeX and Factor and will distributing the revenue to stakers. Earn by staking $DGNX',
+    name: translations.features.rewardsName.en,
+    summary: translations.features.rewardsSummary.en,
+    description: translations.features.rewardsDesc.en,
   },
 ]
 
@@ -96,10 +95,10 @@ export function Features() {
       <Container>
         <div className="mx-auto max-w-2xl md:text-center">
           <h2 className="font-display text-3xl tracking-tight text-slate-900 dark:text-orange-500 sm:text-4xl">
-            $DGNX
+            {translations.features.dgnx.en}
           </h2>
           <p className="mt-4 text-lg tracking-tight text-slate-700 dark:text-slate-400">
-            Three unique features that make us stand out
+            {translations.features.description.en}
           </p>
         </div>
         <FeaturesMobile />

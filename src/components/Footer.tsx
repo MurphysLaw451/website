@@ -6,6 +6,8 @@ import { Container } from './Container'
 
 import logoImage from '../images/logo.png'
 
+import translations from '../translations/site.json'
+
 export function Footer() {
   return (
     <footer className="">
@@ -58,8 +60,7 @@ export function Footer() {
             </Link>
           </div>
           <p className="mt-6 text-sm text-slate-500 sm:mt-0">
-            Copyright 🥦 {new Date().getFullYear()} DegenX. All rights
-            reserved.
+            {translations.footer.copyright.en} 🥦 {new Date().getFullYear()} {translations.footer.reservedRights.en}
           </p>
         </div>
       </Container>

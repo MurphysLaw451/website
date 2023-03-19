@@ -2,34 +2,33 @@ import Image from 'next/image'
 
 import { Container } from './Container'
 
+import translations from '../translations/site.json'
+
 const testimonials = [
   [
     {
-      title: 'Burn: 1% on sell',
-      content:
-        'This makes $DGNX deflationary. Additionally, the burn mechanism increases the backing of the circulating supply, leading to ever increasing baseline value.',
+      title: translations.tokenomics.burnTitle.en,
+      content: translations.tokenomics.burn.en,
     },
     {
-      title: 'Marketing: 1% on buy',
-      content: '1% of the AVAX used to buy DGNX is sent to a marketing wallet. This will be utilized to market the project and grow the community',
-    },
-  ],
-  [
-    {
-      title: 'Liquidity: 3%',
-      content:
-        '3% of buys and sells stay in the LP to creating a stable price floor and ensuring there is always liquidity to sell $DGNX.',
-    },
-    {
-      title: 'Backing: 4%',
-      content: '4% of all buys and sells are sent to the liquidity backing pool, giving $DGNX an ever increasing minimum value.',
+      title: translations.tokenomics.marketingTitle.en,
+      content: translations.tokenomics.marketing.en,
     },
   ],
   [
     {
-      title: 'Development: 2%',
-      content:
-        '2% of all transactions will be used to cover development costs, including audits.',
+      title: translations.tokenomics.liquidityTitle.en,
+      content: translations.tokenomics.liquidity.en,
+    },
+    {
+      title: translations.tokenomics.backingTitle.en,
+      content: translations.tokenomics.backing.en,
+    },
+  ],
+  [
+    {
+      title: translations.tokenomics.developmentTitle.en,
+      content: translations.tokenomics.development.en,
     },
     // {
     //   title: 'Investment fund: 2%',
@@ -48,12 +47,12 @@ export function Tokenomics() {
       <Container>
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="font-display text-3xl tracking-tight text-slate-900 dark:text-orange-500 sm:text-4xl">
-            Tokenomics
+            {translations.tokenomics.title.en}
           </h2>
           <p className="dark:text-slate-400">
-            Total supply (across all chains): 21.000.000 |{' '}
+            {translations.tokenomics.totalSupply.en}: 21.000.000 |{' '}
             <a href="https://snowtrace.io/token/0x51e48670098173025c477d9aa3f0eff7bf9f7812" rel="noreferrer" target="_blank" className="underline text-orange-500">
-              Check on Snowtrace
+              {translations.tokenomics.checkSnowtrace.en}
             </a>
           </p>
         </div>
