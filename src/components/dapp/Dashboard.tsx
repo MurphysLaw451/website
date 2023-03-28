@@ -97,7 +97,7 @@ const TradingViewWidget = () => {
                 if (document.getElementById('tradingview_4246e') && 'TradingView' in window) {
                     // @ts-ignore
                     new window.TradingView.MediumWidget({
-                        symbols: [["DGNX / WAVAX", "TRADERJOE:DGNXWAVAX|12M"]],
+                        symbols: [["DGNX / WAVAX", "DGNXWAVAX|12M"]],
                         chartOnly: false,
                         width: "100%",
                         height: "100%",
