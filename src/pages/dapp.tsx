@@ -31,7 +31,7 @@ export default function Dapp() {
                 />
             </Head>
             <DappHeader />
-            <div className='flex lg:ml-3'>
+            <div className='flex lg:ml-3 my-16'>
                 <div className="max-w-4xl w-64 mr-4 hidden lg:block">
                     <Sidebar />
                 </div>

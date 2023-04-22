@@ -10,7 +10,7 @@ import Sidebar from './Sidebar';
 
 export function DappHeader() {
   return (
-    <header className="py-6">
+    <header className="py-3 fixed w-full dark:bg-gray-900">
       <DappContainer>
         <nav className="relative z-50 flex justify-between">
           <div className="flex items-center md:gap-x-12">
@@ -19,11 +19,11 @@ export function DappHeader() {
             </div>
             <Link href="/" aria-label="Home">
               <Image
-                className="h-12 w-12"
+                className="h-8 w-8"
                 src={logoImage}
                 alt=""
-                width={56}
-                height={56}
+                width={48}
+                height={48}
               />
             </Link>
           </div>

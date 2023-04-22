@@ -223,7 +223,7 @@ const WalletInfo = (props: any) => {
                     </div>
                     <div className="flex">
                         <div className="flex-grow">Stablecoins</div>
-                        <div>${showAmount(walletData, ['0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E'])}</div>
+                        <div>${showAmount(walletData, ['0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E', '0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7'])}</div>
                     </div>
                 </>
                     )

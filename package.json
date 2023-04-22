@@ -7,7 +7,8 @@
     "build": "next build && next export",
     "deploy": "next build && next export && wrangler pages publish out --project-name temp-dgnx",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "typechain": "typechain --target ethers-v6 --out-dir types/ src/abi/vault.json"
   },
   "browserslist": "defaults, not ie <= 11",
   "dependencies": {
@@ -17,6 +18,7 @@
     "autoprefixer": "^10.4.13",
     "aws-lambda": "^1.0.7",
     "clsx": "^1.2.1",
+    "ethers": "^6.3.0",
     "focus-visible": "^5.2.0",
     "next": "13.0.2",
     "next-themes": "^0.2.1",
@@ -33,6 +35,7 @@
     "tailwindcss": "^3.2.4"
   },
   "devDependencies": {
+    "@typechain/ethers-v6": "^0.3.0",
     "@types/aws-lambda": "^8.10.114",
     "@types/node": "18.11.18",
     "@types/react": "18.0.27",
@@ -41,6 +44,7 @@
     "prettier": "^2.7.1",
     "prettier-plugin-tailwindcss": "^0.1.13",
     "ts-loader": "^9.4.2",
+    "typechain": "^8.1.1",
     "typescript": "4.9.4",
     "webpack": "^5.80.0",
     "webpack-node-externals": "^3.0.0"
