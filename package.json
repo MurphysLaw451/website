@@ -8,7 +8,7 @@
     "deploy": "next build && next export && wrangler pages publish out --project-name temp-dgnx",
     "start": "next start",
     "lint": "next lint",
-    "typechain": "typechain --target ethers-v6 --out-dir types/ src/abi/vault.json"
+    "typechain": "typechain --target ethers-v6 --out-dir types/ src/abi/erc20.json"
   },
   "browserslist": "defaults, not ie <= 11",
   "dependencies": {
