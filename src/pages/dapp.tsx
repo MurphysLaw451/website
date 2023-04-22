@@ -8,6 +8,7 @@ import { DappHeader } from '../components/dapp/elements/DappHeader'
 import Sidebar from '../components/dapp/elements/Sidebar'
 import { useEffect, useState } from 'react'
 import { Governance } from '../components/dapp/Governance'
+import { LiquidityBacking } from '../components/dapp/LiquidityBacking'
 
 export default function Dapp() {
     const [ready, setReady] = useState(false);
@@ -39,6 +40,7 @@ export default function Dapp() {
                         <Route element={<Dashboard />} path="/dapp" />
                         <Route element={<BuyDGNX />} path="/dapp/buy/*" />
                         <Route element={<Governance />} path="/dapp/governance" />
+                        <Route element={<LiquidityBacking />} path="/dapp/liquidity-backing" />
                     </Routes>
                 </main>
             </div>

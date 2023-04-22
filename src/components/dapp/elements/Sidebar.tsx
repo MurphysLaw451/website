@@ -3,11 +3,13 @@ import { Link, useLocation } from 'react-router-dom';
 import clsx from 'clsx'
 import { Fragment } from 'react';
 import { HiHome, HiCurrencyDollar } from 'react-icons/hi'
+import { FaPiggyBank } from 'react-icons/fa'
 import { RiGovernmentFill } from 'react-icons/ri'
 
 const navigation = [
     { name: 'Dashboard', icon: HiHome, href: '', count: undefined },
     { name: 'Buy $DGNX', icon: HiCurrencyDollar, href: 'buy', count: undefined },
+    { name: 'Liquidity Backing', icon: FaPiggyBank, href: 'liquidity-backing', count: undefined },
     { name: 'Governance', icon: RiGovernmentFill, href: 'governance', count: undefined },
 ]
 
@@ -100,7 +102,7 @@ export default function Sidebar(props: { mobile?: boolean }) {
     return (
         <div className="flex flex-grow flex-col overflow-y-auto ">
             <div className="flex flex-grow flex-col">
-                <nav className="flex-1 space-y-1  px-2" aria-label="Sidebar">
+                <nav className="flex-1 space-y-1 px-2" aria-label="Sidebar">
                     {navigation.map((item) => {
                         const current = (item.href && location.pathname.includes(item.href))
                             || (`/dapp` === location.pathname && item.href === '')
