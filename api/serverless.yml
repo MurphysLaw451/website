@@ -1,0 +1,37 @@
+service: dgnx-website
+frameworkVersion: '2 || 3'
+
+package:
+  individually: true
+
+plugins:
+  - serverless-webpack
+  - serverless-api-cloudfront
+
+custom:
+  secrets: ${ssm:/aws/reference/secretsmanager/dgnx-website}
+  corsAllowedOrigin:
+    dev: http://localhost:3000
+    production: https://www.dgnx.finance
+
+provider:
+  name: aws
+  region: eu-west-1
+  profile: dgnx
+  stage: dev
+  runtime: nodejs18.x
+
+  environment:
+    DGNX_API_KEY: ${self:custom.secrets.${opt:stage, 'dev'}-DGNX_API_KEY}
+    CORS_ALLOWED_ORIGIN: ${self:custom.corsAllowedOrigin.${opt:stage, self:provider.stage}}
+
+functions:
+  snowtraceProxy:
+    handler: snowtraceProxy/get.handler
+    memorySize: 512
+    timeout: 29
+    events:
+      - http:
+          cors: true
+          path: /snowtrace
+          method: get
