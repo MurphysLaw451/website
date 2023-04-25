@@ -8,17 +8,19 @@
     "deploy": "next build && next export && wrangler pages publish out --project-name temp-dgnx",
     "start": "next start",
     "lint": "next lint",
-    "typechain": "typechain --target ethers-v6 --out-dir types/ src/abi/erc20.json"
+    "typechain": "typechain --target ethers-v5 --out-dir types/ src/abi/*.json"
   },
   "browserslist": "defaults, not ie <= 11",
   "dependencies": {
     "@headlessui/react": "^1.7.2",
     "@lifi/widget": "^1.29.6",
     "@tailwindcss/forms": "^0.5.3",
+    "@wagmi/chains": "^0.2.20",
     "autoprefixer": "^10.4.13",
     "aws-lambda": "^1.0.7",
+    "bignumber.js": "^9.1.1",
     "clsx": "^1.2.1",
-    "ethers": "^6.3.0",
+    "ethers": "^5",
     "focus-visible": "^5.2.0",
     "next": "13.0.2",
     "next-themes": "^0.2.1",
@@ -32,10 +34,11 @@
     "serverless": "^3.30.1",
     "serverless-api-cloudfront": "https://github.com/appsconcept/serverless-api-cloudfront",
     "serverless-webpack": "^5.11.0",
-    "tailwindcss": "^3.2.4"
+    "tailwindcss": "^3.2.4",
+    "wagmi": "^0.12.12"
   },
   "devDependencies": {
-    "@typechain/ethers-v6": "^0.3.0",
+    "@typechain/ethers-v5": "^10.2.0",
     "@types/aws-lambda": "^8.10.114",
     "@types/node": "18.11.18",
     "@types/react": "18.0.27",

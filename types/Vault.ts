@@ -3,29 +3,61 @@
 /* eslint-disable */
 import type {
   BaseContract,
+  BigNumber,
   BigNumberish,
   BytesLike,
-  FunctionFragment,
-  Result,
-  Interface,
-  EventFragment,
-  AddressLike,
-  ContractRunner,
-  ContractMethod,
-  Listener,
+  CallOverrides,
+  ContractTransaction,
+  Overrides,
+  PopulatedTransaction,
+  Signer,
+  utils,
 } from "ethers";
 import type {
-  TypedContractEvent,
-  TypedDeferredTopicFilter,
-  TypedEventLog,
-  TypedLogDescription,
+  FunctionFragment,
+  Result,
+  EventFragment,
+} from "@ethersproject/abi";
+import type { Listener, Provider } from "@ethersproject/providers";
+import type {
+  TypedEventFilter,
+  TypedEvent,
   TypedListener,
-  TypedContractMethod,
+  OnEvent,
+  PromiseOrValue,
 } from "./common";
 
-export interface VaultInterface extends Interface {
+export interface VaultInterface extends utils.Interface {
+  functions: {
+    "DEFAULT_ADMIN_ROLE()": FunctionFragment;
+    "ROLE_CONTROLLER()": FunctionFragment;
+    "ROLE_GOVERNANCE()": FunctionFragment;
+    "ROLE_GOVERNOR()": FunctionFragment;
+    "allAssets(uint256)": FunctionFragment;
+    "assets(address)": FunctionFragment;
+    "balanceOf(address)": FunctionFragment;
+    "countAssets()": FunctionFragment;
+    "deposit(address,uint256)": FunctionFragment;
+    "depositFrom(address,address,uint256)": FunctionFragment;
+    "getRoleAdmin(bytes32)": FunctionFragment;
+    "getRoleMember(bytes32,uint256)": FunctionFragment;
+    "getRoleMemberCount(bytes32)": FunctionFragment;
+    "grantRole(bytes32,address)": FunctionFragment;
+    "hasAsset(address)": FunctionFragment;
+    "hasRole(bytes32,address)": FunctionFragment;
+    "initialize(address,address)": FunctionFragment;
+    "recoverAsset(address,address)": FunctionFragment;
+    "registerAsset(address)": FunctionFragment;
+    "renounceRole(bytes32,address)": FunctionFragment;
+    "revokeAsset(address,address)": FunctionFragment;
+    "revokeRole(bytes32,address)": FunctionFragment;
+    "supportsInterface(bytes4)": FunctionFragment;
+    "withdraw(address,uint256)": FunctionFragment;
+    "withdrawTo(address,address,uint256)": FunctionFragment;
+  };
+
   getFunction(
-    nameOrSignature:
+    nameOrSignatureOrTopic:
       | "DEFAULT_ADMIN_ROLE"
       | "ROLE_CONTROLLER"
       | "ROLE_GOVERNANCE"
@@ -53,22 +85,6 @@ export interface VaultInterface extends Interface {
       | "withdrawTo"
   ): FunctionFragment;
 
-  getEvent(
-    nameOrSignatureOrTopic:
-      | "DepositAsset"
-      | "DepositAssetFailed"
-      | "Initialized"
-      | "RecoveredAsset"
-      | "RecoveredAssetFailed"
-      | "RegisterAssetToVault"
-      | "RevokeAssetFromVault"
-      | "RoleAdminChanged"
-      | "RoleGranted"
-      | "RoleRevoked"
-      | "WithdrawAsset"
-      | "WithdrawAssetFailed"
-  ): EventFragment;
-
   encodeFunctionData(
     functionFragment: "DEFAULT_ADMIN_ROLE",
     values?: undefined
@@ -87,12 +103,15 @@ export interface VaultInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "allAssets",
-    values: [BigNumberish]
+    values: [PromiseOrValue<BigNumberish>]
   ): string;
-  encodeFunctionData(functionFragment: "assets", values: [AddressLike]): string;
+  encodeFunctionData(
+    functionFragment: "assets",
+    values: [PromiseOrValue<string>]
+  ): string;
   encodeFunctionData(
     functionFragment: "balanceOf",
-    values: [AddressLike]
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "countAssets",
@@ -100,71 +119,79 @@ export interface VaultInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "deposit",
-    values: [AddressLike, BigNumberish]
+    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "depositFrom",
-    values: [AddressLike, AddressLike, BigNumberish]
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<string>,
+      PromiseOrValue<BigNumberish>
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "getRoleAdmin",
-    values: [BytesLike]
+    values: [PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(
     functionFragment: "getRoleMember",
-    values: [BytesLike, BigNumberish]
+    values: [PromiseOrValue<BytesLike>, PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "getRoleMemberCount",
-    values: [BytesLike]
+    values: [PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(
     functionFragment: "grantRole",
-    values: [BytesLike, AddressLike]
+    values: [PromiseOrValue<BytesLike>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "hasAsset",
-    values: [AddressLike]
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "hasRole",
-    values: [BytesLike, AddressLike]
+    values: [PromiseOrValue<BytesLike>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "initialize",
-    values: [AddressLike, AddressLike]
+    values: [PromiseOrValue<string>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "recoverAsset",
-    values: [AddressLike, AddressLike]
+    values: [PromiseOrValue<string>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "registerAsset",
-    values: [AddressLike]
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "renounceRole",
-    values: [BytesLike, AddressLike]
+    values: [PromiseOrValue<BytesLike>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "revokeAsset",
-    values: [AddressLike, AddressLike]
+    values: [PromiseOrValue<string>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "revokeRole",
-    values: [BytesLike, AddressLike]
+    values: [PromiseOrValue<BytesLike>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "supportsInterface",
-    values: [BytesLike]
+    values: [PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(
     functionFragment: "withdraw",
-    values: [AddressLike, BigNumberish]
+    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "withdrawTo",
-    values: [AddressLike, AddressLike, BigNumberish]
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<string>,
+      PromiseOrValue<BigNumberish>
+    ]
   ): string;
 
   decodeFunctionResult(
@@ -234,728 +261,950 @@ export interface VaultInterface extends Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "withdraw", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "withdrawTo", data: BytesLike): Result;
+
+  events: {
+    "DepositAsset(address,uint256,address)": EventFragment;
+    "DepositAssetFailed(address,uint256,address)": EventFragment;
+    "Initialized(uint8)": EventFragment;
+    "RecoveredAsset(address,uint256,address)": EventFragment;
+    "RecoveredAssetFailed(address,uint256,address)": EventFragment;
+    "RegisterAssetToVault(address)": EventFragment;
+    "RevokeAssetFromVault(address)": EventFragment;
+    "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
+    "RoleGranted(bytes32,address,address)": EventFragment;
+    "RoleRevoked(bytes32,address,address)": EventFragment;
+    "WithdrawAsset(address,uint256,address)": EventFragment;
+    "WithdrawAssetFailed(address,uint256,address)": EventFragment;
+  };
+
+  getEvent(nameOrSignatureOrTopic: "DepositAsset"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "DepositAssetFailed"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RecoveredAsset"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RecoveredAssetFailed"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RegisterAssetToVault"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RevokeAssetFromVault"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RoleAdminChanged"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RoleGranted"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RoleRevoked"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "WithdrawAsset"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "WithdrawAssetFailed"): EventFragment;
 }
 
-export namespace DepositAssetEvent {
-  export type InputTuple = [
-    assetAddress: AddressLike,
-    assetAmount: BigNumberish,
-    depositer: AddressLike
-  ];
-  export type OutputTuple = [
-    assetAddress: string,
-    assetAmount: bigint,
-    depositer: string
-  ];
-  export interface OutputObject {
-    assetAddress: string;
-    assetAmount: bigint;
-    depositer: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
+export interface DepositAssetEventObject {
+  assetAddress: string;
+  assetAmount: BigNumber;
+  depositer: string;
 }
+export type DepositAssetEvent = TypedEvent<
+  [string, BigNumber, string],
+  DepositAssetEventObject
+>;
 
-export namespace DepositAssetFailedEvent {
-  export type InputTuple = [
-    assetAddress: AddressLike,
-    assetAmount: BigNumberish,
-    depositer: AddressLike
-  ];
-  export type OutputTuple = [
-    assetAddress: string,
-    assetAmount: bigint,
-    depositer: string
-  ];
-  export interface OutputObject {
-    assetAddress: string;
-    assetAmount: bigint;
-    depositer: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
+export type DepositAssetEventFilter = TypedEventFilter<DepositAssetEvent>;
 
-export namespace InitializedEvent {
-  export type InputTuple = [version: BigNumberish];
-  export type OutputTuple = [version: bigint];
-  export interface OutputObject {
-    version: bigint;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
+export interface DepositAssetFailedEventObject {
+  assetAddress: string;
+  assetAmount: BigNumber;
+  depositer: string;
 }
+export type DepositAssetFailedEvent = TypedEvent<
+  [string, BigNumber, string],
+  DepositAssetFailedEventObject
+>;
 
-export namespace RecoveredAssetEvent {
-  export type InputTuple = [
-    assetAddress: AddressLike,
-    assetAmount: BigNumberish,
-    receiver: AddressLike
-  ];
-  export type OutputTuple = [
-    assetAddress: string,
-    assetAmount: bigint,
-    receiver: string
-  ];
-  export interface OutputObject {
-    assetAddress: string;
-    assetAmount: bigint;
-    receiver: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
+export type DepositAssetFailedEventFilter =
+  TypedEventFilter<DepositAssetFailedEvent>;
 
-export namespace RecoveredAssetFailedEvent {
-  export type InputTuple = [
-    assetAddress: AddressLike,
-    assetAmount: BigNumberish,
-    receiver: AddressLike
-  ];
-  export type OutputTuple = [
-    assetAddress: string,
-    assetAmount: bigint,
-    receiver: string
-  ];
-  export interface OutputObject {
-    assetAddress: string;
-    assetAmount: bigint;
-    receiver: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
+export interface InitializedEventObject {
+  version: number;
 }
+export type InitializedEvent = TypedEvent<[number], InitializedEventObject>;
 
-export namespace RegisterAssetToVaultEvent {
-  export type InputTuple = [assetAddress: AddressLike];
-  export type OutputTuple = [assetAddress: string];
-  export interface OutputObject {
-    assetAddress: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
+export type InitializedEventFilter = TypedEventFilter<InitializedEvent>;
 
-export namespace RevokeAssetFromVaultEvent {
-  export type InputTuple = [assetAddress: AddressLike];
-  export type OutputTuple = [assetAddress: string];
-  export interface OutputObject {
-    assetAddress: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
+export interface RecoveredAssetEventObject {
+  assetAddress: string;
+  assetAmount: BigNumber;
+  receiver: string;
 }
+export type RecoveredAssetEvent = TypedEvent<
+  [string, BigNumber, string],
+  RecoveredAssetEventObject
+>;
 
-export namespace RoleAdminChangedEvent {
-  export type InputTuple = [
-    role: BytesLike,
-    previousAdminRole: BytesLike,
-    newAdminRole: BytesLike
-  ];
-  export type OutputTuple = [
-    role: string,
-    previousAdminRole: string,
-    newAdminRole: string
-  ];
-  export interface OutputObject {
-    role: string;
-    previousAdminRole: string;
-    newAdminRole: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
+export type RecoveredAssetEventFilter = TypedEventFilter<RecoveredAssetEvent>;
 
-export namespace RoleGrantedEvent {
-  export type InputTuple = [
-    role: BytesLike,
-    account: AddressLike,
-    sender: AddressLike
-  ];
-  export type OutputTuple = [role: string, account: string, sender: string];
-  export interface OutputObject {
-    role: string;
-    account: string;
-    sender: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
+export interface RecoveredAssetFailedEventObject {
+  assetAddress: string;
+  assetAmount: BigNumber;
+  receiver: string;
 }
+export type RecoveredAssetFailedEvent = TypedEvent<
+  [string, BigNumber, string],
+  RecoveredAssetFailedEventObject
+>;
 
-export namespace RoleRevokedEvent {
-  export type InputTuple = [
-    role: BytesLike,
-    account: AddressLike,
-    sender: AddressLike
-  ];
-  export type OutputTuple = [role: string, account: string, sender: string];
-  export interface OutputObject {
-    role: string;
-    account: string;
-    sender: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
+export type RecoveredAssetFailedEventFilter =
+  TypedEventFilter<RecoveredAssetFailedEvent>;
 
-export namespace WithdrawAssetEvent {
-  export type InputTuple = [
-    assetAddress: AddressLike,
-    assetAmount: BigNumberish,
-    withdrawer: AddressLike
-  ];
-  export type OutputTuple = [
-    assetAddress: string,
-    assetAmount: bigint,
-    withdrawer: string
-  ];
-  export interface OutputObject {
-    assetAddress: string;
-    assetAmount: bigint;
-    withdrawer: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
+export interface RegisterAssetToVaultEventObject {
+  assetAddress: string;
 }
+export type RegisterAssetToVaultEvent = TypedEvent<
+  [string],
+  RegisterAssetToVaultEventObject
+>;
 
-export namespace WithdrawAssetFailedEvent {
-  export type InputTuple = [
-    assetAddress: AddressLike,
-    assetAmount: BigNumberish,
-    withdrawer: AddressLike
-  ];
-  export type OutputTuple = [
-    assetAddress: string,
-    assetAmount: bigint,
-    withdrawer: string
-  ];
-  export interface OutputObject {
-    assetAddress: string;
-    assetAmount: bigint;
-    withdrawer: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
+export type RegisterAssetToVaultEventFilter =
+  TypedEventFilter<RegisterAssetToVaultEvent>;
+
+export interface RevokeAssetFromVaultEventObject {
+  assetAddress: string;
 }
+export type RevokeAssetFromVaultEvent = TypedEvent<
+  [string],
+  RevokeAssetFromVaultEventObject
+>;
+
+export type RevokeAssetFromVaultEventFilter =
+  TypedEventFilter<RevokeAssetFromVaultEvent>;
+
+export interface RoleAdminChangedEventObject {
+  role: string;
+  previousAdminRole: string;
+  newAdminRole: string;
+}
+export type RoleAdminChangedEvent = TypedEvent<
+  [string, string, string],
+  RoleAdminChangedEventObject
+>;
+
+export type RoleAdminChangedEventFilter =
+  TypedEventFilter<RoleAdminChangedEvent>;
+
+export interface RoleGrantedEventObject {
+  role: string;
+  account: string;
+  sender: string;
+}
+export type RoleGrantedEvent = TypedEvent<
+  [string, string, string],
+  RoleGrantedEventObject
+>;
+
+export type RoleGrantedEventFilter = TypedEventFilter<RoleGrantedEvent>;
+
+export interface RoleRevokedEventObject {
+  role: string;
+  account: string;
+  sender: string;
+}
+export type RoleRevokedEvent = TypedEvent<
+  [string, string, string],
+  RoleRevokedEventObject
+>;
+
+export type RoleRevokedEventFilter = TypedEventFilter<RoleRevokedEvent>;
+
+export interface WithdrawAssetEventObject {
+  assetAddress: string;
+  assetAmount: BigNumber;
+  withdrawer: string;
+}
+export type WithdrawAssetEvent = TypedEvent<
+  [string, BigNumber, string],
+  WithdrawAssetEventObject
+>;
+
+export type WithdrawAssetEventFilter = TypedEventFilter<WithdrawAssetEvent>;
+
+export interface WithdrawAssetFailedEventObject {
+  assetAddress: string;
+  assetAmount: BigNumber;
+  withdrawer: string;
+}
+export type WithdrawAssetFailedEvent = TypedEvent<
+  [string, BigNumber, string],
+  WithdrawAssetFailedEventObject
+>;
+
+export type WithdrawAssetFailedEventFilter =
+  TypedEventFilter<WithdrawAssetFailedEvent>;
 
 export interface Vault extends BaseContract {
-  connect(runner?: ContractRunner | null): BaseContract;
-  attach(addressOrName: AddressLike): this;
+  connect(signerOrProvider: Signer | Provider | string): this;
+  attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
   interface: VaultInterface;
 
-  queryFilter<TCEvent extends TypedContractEvent>(
-    event: TCEvent,
+  queryFilter<TEvent extends TypedEvent>(
+    event: TypedEventFilter<TEvent>,
     fromBlockOrBlockhash?: string | number | undefined,
     toBlock?: string | number | undefined
-  ): Promise<Array<TypedEventLog<TCEvent>>>;
-  queryFilter<TCEvent extends TypedContractEvent>(
-    filter: TypedDeferredTopicFilter<TCEvent>,
-    fromBlockOrBlockhash?: string | number | undefined,
-    toBlock?: string | number | undefined
-  ): Promise<Array<TypedEventLog<TCEvent>>>;
+  ): Promise<Array<TEvent>>;
 
-  on<TCEvent extends TypedContractEvent>(
-    event: TCEvent,
-    listener: TypedListener<TCEvent>
-  ): Promise<this>;
-  on<TCEvent extends TypedContractEvent>(
-    filter: TypedDeferredTopicFilter<TCEvent>,
-    listener: TypedListener<TCEvent>
-  ): Promise<this>;
+  listeners<TEvent extends TypedEvent>(
+    eventFilter?: TypedEventFilter<TEvent>
+  ): Array<TypedListener<TEvent>>;
+  listeners(eventName?: string): Array<Listener>;
+  removeAllListeners<TEvent extends TypedEvent>(
+    eventFilter: TypedEventFilter<TEvent>
+  ): this;
+  removeAllListeners(eventName?: string): this;
+  off: OnEvent<this>;
+  on: OnEvent<this>;
+  once: OnEvent<this>;
+  removeListener: OnEvent<this>;
 
-  once<TCEvent extends TypedContractEvent>(
-    event: TCEvent,
-    listener: TypedListener<TCEvent>
-  ): Promise<this>;
-  once<TCEvent extends TypedContractEvent>(
-    filter: TypedDeferredTopicFilter<TCEvent>,
-    listener: TypedListener<TCEvent>
-  ): Promise<this>;
+  functions: {
+    DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<[string]>;
 
-  listeners<TCEvent extends TypedContractEvent>(
-    event: TCEvent
-  ): Promise<Array<TypedListener<TCEvent>>>;
-  listeners(eventName?: string): Promise<Array<Listener>>;
-  removeAllListeners<TCEvent extends TypedContractEvent>(
-    event?: TCEvent
-  ): Promise<this>;
+    ROLE_CONTROLLER(overrides?: CallOverrides): Promise<[string]>;
 
-  DEFAULT_ADMIN_ROLE: TypedContractMethod<[], [string], "view">;
+    ROLE_GOVERNANCE(overrides?: CallOverrides): Promise<[string]>;
 
-  ROLE_CONTROLLER: TypedContractMethod<[], [string], "view">;
+    ROLE_GOVERNOR(overrides?: CallOverrides): Promise<[string]>;
 
-  ROLE_GOVERNANCE: TypedContractMethod<[], [string], "view">;
+    allAssets(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
 
-  ROLE_GOVERNOR: TypedContractMethod<[], [string], "view">;
+    assets(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
 
-  allAssets: TypedContractMethod<[arg0: BigNumberish], [string], "view">;
+    balanceOf(
+      asset: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { balance: BigNumber }>;
 
-  assets: TypedContractMethod<[arg0: AddressLike], [boolean], "view">;
+    countAssets(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { assetCount: BigNumber }>;
 
-  balanceOf: TypedContractMethod<[asset: AddressLike], [bigint], "view">;
+    deposit(
+      asset: PromiseOrValue<string>,
+      amount: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  countAssets: TypedContractMethod<[], [bigint], "view">;
+    depositFrom(
+      asset: PromiseOrValue<string>,
+      from: PromiseOrValue<string>,
+      amount: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  deposit: TypedContractMethod<
-    [asset: AddressLike, amount: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
+    getRoleAdmin(
+      role: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
 
-  depositFrom: TypedContractMethod<
-    [asset: AddressLike, from: AddressLike, amount: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
+    getRoleMember(
+      role: PromiseOrValue<BytesLike>,
+      index: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
 
-  getRoleAdmin: TypedContractMethod<[role: BytesLike], [string], "view">;
+    getRoleMemberCount(
+      role: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
-  getRoleMember: TypedContractMethod<
-    [role: BytesLike, index: BigNumberish],
-    [string],
-    "view"
-  >;
+    grantRole(
+      role: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  getRoleMemberCount: TypedContractMethod<[role: BytesLike], [bigint], "view">;
+    hasAsset(
+      asset: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[boolean] & { has: boolean }>;
 
-  grantRole: TypedContractMethod<
-    [role: BytesLike, account: AddressLike],
-    [void],
-    "nonpayable"
-  >;
+    hasRole(
+      role: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
 
-  hasAsset: TypedContractMethod<[asset: AddressLike], [boolean], "view">;
+    initialize(
+      _controller: PromiseOrValue<string>,
+      _governance: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  hasRole: TypedContractMethod<
-    [role: BytesLike, account: AddressLike],
-    [boolean],
-    "view"
-  >;
+    recoverAsset(
+      asset: PromiseOrValue<string>,
+      receiver: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  initialize: TypedContractMethod<
-    [_controller: AddressLike, _governance: AddressLike],
-    [void],
-    "nonpayable"
-  >;
+    registerAsset(
+      asset: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  recoverAsset: TypedContractMethod<
-    [asset: AddressLike, receiver: AddressLike],
-    [void],
-    "nonpayable"
-  >;
+    renounceRole(
+      role: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  registerAsset: TypedContractMethod<
-    [asset: AddressLike],
-    [void],
-    "nonpayable"
-  >;
+    revokeAsset(
+      asset: PromiseOrValue<string>,
+      receiver: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  renounceRole: TypedContractMethod<
-    [role: BytesLike, account: AddressLike],
-    [void],
-    "nonpayable"
-  >;
+    revokeRole(
+      role: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  revokeAsset: TypedContractMethod<
-    [asset: AddressLike, receiver: AddressLike],
-    [void],
-    "nonpayable"
-  >;
+    supportsInterface(
+      interfaceId: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
 
-  revokeRole: TypedContractMethod<
-    [role: BytesLike, account: AddressLike],
-    [void],
-    "nonpayable"
-  >;
+    withdraw(
+      asset: PromiseOrValue<string>,
+      amount: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  supportsInterface: TypedContractMethod<
-    [interfaceId: BytesLike],
-    [boolean],
-    "view"
-  >;
+    withdrawTo(
+      asset: PromiseOrValue<string>,
+      to: PromiseOrValue<string>,
+      amount: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+  };
 
-  withdraw: TypedContractMethod<
-    [asset: AddressLike, amount: BigNumberish],
-    [boolean],
-    "nonpayable"
-  >;
+  DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
 
-  withdrawTo: TypedContractMethod<
-    [asset: AddressLike, to: AddressLike, amount: BigNumberish],
-    [boolean],
-    "nonpayable"
-  >;
+  ROLE_CONTROLLER(overrides?: CallOverrides): Promise<string>;
 
-  getFunction<T extends ContractMethod = ContractMethod>(
-    key: string | FunctionFragment
-  ): T;
+  ROLE_GOVERNANCE(overrides?: CallOverrides): Promise<string>;
 
-  getFunction(
-    nameOrSignature: "DEFAULT_ADMIN_ROLE"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "ROLE_CONTROLLER"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "ROLE_GOVERNANCE"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "ROLE_GOVERNOR"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "allAssets"
-  ): TypedContractMethod<[arg0: BigNumberish], [string], "view">;
-  getFunction(
-    nameOrSignature: "assets"
-  ): TypedContractMethod<[arg0: AddressLike], [boolean], "view">;
-  getFunction(
-    nameOrSignature: "balanceOf"
-  ): TypedContractMethod<[asset: AddressLike], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "countAssets"
-  ): TypedContractMethod<[], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "deposit"
-  ): TypedContractMethod<
-    [asset: AddressLike, amount: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "depositFrom"
-  ): TypedContractMethod<
-    [asset: AddressLike, from: AddressLike, amount: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "getRoleAdmin"
-  ): TypedContractMethod<[role: BytesLike], [string], "view">;
-  getFunction(
-    nameOrSignature: "getRoleMember"
-  ): TypedContractMethod<
-    [role: BytesLike, index: BigNumberish],
-    [string],
-    "view"
-  >;
-  getFunction(
-    nameOrSignature: "getRoleMemberCount"
-  ): TypedContractMethod<[role: BytesLike], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "grantRole"
-  ): TypedContractMethod<
-    [role: BytesLike, account: AddressLike],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "hasAsset"
-  ): TypedContractMethod<[asset: AddressLike], [boolean], "view">;
-  getFunction(
-    nameOrSignature: "hasRole"
-  ): TypedContractMethod<
-    [role: BytesLike, account: AddressLike],
-    [boolean],
-    "view"
-  >;
-  getFunction(
-    nameOrSignature: "initialize"
-  ): TypedContractMethod<
-    [_controller: AddressLike, _governance: AddressLike],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "recoverAsset"
-  ): TypedContractMethod<
-    [asset: AddressLike, receiver: AddressLike],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "registerAsset"
-  ): TypedContractMethod<[asset: AddressLike], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "renounceRole"
-  ): TypedContractMethod<
-    [role: BytesLike, account: AddressLike],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "revokeAsset"
-  ): TypedContractMethod<
-    [asset: AddressLike, receiver: AddressLike],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "revokeRole"
-  ): TypedContractMethod<
-    [role: BytesLike, account: AddressLike],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "supportsInterface"
-  ): TypedContractMethod<[interfaceId: BytesLike], [boolean], "view">;
-  getFunction(
-    nameOrSignature: "withdraw"
-  ): TypedContractMethod<
-    [asset: AddressLike, amount: BigNumberish],
-    [boolean],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "withdrawTo"
-  ): TypedContractMethod<
-    [asset: AddressLike, to: AddressLike, amount: BigNumberish],
-    [boolean],
-    "nonpayable"
-  >;
+  ROLE_GOVERNOR(overrides?: CallOverrides): Promise<string>;
 
-  getEvent(
-    key: "DepositAsset"
-  ): TypedContractEvent<
-    DepositAssetEvent.InputTuple,
-    DepositAssetEvent.OutputTuple,
-    DepositAssetEvent.OutputObject
-  >;
-  getEvent(
-    key: "DepositAssetFailed"
-  ): TypedContractEvent<
-    DepositAssetFailedEvent.InputTuple,
-    DepositAssetFailedEvent.OutputTuple,
-    DepositAssetFailedEvent.OutputObject
-  >;
-  getEvent(
-    key: "Initialized"
-  ): TypedContractEvent<
-    InitializedEvent.InputTuple,
-    InitializedEvent.OutputTuple,
-    InitializedEvent.OutputObject
-  >;
-  getEvent(
-    key: "RecoveredAsset"
-  ): TypedContractEvent<
-    RecoveredAssetEvent.InputTuple,
-    RecoveredAssetEvent.OutputTuple,
-    RecoveredAssetEvent.OutputObject
-  >;
-  getEvent(
-    key: "RecoveredAssetFailed"
-  ): TypedContractEvent<
-    RecoveredAssetFailedEvent.InputTuple,
-    RecoveredAssetFailedEvent.OutputTuple,
-    RecoveredAssetFailedEvent.OutputObject
-  >;
-  getEvent(
-    key: "RegisterAssetToVault"
-  ): TypedContractEvent<
-    RegisterAssetToVaultEvent.InputTuple,
-    RegisterAssetToVaultEvent.OutputTuple,
-    RegisterAssetToVaultEvent.OutputObject
-  >;
-  getEvent(
-    key: "RevokeAssetFromVault"
-  ): TypedContractEvent<
-    RevokeAssetFromVaultEvent.InputTuple,
-    RevokeAssetFromVaultEvent.OutputTuple,
-    RevokeAssetFromVaultEvent.OutputObject
-  >;
-  getEvent(
-    key: "RoleAdminChanged"
-  ): TypedContractEvent<
-    RoleAdminChangedEvent.InputTuple,
-    RoleAdminChangedEvent.OutputTuple,
-    RoleAdminChangedEvent.OutputObject
-  >;
-  getEvent(
-    key: "RoleGranted"
-  ): TypedContractEvent<
-    RoleGrantedEvent.InputTuple,
-    RoleGrantedEvent.OutputTuple,
-    RoleGrantedEvent.OutputObject
-  >;
-  getEvent(
-    key: "RoleRevoked"
-  ): TypedContractEvent<
-    RoleRevokedEvent.InputTuple,
-    RoleRevokedEvent.OutputTuple,
-    RoleRevokedEvent.OutputObject
-  >;
-  getEvent(
-    key: "WithdrawAsset"
-  ): TypedContractEvent<
-    WithdrawAssetEvent.InputTuple,
-    WithdrawAssetEvent.OutputTuple,
-    WithdrawAssetEvent.OutputObject
-  >;
-  getEvent(
-    key: "WithdrawAssetFailed"
-  ): TypedContractEvent<
-    WithdrawAssetFailedEvent.InputTuple,
-    WithdrawAssetFailedEvent.OutputTuple,
-    WithdrawAssetFailedEvent.OutputObject
-  >;
+  allAssets(
+    arg0: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  assets(
+    arg0: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  balanceOf(
+    asset: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  countAssets(overrides?: CallOverrides): Promise<BigNumber>;
+
+  deposit(
+    asset: PromiseOrValue<string>,
+    amount: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  depositFrom(
+    asset: PromiseOrValue<string>,
+    from: PromiseOrValue<string>,
+    amount: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  getRoleAdmin(
+    role: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  getRoleMember(
+    role: PromiseOrValue<BytesLike>,
+    index: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  getRoleMemberCount(
+    role: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  grantRole(
+    role: PromiseOrValue<BytesLike>,
+    account: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  hasAsset(
+    asset: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  hasRole(
+    role: PromiseOrValue<BytesLike>,
+    account: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  initialize(
+    _controller: PromiseOrValue<string>,
+    _governance: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  recoverAsset(
+    asset: PromiseOrValue<string>,
+    receiver: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  registerAsset(
+    asset: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  renounceRole(
+    role: PromiseOrValue<BytesLike>,
+    account: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  revokeAsset(
+    asset: PromiseOrValue<string>,
+    receiver: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  revokeRole(
+    role: PromiseOrValue<BytesLike>,
+    account: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  supportsInterface(
+    interfaceId: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  withdraw(
+    asset: PromiseOrValue<string>,
+    amount: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  withdrawTo(
+    asset: PromiseOrValue<string>,
+    to: PromiseOrValue<string>,
+    amount: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  callStatic: {
+    DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
+
+    ROLE_CONTROLLER(overrides?: CallOverrides): Promise<string>;
+
+    ROLE_GOVERNANCE(overrides?: CallOverrides): Promise<string>;
+
+    ROLE_GOVERNOR(overrides?: CallOverrides): Promise<string>;
+
+    allAssets(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    assets(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    balanceOf(
+      asset: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    countAssets(overrides?: CallOverrides): Promise<BigNumber>;
+
+    deposit(
+      asset: PromiseOrValue<string>,
+      amount: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    depositFrom(
+      asset: PromiseOrValue<string>,
+      from: PromiseOrValue<string>,
+      amount: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    getRoleAdmin(
+      role: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    getRoleMember(
+      role: PromiseOrValue<BytesLike>,
+      index: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    getRoleMemberCount(
+      role: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    grantRole(
+      role: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    hasAsset(
+      asset: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    hasRole(
+      role: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    initialize(
+      _controller: PromiseOrValue<string>,
+      _governance: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    recoverAsset(
+      asset: PromiseOrValue<string>,
+      receiver: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    registerAsset(
+      asset: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    renounceRole(
+      role: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    revokeAsset(
+      asset: PromiseOrValue<string>,
+      receiver: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    revokeRole(
+      role: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    supportsInterface(
+      interfaceId: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    withdraw(
+      asset: PromiseOrValue<string>,
+      amount: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    withdrawTo(
+      asset: PromiseOrValue<string>,
+      to: PromiseOrValue<string>,
+      amount: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+  };
 
   filters: {
-    "DepositAsset(address,uint256,address)": TypedContractEvent<
-      DepositAssetEvent.InputTuple,
-      DepositAssetEvent.OutputTuple,
-      DepositAssetEvent.OutputObject
-    >;
-    DepositAsset: TypedContractEvent<
-      DepositAssetEvent.InputTuple,
-      DepositAssetEvent.OutputTuple,
-      DepositAssetEvent.OutputObject
-    >;
+    "DepositAsset(address,uint256,address)"(
+      assetAddress?: PromiseOrValue<string> | null,
+      assetAmount?: null,
+      depositer?: PromiseOrValue<string> | null
+    ): DepositAssetEventFilter;
+    DepositAsset(
+      assetAddress?: PromiseOrValue<string> | null,
+      assetAmount?: null,
+      depositer?: PromiseOrValue<string> | null
+    ): DepositAssetEventFilter;
 
-    "DepositAssetFailed(address,uint256,address)": TypedContractEvent<
-      DepositAssetFailedEvent.InputTuple,
-      DepositAssetFailedEvent.OutputTuple,
-      DepositAssetFailedEvent.OutputObject
-    >;
-    DepositAssetFailed: TypedContractEvent<
-      DepositAssetFailedEvent.InputTuple,
-      DepositAssetFailedEvent.OutputTuple,
-      DepositAssetFailedEvent.OutputObject
-    >;
+    "DepositAssetFailed(address,uint256,address)"(
+      assetAddress?: PromiseOrValue<string> | null,
+      assetAmount?: null,
+      depositer?: PromiseOrValue<string> | null
+    ): DepositAssetFailedEventFilter;
+    DepositAssetFailed(
+      assetAddress?: PromiseOrValue<string> | null,
+      assetAmount?: null,
+      depositer?: PromiseOrValue<string> | null
+    ): DepositAssetFailedEventFilter;
 
-    "Initialized(uint8)": TypedContractEvent<
-      InitializedEvent.InputTuple,
-      InitializedEvent.OutputTuple,
-      InitializedEvent.OutputObject
-    >;
-    Initialized: TypedContractEvent<
-      InitializedEvent.InputTuple,
-      InitializedEvent.OutputTuple,
-      InitializedEvent.OutputObject
-    >;
+    "Initialized(uint8)"(version?: null): InitializedEventFilter;
+    Initialized(version?: null): InitializedEventFilter;
 
-    "RecoveredAsset(address,uint256,address)": TypedContractEvent<
-      RecoveredAssetEvent.InputTuple,
-      RecoveredAssetEvent.OutputTuple,
-      RecoveredAssetEvent.OutputObject
-    >;
-    RecoveredAsset: TypedContractEvent<
-      RecoveredAssetEvent.InputTuple,
-      RecoveredAssetEvent.OutputTuple,
-      RecoveredAssetEvent.OutputObject
-    >;
+    "RecoveredAsset(address,uint256,address)"(
+      assetAddress?: PromiseOrValue<string> | null,
+      assetAmount?: null,
+      receiver?: PromiseOrValue<string> | null
+    ): RecoveredAssetEventFilter;
+    RecoveredAsset(
+      assetAddress?: PromiseOrValue<string> | null,
+      assetAmount?: null,
+      receiver?: PromiseOrValue<string> | null
+    ): RecoveredAssetEventFilter;
 
-    "RecoveredAssetFailed(address,uint256,address)": TypedContractEvent<
-      RecoveredAssetFailedEvent.InputTuple,
-      RecoveredAssetFailedEvent.OutputTuple,
-      RecoveredAssetFailedEvent.OutputObject
-    >;
-    RecoveredAssetFailed: TypedContractEvent<
-      RecoveredAssetFailedEvent.InputTuple,
-      RecoveredAssetFailedEvent.OutputTuple,
-      RecoveredAssetFailedEvent.OutputObject
-    >;
+    "RecoveredAssetFailed(address,uint256,address)"(
+      assetAddress?: PromiseOrValue<string> | null,
+      assetAmount?: null,
+      receiver?: PromiseOrValue<string> | null
+    ): RecoveredAssetFailedEventFilter;
+    RecoveredAssetFailed(
+      assetAddress?: PromiseOrValue<string> | null,
+      assetAmount?: null,
+      receiver?: PromiseOrValue<string> | null
+    ): RecoveredAssetFailedEventFilter;
 
-    "RegisterAssetToVault(address)": TypedContractEvent<
-      RegisterAssetToVaultEvent.InputTuple,
-      RegisterAssetToVaultEvent.OutputTuple,
-      RegisterAssetToVaultEvent.OutputObject
-    >;
-    RegisterAssetToVault: TypedContractEvent<
-      RegisterAssetToVaultEvent.InputTuple,
-      RegisterAssetToVaultEvent.OutputTuple,
-      RegisterAssetToVaultEvent.OutputObject
-    >;
+    "RegisterAssetToVault(address)"(
+      assetAddress?: PromiseOrValue<string> | null
+    ): RegisterAssetToVaultEventFilter;
+    RegisterAssetToVault(
+      assetAddress?: PromiseOrValue<string> | null
+    ): RegisterAssetToVaultEventFilter;
 
-    "RevokeAssetFromVault(address)": TypedContractEvent<
-      RevokeAssetFromVaultEvent.InputTuple,
-      RevokeAssetFromVaultEvent.OutputTuple,
-      RevokeAssetFromVaultEvent.OutputObject
-    >;
-    RevokeAssetFromVault: TypedContractEvent<
-      RevokeAssetFromVaultEvent.InputTuple,
-      RevokeAssetFromVaultEvent.OutputTuple,
-      RevokeAssetFromVaultEvent.OutputObject
-    >;
+    "RevokeAssetFromVault(address)"(
+      assetAddress?: PromiseOrValue<string> | null
+    ): RevokeAssetFromVaultEventFilter;
+    RevokeAssetFromVault(
+      assetAddress?: PromiseOrValue<string> | null
+    ): RevokeAssetFromVaultEventFilter;
 
-    "RoleAdminChanged(bytes32,bytes32,bytes32)": TypedContractEvent<
-      RoleAdminChangedEvent.InputTuple,
-      RoleAdminChangedEvent.OutputTuple,
-      RoleAdminChangedEvent.OutputObject
-    >;
-    RoleAdminChanged: TypedContractEvent<
-      RoleAdminChangedEvent.InputTuple,
-      RoleAdminChangedEvent.OutputTuple,
-      RoleAdminChangedEvent.OutputObject
-    >;
+    "RoleAdminChanged(bytes32,bytes32,bytes32)"(
+      role?: PromiseOrValue<BytesLike> | null,
+      previousAdminRole?: PromiseOrValue<BytesLike> | null,
+      newAdminRole?: PromiseOrValue<BytesLike> | null
+    ): RoleAdminChangedEventFilter;
+    RoleAdminChanged(
+      role?: PromiseOrValue<BytesLike> | null,
+      previousAdminRole?: PromiseOrValue<BytesLike> | null,
+      newAdminRole?: PromiseOrValue<BytesLike> | null
+    ): RoleAdminChangedEventFilter;
 
-    "RoleGranted(bytes32,address,address)": TypedContractEvent<
-      RoleGrantedEvent.InputTuple,
-      RoleGrantedEvent.OutputTuple,
-      RoleGrantedEvent.OutputObject
-    >;
-    RoleGranted: TypedContractEvent<
-      RoleGrantedEvent.InputTuple,
-      RoleGrantedEvent.OutputTuple,
-      RoleGrantedEvent.OutputObject
-    >;
+    "RoleGranted(bytes32,address,address)"(
+      role?: PromiseOrValue<BytesLike> | null,
+      account?: PromiseOrValue<string> | null,
+      sender?: PromiseOrValue<string> | null
+    ): RoleGrantedEventFilter;
+    RoleGranted(
+      role?: PromiseOrValue<BytesLike> | null,
+      account?: PromiseOrValue<string> | null,
+      sender?: PromiseOrValue<string> | null
+    ): RoleGrantedEventFilter;
 
-    "RoleRevoked(bytes32,address,address)": TypedContractEvent<
-      RoleRevokedEvent.InputTuple,
-      RoleRevokedEvent.OutputTuple,
-      RoleRevokedEvent.OutputObject
-    >;
-    RoleRevoked: TypedContractEvent<
-      RoleRevokedEvent.InputTuple,
-      RoleRevokedEvent.OutputTuple,
-      RoleRevokedEvent.OutputObject
-    >;
+    "RoleRevoked(bytes32,address,address)"(
+      role?: PromiseOrValue<BytesLike> | null,
+      account?: PromiseOrValue<string> | null,
+      sender?: PromiseOrValue<string> | null
+    ): RoleRevokedEventFilter;
+    RoleRevoked(
+      role?: PromiseOrValue<BytesLike> | null,
+      account?: PromiseOrValue<string> | null,
+      sender?: PromiseOrValue<string> | null
+    ): RoleRevokedEventFilter;
 
-    "WithdrawAsset(address,uint256,address)": TypedContractEvent<
-      WithdrawAssetEvent.InputTuple,
-      WithdrawAssetEvent.OutputTuple,
-      WithdrawAssetEvent.OutputObject
-    >;
-    WithdrawAsset: TypedContractEvent<
-      WithdrawAssetEvent.InputTuple,
-      WithdrawAssetEvent.OutputTuple,
-      WithdrawAssetEvent.OutputObject
-    >;
+    "WithdrawAsset(address,uint256,address)"(
+      assetAddress?: PromiseOrValue<string> | null,
+      assetAmount?: null,
+      withdrawer?: PromiseOrValue<string> | null
+    ): WithdrawAssetEventFilter;
+    WithdrawAsset(
+      assetAddress?: PromiseOrValue<string> | null,
+      assetAmount?: null,
+      withdrawer?: PromiseOrValue<string> | null
+    ): WithdrawAssetEventFilter;
 
-    "WithdrawAssetFailed(address,uint256,address)": TypedContractEvent<
-      WithdrawAssetFailedEvent.InputTuple,
-      WithdrawAssetFailedEvent.OutputTuple,
-      WithdrawAssetFailedEvent.OutputObject
-    >;
-    WithdrawAssetFailed: TypedContractEvent<
-      WithdrawAssetFailedEvent.InputTuple,
-      WithdrawAssetFailedEvent.OutputTuple,
-      WithdrawAssetFailedEvent.OutputObject
-    >;
+    "WithdrawAssetFailed(address,uint256,address)"(
+      assetAddress?: PromiseOrValue<string> | null,
+      assetAmount?: null,
+      withdrawer?: PromiseOrValue<string> | null
+    ): WithdrawAssetFailedEventFilter;
+    WithdrawAssetFailed(
+      assetAddress?: PromiseOrValue<string> | null,
+      assetAmount?: null,
+      withdrawer?: PromiseOrValue<string> | null
+    ): WithdrawAssetFailedEventFilter;
+  };
+
+  estimateGas: {
+    DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
+
+    ROLE_CONTROLLER(overrides?: CallOverrides): Promise<BigNumber>;
+
+    ROLE_GOVERNANCE(overrides?: CallOverrides): Promise<BigNumber>;
+
+    ROLE_GOVERNOR(overrides?: CallOverrides): Promise<BigNumber>;
+
+    allAssets(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    assets(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    balanceOf(
+      asset: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    countAssets(overrides?: CallOverrides): Promise<BigNumber>;
+
+    deposit(
+      asset: PromiseOrValue<string>,
+      amount: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    depositFrom(
+      asset: PromiseOrValue<string>,
+      from: PromiseOrValue<string>,
+      amount: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    getRoleAdmin(
+      role: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getRoleMember(
+      role: PromiseOrValue<BytesLike>,
+      index: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getRoleMemberCount(
+      role: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    grantRole(
+      role: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    hasAsset(
+      asset: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    hasRole(
+      role: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    initialize(
+      _controller: PromiseOrValue<string>,
+      _governance: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    recoverAsset(
+      asset: PromiseOrValue<string>,
+      receiver: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    registerAsset(
+      asset: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    renounceRole(
+      role: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    revokeAsset(
+      asset: PromiseOrValue<string>,
+      receiver: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    revokeRole(
+      role: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    supportsInterface(
+      interfaceId: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    withdraw(
+      asset: PromiseOrValue<string>,
+      amount: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    withdrawTo(
+      asset: PromiseOrValue<string>,
+      to: PromiseOrValue<string>,
+      amount: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+  };
+
+  populateTransaction: {
+    DEFAULT_ADMIN_ROLE(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    ROLE_CONTROLLER(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    ROLE_GOVERNANCE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    ROLE_GOVERNOR(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    allAssets(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    assets(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    balanceOf(
+      asset: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    countAssets(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    deposit(
+      asset: PromiseOrValue<string>,
+      amount: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    depositFrom(
+      asset: PromiseOrValue<string>,
+      from: PromiseOrValue<string>,
+      amount: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    getRoleAdmin(
+      role: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getRoleMember(
+      role: PromiseOrValue<BytesLike>,
+      index: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getRoleMemberCount(
+      role: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    grantRole(
+      role: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    hasAsset(
+      asset: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    hasRole(
+      role: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    initialize(
+      _controller: PromiseOrValue<string>,
+      _governance: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    recoverAsset(
+      asset: PromiseOrValue<string>,
+      receiver: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    registerAsset(
+      asset: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    renounceRole(
+      role: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    revokeAsset(
+      asset: PromiseOrValue<string>,
+      receiver: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    revokeRole(
+      role: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    supportsInterface(
+      interfaceId: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    withdraw(
+      asset: PromiseOrValue<string>,
+      amount: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    withdrawTo(
+      asset: PromiseOrValue<string>,
+      to: PromiseOrValue<string>,
+      amount: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
   };
 }

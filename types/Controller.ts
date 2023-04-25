@@ -3,29 +3,100 @@
 /* eslint-disable */
 import type {
   BaseContract,
+  BigNumber,
   BigNumberish,
   BytesLike,
-  FunctionFragment,
-  Result,
-  Interface,
-  EventFragment,
-  AddressLike,
-  ContractRunner,
-  ContractMethod,
-  Listener,
+  CallOverrides,
+  ContractTransaction,
+  Overrides,
+  PopulatedTransaction,
+  Signer,
+  utils,
 } from "ethers";
 import type {
-  TypedContractEvent,
-  TypedDeferredTopicFilter,
-  TypedEventLog,
-  TypedLogDescription,
+  FunctionFragment,
+  Result,
+  EventFragment,
+} from "@ethersproject/abi";
+import type { Listener, Provider } from "@ethersproject/providers";
+import type {
+  TypedEventFilter,
+  TypedEvent,
   TypedListener,
-  TypedContractMethod,
+  OnEvent,
+  PromiseOrValue,
 } from "./common";
 
-export interface ControllerInterface extends Interface {
+export interface ControllerInterface extends utils.Interface {
+  functions: {
+    "BURN_ADDRESS1()": FunctionFragment;
+    "BURN_ADDRESS2()": FunctionFragment;
+    "DEFAULT_ADMIN_ROLE()": FunctionFragment;
+    "ROLE_CONTROLLER()": FunctionFragment;
+    "ROLE_DEPOSITER()": FunctionFragment;
+    "ROLE_GOVERNANCE()": FunctionFragment;
+    "ROLE_GOVERNOR()": FunctionFragment;
+    "WAVAX()": FunctionFragment;
+    "addStrategy(address)": FunctionFragment;
+    "addSwapper(address)": FunctionFragment;
+    "addToken(address,address,address)": FunctionFragment;
+    "addVault(address)": FunctionFragment;
+    "addWantToken(address,string,bool)": FunctionFragment;
+    "addressCheck(address)": FunctionFragment;
+    "allStrategies(uint256)": FunctionFragment;
+    "allSwappers(uint256)": FunctionFragment;
+    "allTokens(uint256)": FunctionFragment;
+    "allVaults(uint256)": FunctionFragment;
+    "allWantTokens(uint256)": FunctionFragment;
+    "balanceOf(address)": FunctionFragment;
+    "baseToken()": FunctionFragment;
+    "counts()": FunctionFragment;
+    "deposit(address,uint256)": FunctionFragment;
+    "depositOn()": FunctionFragment;
+    "depositTokens(address)": FunctionFragment;
+    "disableToken(address)": FunctionFragment;
+    "disableWantToken(address)": FunctionFragment;
+    "enableToken(address)": FunctionFragment;
+    "enableWantToken(address)": FunctionFragment;
+    "getRoleAdmin(bytes32)": FunctionFragment;
+    "getRoleMember(bytes32,uint256)": FunctionFragment;
+    "getRoleMemberCount(bytes32)": FunctionFragment;
+    "getTotalValue(address)": FunctionFragment;
+    "getValueOfTokensForBaseToken(address,uint256)": FunctionFragment;
+    "getValueOfTokensForOneBaseToken(address)": FunctionFragment;
+    "grantRole(bytes32,address)": FunctionFragment;
+    "hasRole(bytes32,address)": FunctionFragment;
+    "initialize(address,address)": FunctionFragment;
+    "isStrategyInUse(address)": FunctionFragment;
+    "isSwapper(address)": FunctionFragment;
+    "isTokenInAnyVault(address)": FunctionFragment;
+    "isTokenInVault(address,address)": FunctionFragment;
+    "isVaultInUse(address)": FunctionFragment;
+    "isWantTokenSwappable(address)": FunctionFragment;
+    "payout(address,uint256,uint256)": FunctionFragment;
+    "payoutOn()": FunctionFragment;
+    "payoutRaw(uint256)": FunctionFragment;
+    "reassignTokenStrategy(address,address)": FunctionFragment;
+    "recover(address,address)": FunctionFragment;
+    "removeStrategy(address)": FunctionFragment;
+    "removeSwapper(address)": FunctionFragment;
+    "removeToken(address,address)": FunctionFragment;
+    "removeVault(address)": FunctionFragment;
+    "removeWantToken(address)": FunctionFragment;
+    "renameWantToken(address,string)": FunctionFragment;
+    "renounceRole(bytes32,address)": FunctionFragment;
+    "revokeRole(bytes32,address)": FunctionFragment;
+    "setDepositOn(bool)": FunctionFragment;
+    "setPayoutOn(bool)": FunctionFragment;
+    "shareByAmountScaled(uint256)": FunctionFragment;
+    "supportsInterface(bytes4)": FunctionFragment;
+    "swappers(address,address)": FunctionFragment;
+    "totalSupplyBaseToken()": FunctionFragment;
+    "wantTokens(address)": FunctionFragment;
+  };
+
   getFunction(
-    nameOrSignature:
+    nameOrSignatureOrTopic:
       | "BURN_ADDRESS1"
       | "BURN_ADDRESS2"
       | "DEFAULT_ADMIN_ROLE"
@@ -92,40 +163,6 @@ export interface ControllerInterface extends Interface {
       | "wantTokens"
   ): FunctionFragment;
 
-  getEvent(
-    nameOrSignatureOrTopic:
-      | "AllowanceAdded"
-      | "AllowanceRemoved"
-      | "AssignedTokenStrategy"
-      | "AssignedTokenVault"
-      | "Deposit"
-      | "DepositTokenDisabled"
-      | "DepositTokenEnabled"
-      | "Initialized"
-      | "Payout"
-      | "ReassignedTokenStrategy"
-      | "Recovered"
-      | "RoleAdminChanged"
-      | "RoleGranted"
-      | "RoleRevoked"
-      | "StrategyAdded"
-      | "StrategyRemoved"
-      | "SwapperAdded"
-      | "SwapperRemoved"
-      | "TokenAdded"
-      | "TokenRemoved"
-      | "TokensBurned"
-      | "UnassignedTokenStrategy"
-      | "UnassignedTokenVault"
-      | "VaultAdded"
-      | "VaultRemoved"
-      | "WantTokenAdded"
-      | "WantTokenDisabled"
-      | "WantTokenEnabled"
-      | "WantTokenRemoved"
-      | "WantTokenRenamed"
-  ): EventFragment;
-
   encodeFunctionData(
     functionFragment: "BURN_ADDRESS1",
     values?: undefined
@@ -157,207 +194,219 @@ export interface ControllerInterface extends Interface {
   encodeFunctionData(functionFragment: "WAVAX", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "addStrategy",
-    values: [AddressLike]
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "addSwapper",
-    values: [AddressLike]
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "addToken",
-    values: [AddressLike, AddressLike, AddressLike]
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<string>,
+      PromiseOrValue<string>
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "addVault",
-    values: [AddressLike]
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "addWantToken",
-    values: [AddressLike, string, boolean]
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<string>,
+      PromiseOrValue<boolean>
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "addressCheck",
-    values: [AddressLike]
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "allStrategies",
-    values: [BigNumberish]
+    values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "allSwappers",
-    values: [BigNumberish]
+    values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "allTokens",
-    values: [BigNumberish]
+    values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "allVaults",
-    values: [BigNumberish]
+    values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "allWantTokens",
-    values: [BigNumberish]
+    values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "balanceOf",
-    values: [AddressLike]
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(functionFragment: "baseToken", values?: undefined): string;
   encodeFunctionData(functionFragment: "counts", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "deposit",
-    values: [AddressLike, BigNumberish]
+    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(functionFragment: "depositOn", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "depositTokens",
-    values: [AddressLike]
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "disableToken",
-    values: [AddressLike]
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "disableWantToken",
-    values: [AddressLike]
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "enableToken",
-    values: [AddressLike]
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "enableWantToken",
-    values: [AddressLike]
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "getRoleAdmin",
-    values: [BytesLike]
+    values: [PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(
     functionFragment: "getRoleMember",
-    values: [BytesLike, BigNumberish]
+    values: [PromiseOrValue<BytesLike>, PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "getRoleMemberCount",
-    values: [BytesLike]
+    values: [PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(
     functionFragment: "getTotalValue",
-    values: [AddressLike]
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "getValueOfTokensForBaseToken",
-    values: [AddressLike, BigNumberish]
+    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "getValueOfTokensForOneBaseToken",
-    values: [AddressLike]
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "grantRole",
-    values: [BytesLike, AddressLike]
+    values: [PromiseOrValue<BytesLike>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "hasRole",
-    values: [BytesLike, AddressLike]
+    values: [PromiseOrValue<BytesLike>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "initialize",
-    values: [AddressLike, AddressLike]
+    values: [PromiseOrValue<string>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "isStrategyInUse",
-    values: [AddressLike]
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "isSwapper",
-    values: [AddressLike]
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "isTokenInAnyVault",
-    values: [AddressLike]
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "isTokenInVault",
-    values: [AddressLike, AddressLike]
+    values: [PromiseOrValue<string>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "isVaultInUse",
-    values: [AddressLike]
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "isWantTokenSwappable",
-    values: [AddressLike]
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "payout",
-    values: [AddressLike, BigNumberish, BigNumberish]
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>
+    ]
   ): string;
   encodeFunctionData(functionFragment: "payoutOn", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "payoutRaw",
-    values: [BigNumberish]
+    values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "reassignTokenStrategy",
-    values: [AddressLike, AddressLike]
+    values: [PromiseOrValue<string>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "recover",
-    values: [AddressLike, AddressLike]
+    values: [PromiseOrValue<string>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "removeStrategy",
-    values: [AddressLike]
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "removeSwapper",
-    values: [AddressLike]
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "removeToken",
-    values: [AddressLike, AddressLike]
+    values: [PromiseOrValue<string>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "removeVault",
-    values: [AddressLike]
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "removeWantToken",
-    values: [AddressLike]
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "renameWantToken",
-    values: [AddressLike, string]
+    values: [PromiseOrValue<string>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "renounceRole",
-    values: [BytesLike, AddressLike]
+    values: [PromiseOrValue<BytesLike>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "revokeRole",
-    values: [BytesLike, AddressLike]
+    values: [PromiseOrValue<BytesLike>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "setDepositOn",
-    values: [boolean]
+    values: [PromiseOrValue<boolean>]
   ): string;
   encodeFunctionData(
     functionFragment: "setPayoutOn",
-    values: [boolean]
+    values: [PromiseOrValue<boolean>]
   ): string;
   encodeFunctionData(
     functionFragment: "shareByAmountScaled",
-    values: [BigNumberish]
+    values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "supportsInterface",
-    values: [BytesLike]
+    values: [PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(
     functionFragment: "swappers",
-    values: [AddressLike, AddressLike]
+    values: [PromiseOrValue<string>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "totalSupplyBaseToken",
@@ -365,7 +414,7 @@ export interface ControllerInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "wantTokens",
-    values: [AddressLike]
+    values: [PromiseOrValue<string>]
   ): string;
 
   decodeFunctionResult(
@@ -558,1617 +607,2187 @@ export interface ControllerInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "wantTokens", data: BytesLike): Result;
+
+  events: {
+    "AllowanceAdded(address)": EventFragment;
+    "AllowanceRemoved(address)": EventFragment;
+    "AssignedTokenStrategy(address,address)": EventFragment;
+    "AssignedTokenVault(address,address)": EventFragment;
+    "Deposit(address,uint256)": EventFragment;
+    "DepositTokenDisabled(address)": EventFragment;
+    "DepositTokenEnabled(address)": EventFragment;
+    "Initialized(uint8)": EventFragment;
+    "Payout(address,address,uint256)": EventFragment;
+    "ReassignedTokenStrategy(address,address)": EventFragment;
+    "Recovered(address,address,uint256)": EventFragment;
+    "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
+    "RoleGranted(bytes32,address,address)": EventFragment;
+    "RoleRevoked(bytes32,address,address)": EventFragment;
+    "StrategyAdded(address)": EventFragment;
+    "StrategyRemoved(address)": EventFragment;
+    "SwapperAdded(address)": EventFragment;
+    "SwapperRemoved(address)": EventFragment;
+    "TokenAdded(address,address,address)": EventFragment;
+    "TokenRemoved(address)": EventFragment;
+    "TokensBurned(uint256)": EventFragment;
+    "UnassignedTokenStrategy(address,address)": EventFragment;
+    "UnassignedTokenVault(address,address)": EventFragment;
+    "VaultAdded(address)": EventFragment;
+    "VaultRemoved(address)": EventFragment;
+    "WantTokenAdded(address,string,bool)": EventFragment;
+    "WantTokenDisabled(address)": EventFragment;
+    "WantTokenEnabled(address)": EventFragment;
+    "WantTokenRemoved(address)": EventFragment;
+    "WantTokenRenamed(address,string,string)": EventFragment;
+  };
+
+  getEvent(nameOrSignatureOrTopic: "AllowanceAdded"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "AllowanceRemoved"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "AssignedTokenStrategy"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "AssignedTokenVault"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Deposit"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "DepositTokenDisabled"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "DepositTokenEnabled"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Payout"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ReassignedTokenStrategy"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Recovered"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RoleAdminChanged"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RoleGranted"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RoleRevoked"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "StrategyAdded"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "StrategyRemoved"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "SwapperAdded"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "SwapperRemoved"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "TokenAdded"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "TokenRemoved"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "TokensBurned"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "UnassignedTokenStrategy"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "UnassignedTokenVault"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "VaultAdded"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "VaultRemoved"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "WantTokenAdded"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "WantTokenDisabled"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "WantTokenEnabled"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "WantTokenRemoved"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "WantTokenRenamed"): EventFragment;
 }
 
-export namespace AllowanceAddedEvent {
-  export type InputTuple = [sender: AddressLike];
-  export type OutputTuple = [sender: string];
-  export interface OutputObject {
-    sender: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
+export interface AllowanceAddedEventObject {
+  sender: string;
 }
+export type AllowanceAddedEvent = TypedEvent<
+  [string],
+  AllowanceAddedEventObject
+>;
 
-export namespace AllowanceRemovedEvent {
-  export type InputTuple = [sender: AddressLike];
-  export type OutputTuple = [sender: string];
-  export interface OutputObject {
-    sender: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
+export type AllowanceAddedEventFilter = TypedEventFilter<AllowanceAddedEvent>;
 
-export namespace AssignedTokenStrategyEvent {
-  export type InputTuple = [token: AddressLike, strategy: AddressLike];
-  export type OutputTuple = [token: string, strategy: string];
-  export interface OutputObject {
-    token: string;
-    strategy: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
+export interface AllowanceRemovedEventObject {
+  sender: string;
 }
+export type AllowanceRemovedEvent = TypedEvent<
+  [string],
+  AllowanceRemovedEventObject
+>;
 
-export namespace AssignedTokenVaultEvent {
-  export type InputTuple = [token: AddressLike, vault: AddressLike];
-  export type OutputTuple = [token: string, vault: string];
-  export interface OutputObject {
-    token: string;
-    vault: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
+export type AllowanceRemovedEventFilter =
+  TypedEventFilter<AllowanceRemovedEvent>;
 
-export namespace DepositEvent {
-  export type InputTuple = [token: AddressLike, amount: BigNumberish];
-  export type OutputTuple = [token: string, amount: bigint];
-  export interface OutputObject {
-    token: string;
-    amount: bigint;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
+export interface AssignedTokenStrategyEventObject {
+  token: string;
+  strategy: string;
 }
+export type AssignedTokenStrategyEvent = TypedEvent<
+  [string, string],
+  AssignedTokenStrategyEventObject
+>;
 
-export namespace DepositTokenDisabledEvent {
-  export type InputTuple = [token: AddressLike];
-  export type OutputTuple = [token: string];
-  export interface OutputObject {
-    token: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
+export type AssignedTokenStrategyEventFilter =
+  TypedEventFilter<AssignedTokenStrategyEvent>;
 
-export namespace DepositTokenEnabledEvent {
-  export type InputTuple = [token: AddressLike];
-  export type OutputTuple = [token: string];
-  export interface OutputObject {
-    token: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
+export interface AssignedTokenVaultEventObject {
+  token: string;
+  vault: string;
 }
+export type AssignedTokenVaultEvent = TypedEvent<
+  [string, string],
+  AssignedTokenVaultEventObject
+>;
 
-export namespace InitializedEvent {
-  export type InputTuple = [version: BigNumberish];
-  export type OutputTuple = [version: bigint];
-  export interface OutputObject {
-    version: bigint;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
+export type AssignedTokenVaultEventFilter =
+  TypedEventFilter<AssignedTokenVaultEvent>;
 
-export namespace PayoutEvent {
-  export type InputTuple = [
-    wantToken: AddressLike,
-    holder: AddressLike,
-    receiveAmount: BigNumberish
-  ];
-  export type OutputTuple = [
-    wantToken: string,
-    holder: string,
-    receiveAmount: bigint
-  ];
-  export interface OutputObject {
-    wantToken: string;
-    holder: string;
-    receiveAmount: bigint;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
+export interface DepositEventObject {
+  token: string;
+  amount: BigNumber;
 }
+export type DepositEvent = TypedEvent<[string, BigNumber], DepositEventObject>;
 
-export namespace ReassignedTokenStrategyEvent {
-  export type InputTuple = [token: AddressLike, strategy: AddressLike];
-  export type OutputTuple = [token: string, strategy: string];
-  export interface OutputObject {
-    token: string;
-    strategy: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
+export type DepositEventFilter = TypedEventFilter<DepositEvent>;
 
-export namespace RecoveredEvent {
-  export type InputTuple = [
-    token: AddressLike,
-    receiver: AddressLike,
-    amount: BigNumberish
-  ];
-  export type OutputTuple = [token: string, receiver: string, amount: bigint];
-  export interface OutputObject {
-    token: string;
-    receiver: string;
-    amount: bigint;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
+export interface DepositTokenDisabledEventObject {
+  token: string;
 }
+export type DepositTokenDisabledEvent = TypedEvent<
+  [string],
+  DepositTokenDisabledEventObject
+>;
 
-export namespace RoleAdminChangedEvent {
-  export type InputTuple = [
-    role: BytesLike,
-    previousAdminRole: BytesLike,
-    newAdminRole: BytesLike
-  ];
-  export type OutputTuple = [
-    role: string,
-    previousAdminRole: string,
-    newAdminRole: string
-  ];
-  export interface OutputObject {
-    role: string;
-    previousAdminRole: string;
-    newAdminRole: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
+export type DepositTokenDisabledEventFilter =
+  TypedEventFilter<DepositTokenDisabledEvent>;
 
-export namespace RoleGrantedEvent {
-  export type InputTuple = [
-    role: BytesLike,
-    account: AddressLike,
-    sender: AddressLike
-  ];
-  export type OutputTuple = [role: string, account: string, sender: string];
-  export interface OutputObject {
-    role: string;
-    account: string;
-    sender: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
+export interface DepositTokenEnabledEventObject {
+  token: string;
 }
+export type DepositTokenEnabledEvent = TypedEvent<
+  [string],
+  DepositTokenEnabledEventObject
+>;
 
-export namespace RoleRevokedEvent {
-  export type InputTuple = [
-    role: BytesLike,
-    account: AddressLike,
-    sender: AddressLike
-  ];
-  export type OutputTuple = [role: string, account: string, sender: string];
-  export interface OutputObject {
-    role: string;
-    account: string;
-    sender: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
+export type DepositTokenEnabledEventFilter =
+  TypedEventFilter<DepositTokenEnabledEvent>;
 
-export namespace StrategyAddedEvent {
-  export type InputTuple = [strategy: AddressLike];
-  export type OutputTuple = [strategy: string];
-  export interface OutputObject {
-    strategy: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
+export interface InitializedEventObject {
+  version: number;
 }
+export type InitializedEvent = TypedEvent<[number], InitializedEventObject>;
 
-export namespace StrategyRemovedEvent {
-  export type InputTuple = [strategy: AddressLike];
-  export type OutputTuple = [strategy: string];
-  export interface OutputObject {
-    strategy: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
+export type InitializedEventFilter = TypedEventFilter<InitializedEvent>;
 
-export namespace SwapperAddedEvent {
-  export type InputTuple = [swapper: AddressLike];
-  export type OutputTuple = [swapper: string];
-  export interface OutputObject {
-    swapper: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
+export interface PayoutEventObject {
+  wantToken: string;
+  holder: string;
+  receiveAmount: BigNumber;
 }
+export type PayoutEvent = TypedEvent<
+  [string, string, BigNumber],
+  PayoutEventObject
+>;
 
-export namespace SwapperRemovedEvent {
-  export type InputTuple = [swapper: AddressLike];
-  export type OutputTuple = [swapper: string];
-  export interface OutputObject {
-    swapper: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
+export type PayoutEventFilter = TypedEventFilter<PayoutEvent>;
 
-export namespace TokenAddedEvent {
-  export type InputTuple = [
-    token: AddressLike,
-    vault: AddressLike,
-    strategy: AddressLike
-  ];
-  export type OutputTuple = [token: string, vault: string, strategy: string];
-  export interface OutputObject {
-    token: string;
-    vault: string;
-    strategy: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
+export interface ReassignedTokenStrategyEventObject {
+  token: string;
+  strategy: string;
 }
+export type ReassignedTokenStrategyEvent = TypedEvent<
+  [string, string],
+  ReassignedTokenStrategyEventObject
+>;
 
-export namespace TokenRemovedEvent {
-  export type InputTuple = [token: AddressLike];
-  export type OutputTuple = [token: string];
-  export interface OutputObject {
-    token: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
+export type ReassignedTokenStrategyEventFilter =
+  TypedEventFilter<ReassignedTokenStrategyEvent>;
 
-export namespace TokensBurnedEvent {
-  export type InputTuple = [amount: BigNumberish];
-  export type OutputTuple = [amount: bigint];
-  export interface OutputObject {
-    amount: bigint;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
+export interface RecoveredEventObject {
+  token: string;
+  receiver: string;
+  amount: BigNumber;
 }
+export type RecoveredEvent = TypedEvent<
+  [string, string, BigNumber],
+  RecoveredEventObject
+>;
 
-export namespace UnassignedTokenStrategyEvent {
-  export type InputTuple = [token: AddressLike, strategy: AddressLike];
-  export type OutputTuple = [token: string, strategy: string];
-  export interface OutputObject {
-    token: string;
-    strategy: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
+export type RecoveredEventFilter = TypedEventFilter<RecoveredEvent>;
 
-export namespace UnassignedTokenVaultEvent {
-  export type InputTuple = [token: AddressLike, vault: AddressLike];
-  export type OutputTuple = [token: string, vault: string];
-  export interface OutputObject {
-    token: string;
-    vault: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
+export interface RoleAdminChangedEventObject {
+  role: string;
+  previousAdminRole: string;
+  newAdminRole: string;
 }
+export type RoleAdminChangedEvent = TypedEvent<
+  [string, string, string],
+  RoleAdminChangedEventObject
+>;
 
-export namespace VaultAddedEvent {
-  export type InputTuple = [vault: AddressLike];
-  export type OutputTuple = [vault: string];
-  export interface OutputObject {
-    vault: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
+export type RoleAdminChangedEventFilter =
+  TypedEventFilter<RoleAdminChangedEvent>;
 
-export namespace VaultRemovedEvent {
-  export type InputTuple = [vault: AddressLike];
-  export type OutputTuple = [vault: string];
-  export interface OutputObject {
-    vault: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
+export interface RoleGrantedEventObject {
+  role: string;
+  account: string;
+  sender: string;
 }
+export type RoleGrantedEvent = TypedEvent<
+  [string, string, string],
+  RoleGrantedEventObject
+>;
 
-export namespace WantTokenAddedEvent {
-  export type InputTuple = [token: AddressLike, name: string, enabled: boolean];
-  export type OutputTuple = [token: string, name: string, enabled: boolean];
-  export interface OutputObject {
-    token: string;
-    name: string;
-    enabled: boolean;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
+export type RoleGrantedEventFilter = TypedEventFilter<RoleGrantedEvent>;
 
-export namespace WantTokenDisabledEvent {
-  export type InputTuple = [token: AddressLike];
-  export type OutputTuple = [token: string];
-  export interface OutputObject {
-    token: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
+export interface RoleRevokedEventObject {
+  role: string;
+  account: string;
+  sender: string;
 }
+export type RoleRevokedEvent = TypedEvent<
+  [string, string, string],
+  RoleRevokedEventObject
+>;
 
-export namespace WantTokenEnabledEvent {
-  export type InputTuple = [token: AddressLike];
-  export type OutputTuple = [token: string];
-  export interface OutputObject {
-    token: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
+export type RoleRevokedEventFilter = TypedEventFilter<RoleRevokedEvent>;
 
-export namespace WantTokenRemovedEvent {
-  export type InputTuple = [token: AddressLike];
-  export type OutputTuple = [token: string];
-  export interface OutputObject {
-    token: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
+export interface StrategyAddedEventObject {
+  strategy: string;
 }
+export type StrategyAddedEvent = TypedEvent<[string], StrategyAddedEventObject>;
 
-export namespace WantTokenRenamedEvent {
-  export type InputTuple = [
-    token: AddressLike,
-    oldName: string,
-    newName: string
-  ];
-  export type OutputTuple = [token: string, oldName: string, newName: string];
-  export interface OutputObject {
-    token: string;
-    oldName: string;
-    newName: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
+export type StrategyAddedEventFilter = TypedEventFilter<StrategyAddedEvent>;
+
+export interface StrategyRemovedEventObject {
+  strategy: string;
 }
+export type StrategyRemovedEvent = TypedEvent<
+  [string],
+  StrategyRemovedEventObject
+>;
+
+export type StrategyRemovedEventFilter = TypedEventFilter<StrategyRemovedEvent>;
+
+export interface SwapperAddedEventObject {
+  swapper: string;
+}
+export type SwapperAddedEvent = TypedEvent<[string], SwapperAddedEventObject>;
+
+export type SwapperAddedEventFilter = TypedEventFilter<SwapperAddedEvent>;
+
+export interface SwapperRemovedEventObject {
+  swapper: string;
+}
+export type SwapperRemovedEvent = TypedEvent<
+  [string],
+  SwapperRemovedEventObject
+>;
+
+export type SwapperRemovedEventFilter = TypedEventFilter<SwapperRemovedEvent>;
+
+export interface TokenAddedEventObject {
+  token: string;
+  vault: string;
+  strategy: string;
+}
+export type TokenAddedEvent = TypedEvent<
+  [string, string, string],
+  TokenAddedEventObject
+>;
+
+export type TokenAddedEventFilter = TypedEventFilter<TokenAddedEvent>;
+
+export interface TokenRemovedEventObject {
+  token: string;
+}
+export type TokenRemovedEvent = TypedEvent<[string], TokenRemovedEventObject>;
+
+export type TokenRemovedEventFilter = TypedEventFilter<TokenRemovedEvent>;
+
+export interface TokensBurnedEventObject {
+  amount: BigNumber;
+}
+export type TokensBurnedEvent = TypedEvent<
+  [BigNumber],
+  TokensBurnedEventObject
+>;
+
+export type TokensBurnedEventFilter = TypedEventFilter<TokensBurnedEvent>;
+
+export interface UnassignedTokenStrategyEventObject {
+  token: string;
+  strategy: string;
+}
+export type UnassignedTokenStrategyEvent = TypedEvent<
+  [string, string],
+  UnassignedTokenStrategyEventObject
+>;
+
+export type UnassignedTokenStrategyEventFilter =
+  TypedEventFilter<UnassignedTokenStrategyEvent>;
+
+export interface UnassignedTokenVaultEventObject {
+  token: string;
+  vault: string;
+}
+export type UnassignedTokenVaultEvent = TypedEvent<
+  [string, string],
+  UnassignedTokenVaultEventObject
+>;
+
+export type UnassignedTokenVaultEventFilter =
+  TypedEventFilter<UnassignedTokenVaultEvent>;
+
+export interface VaultAddedEventObject {
+  vault: string;
+}
+export type VaultAddedEvent = TypedEvent<[string], VaultAddedEventObject>;
+
+export type VaultAddedEventFilter = TypedEventFilter<VaultAddedEvent>;
+
+export interface VaultRemovedEventObject {
+  vault: string;
+}
+export type VaultRemovedEvent = TypedEvent<[string], VaultRemovedEventObject>;
+
+export type VaultRemovedEventFilter = TypedEventFilter<VaultRemovedEvent>;
+
+export interface WantTokenAddedEventObject {
+  token: string;
+  name: string;
+  enabled: boolean;
+}
+export type WantTokenAddedEvent = TypedEvent<
+  [string, string, boolean],
+  WantTokenAddedEventObject
+>;
+
+export type WantTokenAddedEventFilter = TypedEventFilter<WantTokenAddedEvent>;
+
+export interface WantTokenDisabledEventObject {
+  token: string;
+}
+export type WantTokenDisabledEvent = TypedEvent<
+  [string],
+  WantTokenDisabledEventObject
+>;
+
+export type WantTokenDisabledEventFilter =
+  TypedEventFilter<WantTokenDisabledEvent>;
+
+export interface WantTokenEnabledEventObject {
+  token: string;
+}
+export type WantTokenEnabledEvent = TypedEvent<
+  [string],
+  WantTokenEnabledEventObject
+>;
+
+export type WantTokenEnabledEventFilter =
+  TypedEventFilter<WantTokenEnabledEvent>;
+
+export interface WantTokenRemovedEventObject {
+  token: string;
+}
+export type WantTokenRemovedEvent = TypedEvent<
+  [string],
+  WantTokenRemovedEventObject
+>;
+
+export type WantTokenRemovedEventFilter =
+  TypedEventFilter<WantTokenRemovedEvent>;
+
+export interface WantTokenRenamedEventObject {
+  token: string;
+  oldName: string;
+  newName: string;
+}
+export type WantTokenRenamedEvent = TypedEvent<
+  [string, string, string],
+  WantTokenRenamedEventObject
+>;
+
+export type WantTokenRenamedEventFilter =
+  TypedEventFilter<WantTokenRenamedEvent>;
 
 export interface Controller extends BaseContract {
-  connect(runner?: ContractRunner | null): BaseContract;
-  attach(addressOrName: AddressLike): this;
+  connect(signerOrProvider: Signer | Provider | string): this;
+  attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
   interface: ControllerInterface;
 
-  queryFilter<TCEvent extends TypedContractEvent>(
-    event: TCEvent,
+  queryFilter<TEvent extends TypedEvent>(
+    event: TypedEventFilter<TEvent>,
     fromBlockOrBlockhash?: string | number | undefined,
     toBlock?: string | number | undefined
-  ): Promise<Array<TypedEventLog<TCEvent>>>;
-  queryFilter<TCEvent extends TypedContractEvent>(
-    filter: TypedDeferredTopicFilter<TCEvent>,
-    fromBlockOrBlockhash?: string | number | undefined,
-    toBlock?: string | number | undefined
-  ): Promise<Array<TypedEventLog<TCEvent>>>;
+  ): Promise<Array<TEvent>>;
 
-  on<TCEvent extends TypedContractEvent>(
-    event: TCEvent,
-    listener: TypedListener<TCEvent>
-  ): Promise<this>;
-  on<TCEvent extends TypedContractEvent>(
-    filter: TypedDeferredTopicFilter<TCEvent>,
-    listener: TypedListener<TCEvent>
-  ): Promise<this>;
+  listeners<TEvent extends TypedEvent>(
+    eventFilter?: TypedEventFilter<TEvent>
+  ): Array<TypedListener<TEvent>>;
+  listeners(eventName?: string): Array<Listener>;
+  removeAllListeners<TEvent extends TypedEvent>(
+    eventFilter: TypedEventFilter<TEvent>
+  ): this;
+  removeAllListeners(eventName?: string): this;
+  off: OnEvent<this>;
+  on: OnEvent<this>;
+  once: OnEvent<this>;
+  removeListener: OnEvent<this>;
 
-  once<TCEvent extends TypedContractEvent>(
-    event: TCEvent,
-    listener: TypedListener<TCEvent>
-  ): Promise<this>;
-  once<TCEvent extends TypedContractEvent>(
-    filter: TypedDeferredTopicFilter<TCEvent>,
-    listener: TypedListener<TCEvent>
-  ): Promise<this>;
+  functions: {
+    BURN_ADDRESS1(overrides?: CallOverrides): Promise<[string]>;
 
-  listeners<TCEvent extends TypedContractEvent>(
-    event: TCEvent
-  ): Promise<Array<TypedListener<TCEvent>>>;
-  listeners(eventName?: string): Promise<Array<Listener>>;
-  removeAllListeners<TCEvent extends TypedContractEvent>(
-    event?: TCEvent
-  ): Promise<this>;
+    BURN_ADDRESS2(overrides?: CallOverrides): Promise<[string]>;
 
-  BURN_ADDRESS1: TypedContractMethod<[], [string], "view">;
+    DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<[string]>;
 
-  BURN_ADDRESS2: TypedContractMethod<[], [string], "view">;
+    ROLE_CONTROLLER(overrides?: CallOverrides): Promise<[string]>;
 
-  DEFAULT_ADMIN_ROLE: TypedContractMethod<[], [string], "view">;
+    ROLE_DEPOSITER(overrides?: CallOverrides): Promise<[string]>;
 
-  ROLE_CONTROLLER: TypedContractMethod<[], [string], "view">;
+    ROLE_GOVERNANCE(overrides?: CallOverrides): Promise<[string]>;
 
-  ROLE_DEPOSITER: TypedContractMethod<[], [string], "view">;
+    ROLE_GOVERNOR(overrides?: CallOverrides): Promise<[string]>;
 
-  ROLE_GOVERNANCE: TypedContractMethod<[], [string], "view">;
+    WAVAX(overrides?: CallOverrides): Promise<[string]>;
 
-  ROLE_GOVERNOR: TypedContractMethod<[], [string], "view">;
+    addStrategy(
+      _strategy: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  WAVAX: TypedContractMethod<[], [string], "view">;
+    addSwapper(
+      _swapper: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  addStrategy: TypedContractMethod<
-    [_strategy: AddressLike],
-    [void],
-    "nonpayable"
-  >;
+    addToken(
+      _token: PromiseOrValue<string>,
+      _vault: PromiseOrValue<string>,
+      _strategy: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  addSwapper: TypedContractMethod<
-    [_swapper: AddressLike],
-    [void],
-    "nonpayable"
-  >;
+    addVault(
+      _vault: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  addToken: TypedContractMethod<
-    [_token: AddressLike, _vault: AddressLike, _strategy: AddressLike],
-    [void],
-    "nonpayable"
-  >;
+    addWantToken(
+      _wantToken: PromiseOrValue<string>,
+      _name: PromiseOrValue<string>,
+      _enabled: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  addVault: TypedContractMethod<[_vault: AddressLike], [void], "nonpayable">;
+    addressCheck(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[boolean, boolean] & { isVault: boolean; isStrategy: boolean }>;
 
-  addWantToken: TypedContractMethod<
-    [_wantToken: AddressLike, _name: string, _enabled: boolean],
-    [void],
-    "nonpayable"
-  >;
+    allStrategies(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
 
-  addressCheck: TypedContractMethod<
-    [arg0: AddressLike],
-    [[boolean, boolean] & { isVault: boolean; isStrategy: boolean }],
-    "view"
-  >;
+    allSwappers(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
 
-  allStrategies: TypedContractMethod<[arg0: BigNumberish], [string], "view">;
+    allTokens(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
 
-  allSwappers: TypedContractMethod<[arg0: BigNumberish], [string], "view">;
+    allVaults(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
 
-  allTokens: TypedContractMethod<[arg0: BigNumberish], [string], "view">;
+    allWantTokens(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
 
-  allVaults: TypedContractMethod<[arg0: BigNumberish], [string], "view">;
+    balanceOf(
+      holder: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { balance: BigNumber }>;
 
-  allWantTokens: TypedContractMethod<[arg0: BigNumberish], [string], "view">;
+    baseToken(overrides?: CallOverrides): Promise<[string]>;
 
-  balanceOf: TypedContractMethod<[holder: AddressLike], [bigint], "view">;
-
-  baseToken: TypedContractMethod<[], [string], "view">;
-
-  counts: TypedContractMethod<
-    [],
-    [
-      [bigint, bigint, bigint, bigint, bigint] & {
-        countVaults: bigint;
-        countTokens: bigint;
-        countSwappers: bigint;
-        countStrategies: bigint;
-        countWantTokens: bigint;
+    counts(
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
+        countVaults: BigNumber;
+        countTokens: BigNumber;
+        countSwappers: BigNumber;
+        countStrategies: BigNumber;
+        countWantTokens: BigNumber;
       }
-    ],
-    "view"
-  >;
+    >;
 
-  deposit: TypedContractMethod<
-    [_token: AddressLike, _amount: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
+    deposit(
+      _token: PromiseOrValue<string>,
+      _amount: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  depositOn: TypedContractMethod<[], [boolean], "view">;
+    depositOn(overrides?: CallOverrides): Promise<[boolean]>;
 
-  depositTokens: TypedContractMethod<
-    [arg0: AddressLike],
-    [
+    depositTokens(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<
       [string, string, boolean, boolean] & {
         strategy: string;
         vault: string;
         enabled: boolean;
         isToken: boolean;
       }
-    ],
-    "view"
-  >;
+    >;
 
-  disableToken: TypedContractMethod<
-    [_token: AddressLike],
-    [void],
-    "nonpayable"
-  >;
+    disableToken(
+      _token: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  disableWantToken: TypedContractMethod<
-    [_wantToken: AddressLike],
-    [void],
-    "nonpayable"
-  >;
+    disableWantToken(
+      _wantToken: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  enableToken: TypedContractMethod<[_token: AddressLike], [void], "nonpayable">;
+    enableToken(
+      _token: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  enableWantToken: TypedContractMethod<
-    [_wantToken: AddressLike],
-    [void],
-    "nonpayable"
-  >;
+    enableWantToken(
+      _wantToken: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  getRoleAdmin: TypedContractMethod<[role: BytesLike], [string], "view">;
+    getRoleAdmin(
+      role: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
 
-  getRoleMember: TypedContractMethod<
-    [role: BytesLike, index: BigNumberish],
-    [string],
-    "view"
-  >;
+    getRoleMember(
+      role: PromiseOrValue<BytesLike>,
+      index: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
 
-  getRoleMemberCount: TypedContractMethod<[role: BytesLike], [bigint], "view">;
+    getRoleMemberCount(
+      role: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
-  getTotalValue: TypedContractMethod<
-    [wantToken: AddressLike],
-    [bigint],
-    "view"
-  >;
+    getTotalValue(
+      wantToken: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { amount: BigNumber }>;
 
-  getValueOfTokensForBaseToken: TypedContractMethod<
-    [wantToken: AddressLike, inputAmount: BigNumberish],
-    [bigint],
-    "view"
-  >;
+    getValueOfTokensForBaseToken(
+      wantToken: PromiseOrValue<string>,
+      inputAmount: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { amount: BigNumber }>;
 
-  getValueOfTokensForOneBaseToken: TypedContractMethod<
-    [wantToken: AddressLike],
-    [bigint],
-    "view"
-  >;
+    getValueOfTokensForOneBaseToken(
+      wantToken: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { amount: BigNumber }>;
 
-  grantRole: TypedContractMethod<
-    [role: BytesLike, account: AddressLike],
-    [void],
-    "nonpayable"
-  >;
+    grantRole(
+      role: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  hasRole: TypedContractMethod<
-    [role: BytesLike, account: AddressLike],
-    [boolean],
-    "view"
-  >;
+    hasRole(
+      role: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
 
-  initialize: TypedContractMethod<
-    [_baseToken: AddressLike, _governance: AddressLike],
-    [void],
-    "nonpayable"
-  >;
+    initialize(
+      _baseToken: PromiseOrValue<string>,
+      _governance: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  isStrategyInUse: TypedContractMethod<
-    [_strategy: AddressLike],
-    [boolean],
-    "view"
-  >;
+    isStrategyInUse(
+      _strategy: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[boolean] & { inUse: boolean }>;
 
-  isSwapper: TypedContractMethod<[_swapper: AddressLike], [boolean], "view">;
+    isSwapper(
+      _swapper: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[boolean] & { exists: boolean }>;
 
-  isTokenInAnyVault: TypedContractMethod<
-    [_token: AddressLike],
-    [boolean],
-    "view"
-  >;
+    isTokenInAnyVault(
+      _token: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[boolean] & { inVault: boolean }>;
 
-  isTokenInVault: TypedContractMethod<
-    [_token: AddressLike, _vault: AddressLike],
-    [boolean],
-    "view"
-  >;
+    isTokenInVault(
+      _token: PromiseOrValue<string>,
+      _vault: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[boolean] & { inVault: boolean }>;
 
-  isVaultInUse: TypedContractMethod<[_vault: AddressLike], [boolean], "view">;
+    isVaultInUse(
+      _vault: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[boolean] & { inUse: boolean }>;
 
-  isWantTokenSwappable: TypedContractMethod<
-    [_token: AddressLike],
-    [boolean],
-    "view"
-  >;
+    isWantTokenSwappable(
+      _token: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[boolean] & { isSwappable: boolean }>;
 
-  payout: TypedContractMethod<
-    [
-      wantToken: AddressLike,
-      inputAmount: BigNumberish,
-      outputAmountMin: BigNumberish
-    ],
-    [bigint],
-    "nonpayable"
-  >;
+    payout(
+      wantToken: PromiseOrValue<string>,
+      inputAmount: PromiseOrValue<BigNumberish>,
+      outputAmountMin: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  payoutOn: TypedContractMethod<[], [boolean], "view">;
+    payoutOn(overrides?: CallOverrides): Promise<[boolean]>;
 
-  payoutRaw: TypedContractMethod<
-    [inputAmount: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
+    payoutRaw(
+      inputAmount: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  reassignTokenStrategy: TypedContractMethod<
-    [_token: AddressLike, _strategy: AddressLike],
-    [void],
-    "nonpayable"
-  >;
+    reassignTokenStrategy(
+      _token: PromiseOrValue<string>,
+      _strategy: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  recover: TypedContractMethod<
-    [token: AddressLike, receiver: AddressLike],
-    [void],
-    "nonpayable"
-  >;
+    recover(
+      token: PromiseOrValue<string>,
+      receiver: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  removeStrategy: TypedContractMethod<
-    [_strategy: AddressLike],
-    [void],
-    "nonpayable"
-  >;
+    removeStrategy(
+      _strategy: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  removeSwapper: TypedContractMethod<
-    [_swapper: AddressLike],
-    [void],
-    "nonpayable"
-  >;
+    removeSwapper(
+      _swapper: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  removeToken: TypedContractMethod<
-    [_token: AddressLike, _receiver: AddressLike],
-    [void],
-    "nonpayable"
-  >;
+    removeToken(
+      _token: PromiseOrValue<string>,
+      _receiver: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  removeVault: TypedContractMethod<[_vault: AddressLike], [void], "nonpayable">;
+    removeVault(
+      _vault: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  removeWantToken: TypedContractMethod<
-    [_wantToken: AddressLike],
-    [void],
-    "nonpayable"
-  >;
+    removeWantToken(
+      _wantToken: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  renameWantToken: TypedContractMethod<
-    [_wantToken: AddressLike, _name: string],
-    [void],
-    "nonpayable"
-  >;
+    renameWantToken(
+      _wantToken: PromiseOrValue<string>,
+      _name: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  renounceRole: TypedContractMethod<
-    [role: BytesLike, account: AddressLike],
-    [void],
-    "nonpayable"
-  >;
+    renounceRole(
+      role: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  revokeRole: TypedContractMethod<
-    [role: BytesLike, account: AddressLike],
-    [void],
-    "nonpayable"
-  >;
+    revokeRole(
+      role: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  setDepositOn: TypedContractMethod<[enabled: boolean], [void], "nonpayable">;
+    setDepositOn(
+      enabled: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  setPayoutOn: TypedContractMethod<[enabled: boolean], [void], "nonpayable">;
+    setPayoutOn(
+      enabled: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
-  shareByAmountScaled: TypedContractMethod<
-    [amount: BigNumberish],
-    [bigint],
-    "view"
-  >;
+    shareByAmountScaled(
+      amount: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { value: BigNumber }>;
 
-  supportsInterface: TypedContractMethod<
-    [interfaceId: BytesLike],
-    [boolean],
-    "view"
-  >;
+    supportsInterface(
+      interfaceId: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
 
-  swappers: TypedContractMethod<
-    [arg0: AddressLike, arg1: AddressLike],
-    [string],
-    "view"
-  >;
+    swappers(
+      arg0: PromiseOrValue<string>,
+      arg1: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
 
-  totalSupplyBaseToken: TypedContractMethod<[], [bigint], "view">;
+    totalSupplyBaseToken(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { totalSupply: BigNumber }>;
 
-  wantTokens: TypedContractMethod<
-    [arg0: AddressLike],
-    [
+    wantTokens(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<
       [string, boolean, boolean] & {
         name: string;
         enabled: boolean;
         isWantToken: boolean;
       }
-    ],
-    "view"
+    >;
+  };
+
+  BURN_ADDRESS1(overrides?: CallOverrides): Promise<string>;
+
+  BURN_ADDRESS2(overrides?: CallOverrides): Promise<string>;
+
+  DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
+
+  ROLE_CONTROLLER(overrides?: CallOverrides): Promise<string>;
+
+  ROLE_DEPOSITER(overrides?: CallOverrides): Promise<string>;
+
+  ROLE_GOVERNANCE(overrides?: CallOverrides): Promise<string>;
+
+  ROLE_GOVERNOR(overrides?: CallOverrides): Promise<string>;
+
+  WAVAX(overrides?: CallOverrides): Promise<string>;
+
+  addStrategy(
+    _strategy: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  addSwapper(
+    _swapper: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  addToken(
+    _token: PromiseOrValue<string>,
+    _vault: PromiseOrValue<string>,
+    _strategy: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  addVault(
+    _vault: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  addWantToken(
+    _wantToken: PromiseOrValue<string>,
+    _name: PromiseOrValue<string>,
+    _enabled: PromiseOrValue<boolean>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  addressCheck(
+    arg0: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<[boolean, boolean] & { isVault: boolean; isStrategy: boolean }>;
+
+  allStrategies(
+    arg0: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  allSwappers(
+    arg0: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  allTokens(
+    arg0: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  allVaults(
+    arg0: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  allWantTokens(
+    arg0: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  balanceOf(
+    holder: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  baseToken(overrides?: CallOverrides): Promise<string>;
+
+  counts(
+    overrides?: CallOverrides
+  ): Promise<
+    [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
+      countVaults: BigNumber;
+      countTokens: BigNumber;
+      countSwappers: BigNumber;
+      countStrategies: BigNumber;
+      countWantTokens: BigNumber;
+    }
   >;
 
-  getFunction<T extends ContractMethod = ContractMethod>(
-    key: string | FunctionFragment
-  ): T;
+  deposit(
+    _token: PromiseOrValue<string>,
+    _amount: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
 
-  getFunction(
-    nameOrSignature: "BURN_ADDRESS1"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "BURN_ADDRESS2"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "DEFAULT_ADMIN_ROLE"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "ROLE_CONTROLLER"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "ROLE_DEPOSITER"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "ROLE_GOVERNANCE"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "ROLE_GOVERNOR"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "WAVAX"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "addStrategy"
-  ): TypedContractMethod<[_strategy: AddressLike], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "addSwapper"
-  ): TypedContractMethod<[_swapper: AddressLike], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "addToken"
-  ): TypedContractMethod<
-    [_token: AddressLike, _vault: AddressLike, _strategy: AddressLike],
-    [void],
-    "nonpayable"
+  depositOn(overrides?: CallOverrides): Promise<boolean>;
+
+  depositTokens(
+    arg0: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<
+    [string, string, boolean, boolean] & {
+      strategy: string;
+      vault: string;
+      enabled: boolean;
+      isToken: boolean;
+    }
   >;
-  getFunction(
-    nameOrSignature: "addVault"
-  ): TypedContractMethod<[_vault: AddressLike], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "addWantToken"
-  ): TypedContractMethod<
-    [_wantToken: AddressLike, _name: string, _enabled: boolean],
-    [void],
-    "nonpayable"
+
+  disableToken(
+    _token: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  disableWantToken(
+    _wantToken: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  enableToken(
+    _token: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  enableWantToken(
+    _wantToken: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  getRoleAdmin(
+    role: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  getRoleMember(
+    role: PromiseOrValue<BytesLike>,
+    index: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  getRoleMemberCount(
+    role: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  getTotalValue(
+    wantToken: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  getValueOfTokensForBaseToken(
+    wantToken: PromiseOrValue<string>,
+    inputAmount: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  getValueOfTokensForOneBaseToken(
+    wantToken: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  grantRole(
+    role: PromiseOrValue<BytesLike>,
+    account: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  hasRole(
+    role: PromiseOrValue<BytesLike>,
+    account: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  initialize(
+    _baseToken: PromiseOrValue<string>,
+    _governance: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  isStrategyInUse(
+    _strategy: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  isSwapper(
+    _swapper: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  isTokenInAnyVault(
+    _token: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  isTokenInVault(
+    _token: PromiseOrValue<string>,
+    _vault: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  isVaultInUse(
+    _vault: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  isWantTokenSwappable(
+    _token: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  payout(
+    wantToken: PromiseOrValue<string>,
+    inputAmount: PromiseOrValue<BigNumberish>,
+    outputAmountMin: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  payoutOn(overrides?: CallOverrides): Promise<boolean>;
+
+  payoutRaw(
+    inputAmount: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  reassignTokenStrategy(
+    _token: PromiseOrValue<string>,
+    _strategy: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  recover(
+    token: PromiseOrValue<string>,
+    receiver: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  removeStrategy(
+    _strategy: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  removeSwapper(
+    _swapper: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  removeToken(
+    _token: PromiseOrValue<string>,
+    _receiver: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  removeVault(
+    _vault: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  removeWantToken(
+    _wantToken: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  renameWantToken(
+    _wantToken: PromiseOrValue<string>,
+    _name: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  renounceRole(
+    role: PromiseOrValue<BytesLike>,
+    account: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  revokeRole(
+    role: PromiseOrValue<BytesLike>,
+    account: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  setDepositOn(
+    enabled: PromiseOrValue<boolean>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  setPayoutOn(
+    enabled: PromiseOrValue<boolean>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  shareByAmountScaled(
+    amount: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  supportsInterface(
+    interfaceId: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  swappers(
+    arg0: PromiseOrValue<string>,
+    arg1: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  totalSupplyBaseToken(overrides?: CallOverrides): Promise<BigNumber>;
+
+  wantTokens(
+    arg0: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<
+    [string, boolean, boolean] & {
+      name: string;
+      enabled: boolean;
+      isWantToken: boolean;
+    }
   >;
-  getFunction(
-    nameOrSignature: "addressCheck"
-  ): TypedContractMethod<
-    [arg0: AddressLike],
-    [[boolean, boolean] & { isVault: boolean; isStrategy: boolean }],
-    "view"
-  >;
-  getFunction(
-    nameOrSignature: "allStrategies"
-  ): TypedContractMethod<[arg0: BigNumberish], [string], "view">;
-  getFunction(
-    nameOrSignature: "allSwappers"
-  ): TypedContractMethod<[arg0: BigNumberish], [string], "view">;
-  getFunction(
-    nameOrSignature: "allTokens"
-  ): TypedContractMethod<[arg0: BigNumberish], [string], "view">;
-  getFunction(
-    nameOrSignature: "allVaults"
-  ): TypedContractMethod<[arg0: BigNumberish], [string], "view">;
-  getFunction(
-    nameOrSignature: "allWantTokens"
-  ): TypedContractMethod<[arg0: BigNumberish], [string], "view">;
-  getFunction(
-    nameOrSignature: "balanceOf"
-  ): TypedContractMethod<[holder: AddressLike], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "baseToken"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "counts"
-  ): TypedContractMethod<
-    [],
-    [
-      [bigint, bigint, bigint, bigint, bigint] & {
-        countVaults: bigint;
-        countTokens: bigint;
-        countSwappers: bigint;
-        countStrategies: bigint;
-        countWantTokens: bigint;
+
+  callStatic: {
+    BURN_ADDRESS1(overrides?: CallOverrides): Promise<string>;
+
+    BURN_ADDRESS2(overrides?: CallOverrides): Promise<string>;
+
+    DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
+
+    ROLE_CONTROLLER(overrides?: CallOverrides): Promise<string>;
+
+    ROLE_DEPOSITER(overrides?: CallOverrides): Promise<string>;
+
+    ROLE_GOVERNANCE(overrides?: CallOverrides): Promise<string>;
+
+    ROLE_GOVERNOR(overrides?: CallOverrides): Promise<string>;
+
+    WAVAX(overrides?: CallOverrides): Promise<string>;
+
+    addStrategy(
+      _strategy: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    addSwapper(
+      _swapper: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    addToken(
+      _token: PromiseOrValue<string>,
+      _vault: PromiseOrValue<string>,
+      _strategy: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    addVault(
+      _vault: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    addWantToken(
+      _wantToken: PromiseOrValue<string>,
+      _name: PromiseOrValue<string>,
+      _enabled: PromiseOrValue<boolean>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    addressCheck(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[boolean, boolean] & { isVault: boolean; isStrategy: boolean }>;
+
+    allStrategies(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    allSwappers(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    allTokens(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    allVaults(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    allWantTokens(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    balanceOf(
+      holder: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    baseToken(overrides?: CallOverrides): Promise<string>;
+
+    counts(
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
+        countVaults: BigNumber;
+        countTokens: BigNumber;
+        countSwappers: BigNumber;
+        countStrategies: BigNumber;
+        countWantTokens: BigNumber;
       }
-    ],
-    "view"
-  >;
-  getFunction(
-    nameOrSignature: "deposit"
-  ): TypedContractMethod<
-    [_token: AddressLike, _amount: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "depositOn"
-  ): TypedContractMethod<[], [boolean], "view">;
-  getFunction(
-    nameOrSignature: "depositTokens"
-  ): TypedContractMethod<
-    [arg0: AddressLike],
-    [
+    >;
+
+    deposit(
+      _token: PromiseOrValue<string>,
+      _amount: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    depositOn(overrides?: CallOverrides): Promise<boolean>;
+
+    depositTokens(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<
       [string, string, boolean, boolean] & {
         strategy: string;
         vault: string;
         enabled: boolean;
         isToken: boolean;
       }
-    ],
-    "view"
-  >;
-  getFunction(
-    nameOrSignature: "disableToken"
-  ): TypedContractMethod<[_token: AddressLike], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "disableWantToken"
-  ): TypedContractMethod<[_wantToken: AddressLike], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "enableToken"
-  ): TypedContractMethod<[_token: AddressLike], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "enableWantToken"
-  ): TypedContractMethod<[_wantToken: AddressLike], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "getRoleAdmin"
-  ): TypedContractMethod<[role: BytesLike], [string], "view">;
-  getFunction(
-    nameOrSignature: "getRoleMember"
-  ): TypedContractMethod<
-    [role: BytesLike, index: BigNumberish],
-    [string],
-    "view"
-  >;
-  getFunction(
-    nameOrSignature: "getRoleMemberCount"
-  ): TypedContractMethod<[role: BytesLike], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "getTotalValue"
-  ): TypedContractMethod<[wantToken: AddressLike], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "getValueOfTokensForBaseToken"
-  ): TypedContractMethod<
-    [wantToken: AddressLike, inputAmount: BigNumberish],
-    [bigint],
-    "view"
-  >;
-  getFunction(
-    nameOrSignature: "getValueOfTokensForOneBaseToken"
-  ): TypedContractMethod<[wantToken: AddressLike], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "grantRole"
-  ): TypedContractMethod<
-    [role: BytesLike, account: AddressLike],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "hasRole"
-  ): TypedContractMethod<
-    [role: BytesLike, account: AddressLike],
-    [boolean],
-    "view"
-  >;
-  getFunction(
-    nameOrSignature: "initialize"
-  ): TypedContractMethod<
-    [_baseToken: AddressLike, _governance: AddressLike],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "isStrategyInUse"
-  ): TypedContractMethod<[_strategy: AddressLike], [boolean], "view">;
-  getFunction(
-    nameOrSignature: "isSwapper"
-  ): TypedContractMethod<[_swapper: AddressLike], [boolean], "view">;
-  getFunction(
-    nameOrSignature: "isTokenInAnyVault"
-  ): TypedContractMethod<[_token: AddressLike], [boolean], "view">;
-  getFunction(
-    nameOrSignature: "isTokenInVault"
-  ): TypedContractMethod<
-    [_token: AddressLike, _vault: AddressLike],
-    [boolean],
-    "view"
-  >;
-  getFunction(
-    nameOrSignature: "isVaultInUse"
-  ): TypedContractMethod<[_vault: AddressLike], [boolean], "view">;
-  getFunction(
-    nameOrSignature: "isWantTokenSwappable"
-  ): TypedContractMethod<[_token: AddressLike], [boolean], "view">;
-  getFunction(
-    nameOrSignature: "payout"
-  ): TypedContractMethod<
-    [
-      wantToken: AddressLike,
-      inputAmount: BigNumberish,
-      outputAmountMin: BigNumberish
-    ],
-    [bigint],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "payoutOn"
-  ): TypedContractMethod<[], [boolean], "view">;
-  getFunction(
-    nameOrSignature: "payoutRaw"
-  ): TypedContractMethod<[inputAmount: BigNumberish], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "reassignTokenStrategy"
-  ): TypedContractMethod<
-    [_token: AddressLike, _strategy: AddressLike],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "recover"
-  ): TypedContractMethod<
-    [token: AddressLike, receiver: AddressLike],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "removeStrategy"
-  ): TypedContractMethod<[_strategy: AddressLike], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "removeSwapper"
-  ): TypedContractMethod<[_swapper: AddressLike], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "removeToken"
-  ): TypedContractMethod<
-    [_token: AddressLike, _receiver: AddressLike],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "removeVault"
-  ): TypedContractMethod<[_vault: AddressLike], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "removeWantToken"
-  ): TypedContractMethod<[_wantToken: AddressLike], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "renameWantToken"
-  ): TypedContractMethod<
-    [_wantToken: AddressLike, _name: string],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "renounceRole"
-  ): TypedContractMethod<
-    [role: BytesLike, account: AddressLike],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "revokeRole"
-  ): TypedContractMethod<
-    [role: BytesLike, account: AddressLike],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "setDepositOn"
-  ): TypedContractMethod<[enabled: boolean], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "setPayoutOn"
-  ): TypedContractMethod<[enabled: boolean], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "shareByAmountScaled"
-  ): TypedContractMethod<[amount: BigNumberish], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "supportsInterface"
-  ): TypedContractMethod<[interfaceId: BytesLike], [boolean], "view">;
-  getFunction(
-    nameOrSignature: "swappers"
-  ): TypedContractMethod<
-    [arg0: AddressLike, arg1: AddressLike],
-    [string],
-    "view"
-  >;
-  getFunction(
-    nameOrSignature: "totalSupplyBaseToken"
-  ): TypedContractMethod<[], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "wantTokens"
-  ): TypedContractMethod<
-    [arg0: AddressLike],
-    [
+    >;
+
+    disableToken(
+      _token: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    disableWantToken(
+      _wantToken: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    enableToken(
+      _token: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    enableWantToken(
+      _wantToken: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    getRoleAdmin(
+      role: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    getRoleMember(
+      role: PromiseOrValue<BytesLike>,
+      index: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    getRoleMemberCount(
+      role: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getTotalValue(
+      wantToken: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getValueOfTokensForBaseToken(
+      wantToken: PromiseOrValue<string>,
+      inputAmount: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getValueOfTokensForOneBaseToken(
+      wantToken: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    grantRole(
+      role: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    hasRole(
+      role: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    initialize(
+      _baseToken: PromiseOrValue<string>,
+      _governance: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    isStrategyInUse(
+      _strategy: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    isSwapper(
+      _swapper: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    isTokenInAnyVault(
+      _token: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    isTokenInVault(
+      _token: PromiseOrValue<string>,
+      _vault: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    isVaultInUse(
+      _vault: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    isWantTokenSwappable(
+      _token: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    payout(
+      wantToken: PromiseOrValue<string>,
+      inputAmount: PromiseOrValue<BigNumberish>,
+      outputAmountMin: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    payoutOn(overrides?: CallOverrides): Promise<boolean>;
+
+    payoutRaw(
+      inputAmount: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    reassignTokenStrategy(
+      _token: PromiseOrValue<string>,
+      _strategy: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    recover(
+      token: PromiseOrValue<string>,
+      receiver: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    removeStrategy(
+      _strategy: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    removeSwapper(
+      _swapper: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    removeToken(
+      _token: PromiseOrValue<string>,
+      _receiver: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    removeVault(
+      _vault: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    removeWantToken(
+      _wantToken: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    renameWantToken(
+      _wantToken: PromiseOrValue<string>,
+      _name: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    renounceRole(
+      role: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    revokeRole(
+      role: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setDepositOn(
+      enabled: PromiseOrValue<boolean>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setPayoutOn(
+      enabled: PromiseOrValue<boolean>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    shareByAmountScaled(
+      amount: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    supportsInterface(
+      interfaceId: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    swappers(
+      arg0: PromiseOrValue<string>,
+      arg1: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    totalSupplyBaseToken(overrides?: CallOverrides): Promise<BigNumber>;
+
+    wantTokens(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<
       [string, boolean, boolean] & {
         name: string;
         enabled: boolean;
         isWantToken: boolean;
       }
-    ],
-    "view"
-  >;
-
-  getEvent(
-    key: "AllowanceAdded"
-  ): TypedContractEvent<
-    AllowanceAddedEvent.InputTuple,
-    AllowanceAddedEvent.OutputTuple,
-    AllowanceAddedEvent.OutputObject
-  >;
-  getEvent(
-    key: "AllowanceRemoved"
-  ): TypedContractEvent<
-    AllowanceRemovedEvent.InputTuple,
-    AllowanceRemovedEvent.OutputTuple,
-    AllowanceRemovedEvent.OutputObject
-  >;
-  getEvent(
-    key: "AssignedTokenStrategy"
-  ): TypedContractEvent<
-    AssignedTokenStrategyEvent.InputTuple,
-    AssignedTokenStrategyEvent.OutputTuple,
-    AssignedTokenStrategyEvent.OutputObject
-  >;
-  getEvent(
-    key: "AssignedTokenVault"
-  ): TypedContractEvent<
-    AssignedTokenVaultEvent.InputTuple,
-    AssignedTokenVaultEvent.OutputTuple,
-    AssignedTokenVaultEvent.OutputObject
-  >;
-  getEvent(
-    key: "Deposit"
-  ): TypedContractEvent<
-    DepositEvent.InputTuple,
-    DepositEvent.OutputTuple,
-    DepositEvent.OutputObject
-  >;
-  getEvent(
-    key: "DepositTokenDisabled"
-  ): TypedContractEvent<
-    DepositTokenDisabledEvent.InputTuple,
-    DepositTokenDisabledEvent.OutputTuple,
-    DepositTokenDisabledEvent.OutputObject
-  >;
-  getEvent(
-    key: "DepositTokenEnabled"
-  ): TypedContractEvent<
-    DepositTokenEnabledEvent.InputTuple,
-    DepositTokenEnabledEvent.OutputTuple,
-    DepositTokenEnabledEvent.OutputObject
-  >;
-  getEvent(
-    key: "Initialized"
-  ): TypedContractEvent<
-    InitializedEvent.InputTuple,
-    InitializedEvent.OutputTuple,
-    InitializedEvent.OutputObject
-  >;
-  getEvent(
-    key: "Payout"
-  ): TypedContractEvent<
-    PayoutEvent.InputTuple,
-    PayoutEvent.OutputTuple,
-    PayoutEvent.OutputObject
-  >;
-  getEvent(
-    key: "ReassignedTokenStrategy"
-  ): TypedContractEvent<
-    ReassignedTokenStrategyEvent.InputTuple,
-    ReassignedTokenStrategyEvent.OutputTuple,
-    ReassignedTokenStrategyEvent.OutputObject
-  >;
-  getEvent(
-    key: "Recovered"
-  ): TypedContractEvent<
-    RecoveredEvent.InputTuple,
-    RecoveredEvent.OutputTuple,
-    RecoveredEvent.OutputObject
-  >;
-  getEvent(
-    key: "RoleAdminChanged"
-  ): TypedContractEvent<
-    RoleAdminChangedEvent.InputTuple,
-    RoleAdminChangedEvent.OutputTuple,
-    RoleAdminChangedEvent.OutputObject
-  >;
-  getEvent(
-    key: "RoleGranted"
-  ): TypedContractEvent<
-    RoleGrantedEvent.InputTuple,
-    RoleGrantedEvent.OutputTuple,
-    RoleGrantedEvent.OutputObject
-  >;
-  getEvent(
-    key: "RoleRevoked"
-  ): TypedContractEvent<
-    RoleRevokedEvent.InputTuple,
-    RoleRevokedEvent.OutputTuple,
-    RoleRevokedEvent.OutputObject
-  >;
-  getEvent(
-    key: "StrategyAdded"
-  ): TypedContractEvent<
-    StrategyAddedEvent.InputTuple,
-    StrategyAddedEvent.OutputTuple,
-    StrategyAddedEvent.OutputObject
-  >;
-  getEvent(
-    key: "StrategyRemoved"
-  ): TypedContractEvent<
-    StrategyRemovedEvent.InputTuple,
-    StrategyRemovedEvent.OutputTuple,
-    StrategyRemovedEvent.OutputObject
-  >;
-  getEvent(
-    key: "SwapperAdded"
-  ): TypedContractEvent<
-    SwapperAddedEvent.InputTuple,
-    SwapperAddedEvent.OutputTuple,
-    SwapperAddedEvent.OutputObject
-  >;
-  getEvent(
-    key: "SwapperRemoved"
-  ): TypedContractEvent<
-    SwapperRemovedEvent.InputTuple,
-    SwapperRemovedEvent.OutputTuple,
-    SwapperRemovedEvent.OutputObject
-  >;
-  getEvent(
-    key: "TokenAdded"
-  ): TypedContractEvent<
-    TokenAddedEvent.InputTuple,
-    TokenAddedEvent.OutputTuple,
-    TokenAddedEvent.OutputObject
-  >;
-  getEvent(
-    key: "TokenRemoved"
-  ): TypedContractEvent<
-    TokenRemovedEvent.InputTuple,
-    TokenRemovedEvent.OutputTuple,
-    TokenRemovedEvent.OutputObject
-  >;
-  getEvent(
-    key: "TokensBurned"
-  ): TypedContractEvent<
-    TokensBurnedEvent.InputTuple,
-    TokensBurnedEvent.OutputTuple,
-    TokensBurnedEvent.OutputObject
-  >;
-  getEvent(
-    key: "UnassignedTokenStrategy"
-  ): TypedContractEvent<
-    UnassignedTokenStrategyEvent.InputTuple,
-    UnassignedTokenStrategyEvent.OutputTuple,
-    UnassignedTokenStrategyEvent.OutputObject
-  >;
-  getEvent(
-    key: "UnassignedTokenVault"
-  ): TypedContractEvent<
-    UnassignedTokenVaultEvent.InputTuple,
-    UnassignedTokenVaultEvent.OutputTuple,
-    UnassignedTokenVaultEvent.OutputObject
-  >;
-  getEvent(
-    key: "VaultAdded"
-  ): TypedContractEvent<
-    VaultAddedEvent.InputTuple,
-    VaultAddedEvent.OutputTuple,
-    VaultAddedEvent.OutputObject
-  >;
-  getEvent(
-    key: "VaultRemoved"
-  ): TypedContractEvent<
-    VaultRemovedEvent.InputTuple,
-    VaultRemovedEvent.OutputTuple,
-    VaultRemovedEvent.OutputObject
-  >;
-  getEvent(
-    key: "WantTokenAdded"
-  ): TypedContractEvent<
-    WantTokenAddedEvent.InputTuple,
-    WantTokenAddedEvent.OutputTuple,
-    WantTokenAddedEvent.OutputObject
-  >;
-  getEvent(
-    key: "WantTokenDisabled"
-  ): TypedContractEvent<
-    WantTokenDisabledEvent.InputTuple,
-    WantTokenDisabledEvent.OutputTuple,
-    WantTokenDisabledEvent.OutputObject
-  >;
-  getEvent(
-    key: "WantTokenEnabled"
-  ): TypedContractEvent<
-    WantTokenEnabledEvent.InputTuple,
-    WantTokenEnabledEvent.OutputTuple,
-    WantTokenEnabledEvent.OutputObject
-  >;
-  getEvent(
-    key: "WantTokenRemoved"
-  ): TypedContractEvent<
-    WantTokenRemovedEvent.InputTuple,
-    WantTokenRemovedEvent.OutputTuple,
-    WantTokenRemovedEvent.OutputObject
-  >;
-  getEvent(
-    key: "WantTokenRenamed"
-  ): TypedContractEvent<
-    WantTokenRenamedEvent.InputTuple,
-    WantTokenRenamedEvent.OutputTuple,
-    WantTokenRenamedEvent.OutputObject
-  >;
+    >;
+  };
 
   filters: {
-    "AllowanceAdded(address)": TypedContractEvent<
-      AllowanceAddedEvent.InputTuple,
-      AllowanceAddedEvent.OutputTuple,
-      AllowanceAddedEvent.OutputObject
-    >;
-    AllowanceAdded: TypedContractEvent<
-      AllowanceAddedEvent.InputTuple,
-      AllowanceAddedEvent.OutputTuple,
-      AllowanceAddedEvent.OutputObject
-    >;
+    "AllowanceAdded(address)"(sender?: null): AllowanceAddedEventFilter;
+    AllowanceAdded(sender?: null): AllowanceAddedEventFilter;
 
-    "AllowanceRemoved(address)": TypedContractEvent<
-      AllowanceRemovedEvent.InputTuple,
-      AllowanceRemovedEvent.OutputTuple,
-      AllowanceRemovedEvent.OutputObject
-    >;
-    AllowanceRemoved: TypedContractEvent<
-      AllowanceRemovedEvent.InputTuple,
-      AllowanceRemovedEvent.OutputTuple,
-      AllowanceRemovedEvent.OutputObject
-    >;
+    "AllowanceRemoved(address)"(sender?: null): AllowanceRemovedEventFilter;
+    AllowanceRemoved(sender?: null): AllowanceRemovedEventFilter;
 
-    "AssignedTokenStrategy(address,address)": TypedContractEvent<
-      AssignedTokenStrategyEvent.InputTuple,
-      AssignedTokenStrategyEvent.OutputTuple,
-      AssignedTokenStrategyEvent.OutputObject
-    >;
-    AssignedTokenStrategy: TypedContractEvent<
-      AssignedTokenStrategyEvent.InputTuple,
-      AssignedTokenStrategyEvent.OutputTuple,
-      AssignedTokenStrategyEvent.OutputObject
-    >;
+    "AssignedTokenStrategy(address,address)"(
+      token?: null,
+      strategy?: null
+    ): AssignedTokenStrategyEventFilter;
+    AssignedTokenStrategy(
+      token?: null,
+      strategy?: null
+    ): AssignedTokenStrategyEventFilter;
 
-    "AssignedTokenVault(address,address)": TypedContractEvent<
-      AssignedTokenVaultEvent.InputTuple,
-      AssignedTokenVaultEvent.OutputTuple,
-      AssignedTokenVaultEvent.OutputObject
-    >;
-    AssignedTokenVault: TypedContractEvent<
-      AssignedTokenVaultEvent.InputTuple,
-      AssignedTokenVaultEvent.OutputTuple,
-      AssignedTokenVaultEvent.OutputObject
-    >;
+    "AssignedTokenVault(address,address)"(
+      token?: null,
+      vault?: null
+    ): AssignedTokenVaultEventFilter;
+    AssignedTokenVault(
+      token?: null,
+      vault?: null
+    ): AssignedTokenVaultEventFilter;
 
-    "Deposit(address,uint256)": TypedContractEvent<
-      DepositEvent.InputTuple,
-      DepositEvent.OutputTuple,
-      DepositEvent.OutputObject
-    >;
-    Deposit: TypedContractEvent<
-      DepositEvent.InputTuple,
-      DepositEvent.OutputTuple,
-      DepositEvent.OutputObject
-    >;
+    "Deposit(address,uint256)"(token?: null, amount?: null): DepositEventFilter;
+    Deposit(token?: null, amount?: null): DepositEventFilter;
 
-    "DepositTokenDisabled(address)": TypedContractEvent<
-      DepositTokenDisabledEvent.InputTuple,
-      DepositTokenDisabledEvent.OutputTuple,
-      DepositTokenDisabledEvent.OutputObject
-    >;
-    DepositTokenDisabled: TypedContractEvent<
-      DepositTokenDisabledEvent.InputTuple,
-      DepositTokenDisabledEvent.OutputTuple,
-      DepositTokenDisabledEvent.OutputObject
-    >;
+    "DepositTokenDisabled(address)"(
+      token?: null
+    ): DepositTokenDisabledEventFilter;
+    DepositTokenDisabled(token?: null): DepositTokenDisabledEventFilter;
 
-    "DepositTokenEnabled(address)": TypedContractEvent<
-      DepositTokenEnabledEvent.InputTuple,
-      DepositTokenEnabledEvent.OutputTuple,
-      DepositTokenEnabledEvent.OutputObject
-    >;
-    DepositTokenEnabled: TypedContractEvent<
-      DepositTokenEnabledEvent.InputTuple,
-      DepositTokenEnabledEvent.OutputTuple,
-      DepositTokenEnabledEvent.OutputObject
-    >;
+    "DepositTokenEnabled(address)"(
+      token?: null
+    ): DepositTokenEnabledEventFilter;
+    DepositTokenEnabled(token?: null): DepositTokenEnabledEventFilter;
 
-    "Initialized(uint8)": TypedContractEvent<
-      InitializedEvent.InputTuple,
-      InitializedEvent.OutputTuple,
-      InitializedEvent.OutputObject
-    >;
-    Initialized: TypedContractEvent<
-      InitializedEvent.InputTuple,
-      InitializedEvent.OutputTuple,
-      InitializedEvent.OutputObject
-    >;
+    "Initialized(uint8)"(version?: null): InitializedEventFilter;
+    Initialized(version?: null): InitializedEventFilter;
 
-    "Payout(address,address,uint256)": TypedContractEvent<
-      PayoutEvent.InputTuple,
-      PayoutEvent.OutputTuple,
-      PayoutEvent.OutputObject
-    >;
-    Payout: TypedContractEvent<
-      PayoutEvent.InputTuple,
-      PayoutEvent.OutputTuple,
-      PayoutEvent.OutputObject
-    >;
+    "Payout(address,address,uint256)"(
+      wantToken?: null,
+      holder?: null,
+      receiveAmount?: null
+    ): PayoutEventFilter;
+    Payout(
+      wantToken?: null,
+      holder?: null,
+      receiveAmount?: null
+    ): PayoutEventFilter;
 
-    "ReassignedTokenStrategy(address,address)": TypedContractEvent<
-      ReassignedTokenStrategyEvent.InputTuple,
-      ReassignedTokenStrategyEvent.OutputTuple,
-      ReassignedTokenStrategyEvent.OutputObject
-    >;
-    ReassignedTokenStrategy: TypedContractEvent<
-      ReassignedTokenStrategyEvent.InputTuple,
-      ReassignedTokenStrategyEvent.OutputTuple,
-      ReassignedTokenStrategyEvent.OutputObject
-    >;
+    "ReassignedTokenStrategy(address,address)"(
+      token?: null,
+      strategy?: null
+    ): ReassignedTokenStrategyEventFilter;
+    ReassignedTokenStrategy(
+      token?: null,
+      strategy?: null
+    ): ReassignedTokenStrategyEventFilter;
 
-    "Recovered(address,address,uint256)": TypedContractEvent<
-      RecoveredEvent.InputTuple,
-      RecoveredEvent.OutputTuple,
-      RecoveredEvent.OutputObject
-    >;
-    Recovered: TypedContractEvent<
-      RecoveredEvent.InputTuple,
-      RecoveredEvent.OutputTuple,
-      RecoveredEvent.OutputObject
-    >;
+    "Recovered(address,address,uint256)"(
+      token?: null,
+      receiver?: null,
+      amount?: null
+    ): RecoveredEventFilter;
+    Recovered(
+      token?: null,
+      receiver?: null,
+      amount?: null
+    ): RecoveredEventFilter;
 
-    "RoleAdminChanged(bytes32,bytes32,bytes32)": TypedContractEvent<
-      RoleAdminChangedEvent.InputTuple,
-      RoleAdminChangedEvent.OutputTuple,
-      RoleAdminChangedEvent.OutputObject
-    >;
-    RoleAdminChanged: TypedContractEvent<
-      RoleAdminChangedEvent.InputTuple,
-      RoleAdminChangedEvent.OutputTuple,
-      RoleAdminChangedEvent.OutputObject
-    >;
+    "RoleAdminChanged(bytes32,bytes32,bytes32)"(
+      role?: PromiseOrValue<BytesLike> | null,
+      previousAdminRole?: PromiseOrValue<BytesLike> | null,
+      newAdminRole?: PromiseOrValue<BytesLike> | null
+    ): RoleAdminChangedEventFilter;
+    RoleAdminChanged(
+      role?: PromiseOrValue<BytesLike> | null,
+      previousAdminRole?: PromiseOrValue<BytesLike> | null,
+      newAdminRole?: PromiseOrValue<BytesLike> | null
+    ): RoleAdminChangedEventFilter;
 
-    "RoleGranted(bytes32,address,address)": TypedContractEvent<
-      RoleGrantedEvent.InputTuple,
-      RoleGrantedEvent.OutputTuple,
-      RoleGrantedEvent.OutputObject
-    >;
-    RoleGranted: TypedContractEvent<
-      RoleGrantedEvent.InputTuple,
-      RoleGrantedEvent.OutputTuple,
-      RoleGrantedEvent.OutputObject
-    >;
+    "RoleGranted(bytes32,address,address)"(
+      role?: PromiseOrValue<BytesLike> | null,
+      account?: PromiseOrValue<string> | null,
+      sender?: PromiseOrValue<string> | null
+    ): RoleGrantedEventFilter;
+    RoleGranted(
+      role?: PromiseOrValue<BytesLike> | null,
+      account?: PromiseOrValue<string> | null,
+      sender?: PromiseOrValue<string> | null
+    ): RoleGrantedEventFilter;
 
-    "RoleRevoked(bytes32,address,address)": TypedContractEvent<
-      RoleRevokedEvent.InputTuple,
-      RoleRevokedEvent.OutputTuple,
-      RoleRevokedEvent.OutputObject
-    >;
-    RoleRevoked: TypedContractEvent<
-      RoleRevokedEvent.InputTuple,
-      RoleRevokedEvent.OutputTuple,
-      RoleRevokedEvent.OutputObject
-    >;
+    "RoleRevoked(bytes32,address,address)"(
+      role?: PromiseOrValue<BytesLike> | null,
+      account?: PromiseOrValue<string> | null,
+      sender?: PromiseOrValue<string> | null
+    ): RoleRevokedEventFilter;
+    RoleRevoked(
+      role?: PromiseOrValue<BytesLike> | null,
+      account?: PromiseOrValue<string> | null,
+      sender?: PromiseOrValue<string> | null
+    ): RoleRevokedEventFilter;
 
-    "StrategyAdded(address)": TypedContractEvent<
-      StrategyAddedEvent.InputTuple,
-      StrategyAddedEvent.OutputTuple,
-      StrategyAddedEvent.OutputObject
-    >;
-    StrategyAdded: TypedContractEvent<
-      StrategyAddedEvent.InputTuple,
-      StrategyAddedEvent.OutputTuple,
-      StrategyAddedEvent.OutputObject
-    >;
+    "StrategyAdded(address)"(strategy?: null): StrategyAddedEventFilter;
+    StrategyAdded(strategy?: null): StrategyAddedEventFilter;
 
-    "StrategyRemoved(address)": TypedContractEvent<
-      StrategyRemovedEvent.InputTuple,
-      StrategyRemovedEvent.OutputTuple,
-      StrategyRemovedEvent.OutputObject
-    >;
-    StrategyRemoved: TypedContractEvent<
-      StrategyRemovedEvent.InputTuple,
-      StrategyRemovedEvent.OutputTuple,
-      StrategyRemovedEvent.OutputObject
-    >;
+    "StrategyRemoved(address)"(strategy?: null): StrategyRemovedEventFilter;
+    StrategyRemoved(strategy?: null): StrategyRemovedEventFilter;
 
-    "SwapperAdded(address)": TypedContractEvent<
-      SwapperAddedEvent.InputTuple,
-      SwapperAddedEvent.OutputTuple,
-      SwapperAddedEvent.OutputObject
-    >;
-    SwapperAdded: TypedContractEvent<
-      SwapperAddedEvent.InputTuple,
-      SwapperAddedEvent.OutputTuple,
-      SwapperAddedEvent.OutputObject
-    >;
+    "SwapperAdded(address)"(swapper?: null): SwapperAddedEventFilter;
+    SwapperAdded(swapper?: null): SwapperAddedEventFilter;
 
-    "SwapperRemoved(address)": TypedContractEvent<
-      SwapperRemovedEvent.InputTuple,
-      SwapperRemovedEvent.OutputTuple,
-      SwapperRemovedEvent.OutputObject
-    >;
-    SwapperRemoved: TypedContractEvent<
-      SwapperRemovedEvent.InputTuple,
-      SwapperRemovedEvent.OutputTuple,
-      SwapperRemovedEvent.OutputObject
-    >;
+    "SwapperRemoved(address)"(swapper?: null): SwapperRemovedEventFilter;
+    SwapperRemoved(swapper?: null): SwapperRemovedEventFilter;
 
-    "TokenAdded(address,address,address)": TypedContractEvent<
-      TokenAddedEvent.InputTuple,
-      TokenAddedEvent.OutputTuple,
-      TokenAddedEvent.OutputObject
-    >;
-    TokenAdded: TypedContractEvent<
-      TokenAddedEvent.InputTuple,
-      TokenAddedEvent.OutputTuple,
-      TokenAddedEvent.OutputObject
-    >;
+    "TokenAdded(address,address,address)"(
+      token?: null,
+      vault?: null,
+      strategy?: null
+    ): TokenAddedEventFilter;
+    TokenAdded(
+      token?: null,
+      vault?: null,
+      strategy?: null
+    ): TokenAddedEventFilter;
 
-    "TokenRemoved(address)": TypedContractEvent<
-      TokenRemovedEvent.InputTuple,
-      TokenRemovedEvent.OutputTuple,
-      TokenRemovedEvent.OutputObject
-    >;
-    TokenRemoved: TypedContractEvent<
-      TokenRemovedEvent.InputTuple,
-      TokenRemovedEvent.OutputTuple,
-      TokenRemovedEvent.OutputObject
-    >;
+    "TokenRemoved(address)"(token?: null): TokenRemovedEventFilter;
+    TokenRemoved(token?: null): TokenRemovedEventFilter;
 
-    "TokensBurned(uint256)": TypedContractEvent<
-      TokensBurnedEvent.InputTuple,
-      TokensBurnedEvent.OutputTuple,
-      TokensBurnedEvent.OutputObject
-    >;
-    TokensBurned: TypedContractEvent<
-      TokensBurnedEvent.InputTuple,
-      TokensBurnedEvent.OutputTuple,
-      TokensBurnedEvent.OutputObject
-    >;
+    "TokensBurned(uint256)"(amount?: null): TokensBurnedEventFilter;
+    TokensBurned(amount?: null): TokensBurnedEventFilter;
 
-    "UnassignedTokenStrategy(address,address)": TypedContractEvent<
-      UnassignedTokenStrategyEvent.InputTuple,
-      UnassignedTokenStrategyEvent.OutputTuple,
-      UnassignedTokenStrategyEvent.OutputObject
-    >;
-    UnassignedTokenStrategy: TypedContractEvent<
-      UnassignedTokenStrategyEvent.InputTuple,
-      UnassignedTokenStrategyEvent.OutputTuple,
-      UnassignedTokenStrategyEvent.OutputObject
-    >;
+    "UnassignedTokenStrategy(address,address)"(
+      token?: null,
+      strategy?: null
+    ): UnassignedTokenStrategyEventFilter;
+    UnassignedTokenStrategy(
+      token?: null,
+      strategy?: null
+    ): UnassignedTokenStrategyEventFilter;
 
-    "UnassignedTokenVault(address,address)": TypedContractEvent<
-      UnassignedTokenVaultEvent.InputTuple,
-      UnassignedTokenVaultEvent.OutputTuple,
-      UnassignedTokenVaultEvent.OutputObject
-    >;
-    UnassignedTokenVault: TypedContractEvent<
-      UnassignedTokenVaultEvent.InputTuple,
-      UnassignedTokenVaultEvent.OutputTuple,
-      UnassignedTokenVaultEvent.OutputObject
-    >;
+    "UnassignedTokenVault(address,address)"(
+      token?: null,
+      vault?: null
+    ): UnassignedTokenVaultEventFilter;
+    UnassignedTokenVault(
+      token?: null,
+      vault?: null
+    ): UnassignedTokenVaultEventFilter;
 
-    "VaultAdded(address)": TypedContractEvent<
-      VaultAddedEvent.InputTuple,
-      VaultAddedEvent.OutputTuple,
-      VaultAddedEvent.OutputObject
-    >;
-    VaultAdded: TypedContractEvent<
-      VaultAddedEvent.InputTuple,
-      VaultAddedEvent.OutputTuple,
-      VaultAddedEvent.OutputObject
-    >;
+    "VaultAdded(address)"(vault?: null): VaultAddedEventFilter;
+    VaultAdded(vault?: null): VaultAddedEventFilter;
 
-    "VaultRemoved(address)": TypedContractEvent<
-      VaultRemovedEvent.InputTuple,
-      VaultRemovedEvent.OutputTuple,
-      VaultRemovedEvent.OutputObject
-    >;
-    VaultRemoved: TypedContractEvent<
-      VaultRemovedEvent.InputTuple,
-      VaultRemovedEvent.OutputTuple,
-      VaultRemovedEvent.OutputObject
-    >;
+    "VaultRemoved(address)"(vault?: null): VaultRemovedEventFilter;
+    VaultRemoved(vault?: null): VaultRemovedEventFilter;
 
-    "WantTokenAdded(address,string,bool)": TypedContractEvent<
-      WantTokenAddedEvent.InputTuple,
-      WantTokenAddedEvent.OutputTuple,
-      WantTokenAddedEvent.OutputObject
-    >;
-    WantTokenAdded: TypedContractEvent<
-      WantTokenAddedEvent.InputTuple,
-      WantTokenAddedEvent.OutputTuple,
-      WantTokenAddedEvent.OutputObject
-    >;
+    "WantTokenAdded(address,string,bool)"(
+      token?: null,
+      name?: null,
+      enabled?: null
+    ): WantTokenAddedEventFilter;
+    WantTokenAdded(
+      token?: null,
+      name?: null,
+      enabled?: null
+    ): WantTokenAddedEventFilter;
 
-    "WantTokenDisabled(address)": TypedContractEvent<
-      WantTokenDisabledEvent.InputTuple,
-      WantTokenDisabledEvent.OutputTuple,
-      WantTokenDisabledEvent.OutputObject
-    >;
-    WantTokenDisabled: TypedContractEvent<
-      WantTokenDisabledEvent.InputTuple,
-      WantTokenDisabledEvent.OutputTuple,
-      WantTokenDisabledEvent.OutputObject
-    >;
+    "WantTokenDisabled(address)"(token?: null): WantTokenDisabledEventFilter;
+    WantTokenDisabled(token?: null): WantTokenDisabledEventFilter;
 
-    "WantTokenEnabled(address)": TypedContractEvent<
-      WantTokenEnabledEvent.InputTuple,
-      WantTokenEnabledEvent.OutputTuple,
-      WantTokenEnabledEvent.OutputObject
-    >;
-    WantTokenEnabled: TypedContractEvent<
-      WantTokenEnabledEvent.InputTuple,
-      WantTokenEnabledEvent.OutputTuple,
-      WantTokenEnabledEvent.OutputObject
-    >;
+    "WantTokenEnabled(address)"(token?: null): WantTokenEnabledEventFilter;
+    WantTokenEnabled(token?: null): WantTokenEnabledEventFilter;
 
-    "WantTokenRemoved(address)": TypedContractEvent<
-      WantTokenRemovedEvent.InputTuple,
-      WantTokenRemovedEvent.OutputTuple,
-      WantTokenRemovedEvent.OutputObject
-    >;
-    WantTokenRemoved: TypedContractEvent<
-      WantTokenRemovedEvent.InputTuple,
-      WantTokenRemovedEvent.OutputTuple,
-      WantTokenRemovedEvent.OutputObject
-    >;
+    "WantTokenRemoved(address)"(token?: null): WantTokenRemovedEventFilter;
+    WantTokenRemoved(token?: null): WantTokenRemovedEventFilter;
 
-    "WantTokenRenamed(address,string,string)": TypedContractEvent<
-      WantTokenRenamedEvent.InputTuple,
-      WantTokenRenamedEvent.OutputTuple,
-      WantTokenRenamedEvent.OutputObject
-    >;
-    WantTokenRenamed: TypedContractEvent<
-      WantTokenRenamedEvent.InputTuple,
-      WantTokenRenamedEvent.OutputTuple,
-      WantTokenRenamedEvent.OutputObject
-    >;
+    "WantTokenRenamed(address,string,string)"(
+      token?: null,
+      oldName?: null,
+      newName?: null
+    ): WantTokenRenamedEventFilter;
+    WantTokenRenamed(
+      token?: null,
+      oldName?: null,
+      newName?: null
+    ): WantTokenRenamedEventFilter;
+  };
+
+  estimateGas: {
+    BURN_ADDRESS1(overrides?: CallOverrides): Promise<BigNumber>;
+
+    BURN_ADDRESS2(overrides?: CallOverrides): Promise<BigNumber>;
+
+    DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
+
+    ROLE_CONTROLLER(overrides?: CallOverrides): Promise<BigNumber>;
+
+    ROLE_DEPOSITER(overrides?: CallOverrides): Promise<BigNumber>;
+
+    ROLE_GOVERNANCE(overrides?: CallOverrides): Promise<BigNumber>;
+
+    ROLE_GOVERNOR(overrides?: CallOverrides): Promise<BigNumber>;
+
+    WAVAX(overrides?: CallOverrides): Promise<BigNumber>;
+
+    addStrategy(
+      _strategy: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    addSwapper(
+      _swapper: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    addToken(
+      _token: PromiseOrValue<string>,
+      _vault: PromiseOrValue<string>,
+      _strategy: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    addVault(
+      _vault: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    addWantToken(
+      _wantToken: PromiseOrValue<string>,
+      _name: PromiseOrValue<string>,
+      _enabled: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    addressCheck(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    allStrategies(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    allSwappers(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    allTokens(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    allVaults(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    allWantTokens(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    balanceOf(
+      holder: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    baseToken(overrides?: CallOverrides): Promise<BigNumber>;
+
+    counts(overrides?: CallOverrides): Promise<BigNumber>;
+
+    deposit(
+      _token: PromiseOrValue<string>,
+      _amount: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    depositOn(overrides?: CallOverrides): Promise<BigNumber>;
+
+    depositTokens(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    disableToken(
+      _token: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    disableWantToken(
+      _wantToken: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    enableToken(
+      _token: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    enableWantToken(
+      _wantToken: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    getRoleAdmin(
+      role: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getRoleMember(
+      role: PromiseOrValue<BytesLike>,
+      index: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getRoleMemberCount(
+      role: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getTotalValue(
+      wantToken: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getValueOfTokensForBaseToken(
+      wantToken: PromiseOrValue<string>,
+      inputAmount: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getValueOfTokensForOneBaseToken(
+      wantToken: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    grantRole(
+      role: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    hasRole(
+      role: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    initialize(
+      _baseToken: PromiseOrValue<string>,
+      _governance: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    isStrategyInUse(
+      _strategy: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    isSwapper(
+      _swapper: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    isTokenInAnyVault(
+      _token: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    isTokenInVault(
+      _token: PromiseOrValue<string>,
+      _vault: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    isVaultInUse(
+      _vault: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    isWantTokenSwappable(
+      _token: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    payout(
+      wantToken: PromiseOrValue<string>,
+      inputAmount: PromiseOrValue<BigNumberish>,
+      outputAmountMin: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    payoutOn(overrides?: CallOverrides): Promise<BigNumber>;
+
+    payoutRaw(
+      inputAmount: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    reassignTokenStrategy(
+      _token: PromiseOrValue<string>,
+      _strategy: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    recover(
+      token: PromiseOrValue<string>,
+      receiver: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    removeStrategy(
+      _strategy: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    removeSwapper(
+      _swapper: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    removeToken(
+      _token: PromiseOrValue<string>,
+      _receiver: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    removeVault(
+      _vault: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    removeWantToken(
+      _wantToken: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    renameWantToken(
+      _wantToken: PromiseOrValue<string>,
+      _name: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    renounceRole(
+      role: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    revokeRole(
+      role: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    setDepositOn(
+      enabled: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    setPayoutOn(
+      enabled: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    shareByAmountScaled(
+      amount: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    supportsInterface(
+      interfaceId: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    swappers(
+      arg0: PromiseOrValue<string>,
+      arg1: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    totalSupplyBaseToken(overrides?: CallOverrides): Promise<BigNumber>;
+
+    wantTokens(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+  };
+
+  populateTransaction: {
+    BURN_ADDRESS1(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    BURN_ADDRESS2(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    DEFAULT_ADMIN_ROLE(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    ROLE_CONTROLLER(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    ROLE_DEPOSITER(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    ROLE_GOVERNANCE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    ROLE_GOVERNOR(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    WAVAX(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    addStrategy(
+      _strategy: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    addSwapper(
+      _swapper: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    addToken(
+      _token: PromiseOrValue<string>,
+      _vault: PromiseOrValue<string>,
+      _strategy: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    addVault(
+      _vault: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    addWantToken(
+      _wantToken: PromiseOrValue<string>,
+      _name: PromiseOrValue<string>,
+      _enabled: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    addressCheck(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    allStrategies(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    allSwappers(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    allTokens(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    allVaults(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    allWantTokens(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    balanceOf(
+      holder: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    baseToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    counts(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    deposit(
+      _token: PromiseOrValue<string>,
+      _amount: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    depositOn(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    depositTokens(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    disableToken(
+      _token: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    disableWantToken(
+      _wantToken: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    enableToken(
+      _token: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    enableWantToken(
+      _wantToken: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    getRoleAdmin(
+      role: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getRoleMember(
+      role: PromiseOrValue<BytesLike>,
+      index: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getRoleMemberCount(
+      role: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getTotalValue(
+      wantToken: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getValueOfTokensForBaseToken(
+      wantToken: PromiseOrValue<string>,
+      inputAmount: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getValueOfTokensForOneBaseToken(
+      wantToken: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    grantRole(
+      role: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    hasRole(
+      role: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    initialize(
+      _baseToken: PromiseOrValue<string>,
+      _governance: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    isStrategyInUse(
+      _strategy: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    isSwapper(
+      _swapper: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    isTokenInAnyVault(
+      _token: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    isTokenInVault(
+      _token: PromiseOrValue<string>,
+      _vault: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    isVaultInUse(
+      _vault: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    isWantTokenSwappable(
+      _token: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    payout(
+      wantToken: PromiseOrValue<string>,
+      inputAmount: PromiseOrValue<BigNumberish>,
+      outputAmountMin: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    payoutOn(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    payoutRaw(
+      inputAmount: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    reassignTokenStrategy(
+      _token: PromiseOrValue<string>,
+      _strategy: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    recover(
+      token: PromiseOrValue<string>,
+      receiver: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    removeStrategy(
+      _strategy: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    removeSwapper(
+      _swapper: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    removeToken(
+      _token: PromiseOrValue<string>,
+      _receiver: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    removeVault(
+      _vault: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    removeWantToken(
+      _wantToken: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    renameWantToken(
+      _wantToken: PromiseOrValue<string>,
+      _name: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    renounceRole(
+      role: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    revokeRole(
+      role: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setDepositOn(
+      enabled: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setPayoutOn(
+      enabled: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    shareByAmountScaled(
+      amount: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    supportsInterface(
+      interfaceId: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    swappers(
+      arg0: PromiseOrValue<string>,
+      arg1: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    totalSupplyBaseToken(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    wantTokens(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
   };
 }
