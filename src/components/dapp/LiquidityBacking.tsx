@@ -98,18 +98,23 @@ export const LiquidityBacking = (props: RouteObject) => {
 
     return (
         <div>
-            <h1 className="text-4xl mb-4">Liquidity Backing</h1>
-            <div className="flex flex-col lg:flex-row w-full">
-                <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
-                    <div className="flex mb-6">
-                        <h3 className="text-xl flex-grow mb-3">Total backing</h3>
-                        {stats?.wantTokenData && (
-                            <select onChange={(e) => setActiveWantToken(stats.wantTokenData.find(wantToken => wantToken.address === e.target.value))} className="dark:bg-slate-900 border dark:border-dark-800 dark:text-slate-200 py-1 leading-3">
+            <div className="flex flex-col lg:flex-row items-center mb-8">
+                <h1 className="flex-grow text-4xl mb-4">Liquidity Backing</h1>
+                    {stats?.wantTokenData && (
+                        <div className="flex items-center gap-3">
+                            <p>Show backing in</p>
+                            <select onChange={(e) => setActiveWantToken(stats.wantTokenData.find(wantToken => wantToken.address === e.target.value))} className="dark:bg-slate-900 border dark:border-dark-800 dark:text-slate-200 py-3 leading-3">
                                 {stats.wantTokenData.map(token => {
                                     return <option key={token.address} value={token.address} selected={tokenIsUSDC(token.address)}>{token.info.name}</option>
                                 })}
                             </select>
-                            )}
+                    </div>
+                )}
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl">
+                    <div className="flex mb-6">
+                        <h3 className="text-xl flex-grow mb-3">Total backing</h3>
                     </div>
                     {!loading && totalBacking > 0 && <div className="text-right text-2xl">
                         {totalBacking.toFixed(3)} {activeWantToken.info.name}
@@ -119,7 +124,7 @@ export const LiquidityBacking = (props: RouteObject) => {
                         <div>{backingPerDGNX.toFixed(8)} {activeWantToken.info.name} / DGNX</div>
                     </div>}
                 </div>
-                <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
+                <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl">
                     <div className="flex mb-6">
                         <h3 className="text-xl flex-grow mb-3">Your backing</h3>
                     </div>
@@ -128,7 +133,8 @@ export const LiquidityBacking = (props: RouteObject) => {
                         : <p className="text-center">Connect wallet to see your backing</p>
                     }
                 </div>
-                <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
+
+                <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl">
                     <h3 className="text-xl mb-3">Backing breakdown</h3>
                     <div className="flex flex-col">
                         {stats?.vaultData
@@ -144,10 +150,19 @@ export const LiquidityBacking = (props: RouteObject) => {
                         }
                     </div>
                 </div>
-            </div>
-            <h1 className="text-2xl my-4">Burn DGNX for backing</h1>
-            <div className="flex flex-col lg:flex-row w-full">
-                <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
+
+                <div className="lg:col-span-2 dark:bg-slate-800 bg-gray-100 p-6 rounded-xl">
+                    <div className="flex mb-6">
+                        <h3 className="text-xl flex-grow mb-3">Your backing</h3>
+                    </div>
+                    {isConnected && baseTokenBalance
+                        ? <WalletBacking amountBaseTokens={BNtoNumber(baseTokenBalance, baseTokenDecimals)} backingValue={addressBacking} wantTokenName={activeWantToken?.info?.name} />
+                        : <p className="text-center">Connect wallet to see your backing</p>
+                    }
+                </div>
+
+                <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl">
+                    <h1 className="text-2xl my-4">Burn DGNX for backing</h1>
                     <BurnForBacking
                         baseTokenAmount={baseTokenBalance}
                         baseTokenDecimals={baseTokenDecimals}

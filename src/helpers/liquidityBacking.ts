@@ -88,6 +88,8 @@ const getVaultsData = async (provider: ethers.providers.Provider, controller: Co
         }
     }))
 
+    console.log(vaultDataIncNames)
+
     return vaultDataIncNames;
 };
 
@@ -99,6 +101,9 @@ const getVaultsData = async (provider: ethers.providers.Provider, controller: Co
 export const getStats = async (provider: ethers.providers.Provider) => {
     const controller = Controller__factory.connect(process.env.NEXT_PUBLIC_CONTROLLER_ADDRESS, provider);
     const counts = await controller.counts();
+
+    const supply = await controller.totalSupplyBaseToken()
+    console.log({supply: supply.toString()})
 
     const [vaultData, wantTokenData] = await Promise.all([
         getVaultsData(provider, controller, Number(counts.countVaults)),
