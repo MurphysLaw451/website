@@ -7,6 +7,7 @@ import { useAccount } from "wagmi";
 import BigNumber from "bignumber.js";
 import { BNtoNumber } from "../../helpers/number";
 import { BurnForBacking } from "./elements/BurnForBacking";
+import { Chart } from "./elements/Chart";
 
 const provider = new ethers.providers.JsonRpcProvider('https://avalanche-mainnet-fork.mastertoco.de/', {
     name: 'avalanche',
@@ -151,14 +152,8 @@ export const LiquidityBacking = (props: RouteObject) => {
                     </div>
                 </div>
 
-                <div className="lg:col-span-2 dark:bg-slate-800 bg-gray-100 p-6 rounded-xl">
-                    <div className="flex mb-6">
-                        <h3 className="text-xl flex-grow mb-3">Your backing</h3>
-                    </div>
-                    {isConnected && baseTokenBalance
-                        ? <WalletBacking amountBaseTokens={BNtoNumber(baseTokenBalance, baseTokenDecimals)} backingValue={addressBacking} wantTokenName={activeWantToken?.info?.name} />
-                        : <p className="text-center">Connect wallet to see your backing</p>
-                    }
+                <div className="lg:col-span-2 dark:bg-slate-800 bg-gray-100 p-6 rounded-xl h-[30em]">
+                    <Chart wantToken={activeWantToken} />
                 </div>
 
                 <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl">
