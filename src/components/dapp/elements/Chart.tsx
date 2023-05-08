@@ -161,7 +161,7 @@ export const Chart = (props: {
         tv.onChartReady(() => {
             tv.chart(0).createStudy(backingChartName, false, true);
             tv.createDropdown({
-                title: 'Price',
+                title: 'Price symbol',
                 align: 'left',
                 items: [
                     {
