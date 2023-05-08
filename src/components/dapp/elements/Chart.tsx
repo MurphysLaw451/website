@@ -1,9 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { setTimeout } from 'timers';
 import { datafeed } from '../../../helpers/datafeed';
 import clsx from 'clsx';
 import { CustomIndicator, IPineStudyResult, LibraryPineStudy, OhlcStudyPlotStyle, RawStudyMetaInfoId } from '../../../../public/charting_library/charting_library';
 import { StudyPlotType } from '../../../../public/charting_library/charting_library';
+import { BACKING_TYPE, CHART_PRICE_MODE } from '../../../types';
 
 const applyOverrides = (tv: any) => {
     try {
@@ -15,19 +16,31 @@ const applyOverrides = (tv: any) => {
     } catch (e) { }
 }
 
+
 export const Chart = (props: {
     wantToken: { decimals: number; address: string; info: { name: string }},
     className?: string 
 }) => {
+    const [backingType, setBackingType] = useState<BACKING_TYPE>(BACKING_TYPE.TOTAL)
+    const [priceMode, setPriceMode] = useState<CHART_PRICE_MODE>(CHART_PRICE_MODE.USD)
+
     useEffect(() => {
         if (!props?.wantToken?.info?.name) {
             return;
         }
+
+        let backingName = 'Total backing'
+        if (backingType === BACKING_TYPE.ONE) {
+            backingName = 'Backing per 1 DGNX'
+        }
+
+        const backingChartName = `${backingName} in ${props.wantToken.info.name}`
+
         // @ts-ignore
         const tv = new TradingView.widget({
             // debug: true,
 
-            symbol: 'DGNX/USD', // default symbol
+            symbol: `DGNX/${priceMode}`, // default symbol
             // @ts-ignore
             interval: '1', // default interval
             autosize: true, // displays the chart in the fullscreen mode
@@ -44,12 +57,12 @@ export const Chart = (props: {
             custom_indicators_getter: PineJS => {
                 return Promise.resolve<CustomIndicator[]>([
                     {
-                        name: `Backing in ${props.wantToken.info.name}`,
+                        name: backingChartName,
                         metainfo: {
                             _metainfoVersion: 51,
                             id: 'Backing@tv-basicstudies-1' as RawStudyMetaInfoId,
-                            description: `Backing in ${props.wantToken.info.name}`,
-                            shortDescription: `Backing in ${props.wantToken.info.name}`,
+                            description: backingChartName,
+                            shortDescription: backingChartName,
                             format: {
                                 type: 'inherit'
                             },
@@ -108,7 +121,7 @@ export const Chart = (props: {
                                 this._context = context;
                                 this._input = inputCallback;
 
-                                const symbol = `BACKING/${props.wantToken.info.name}`;
+                                const symbol = `BACKING/${backingType}/${props.wantToken.info.name}`;
                                 this._context.new_sym(
                                     symbol,
                                     PineJS.Std.period(this._context)
@@ -146,7 +159,43 @@ export const Chart = (props: {
         });
 
         tv.onChartReady(() => {
-            tv.chart(0).createStudy(`Backing in ${props.wantToken.info.name}`, false, true);
+            tv.chart(0).createStudy(backingChartName, false, true);
+            tv.createDropdown({
+                title: 'Price',
+                align: 'left',
+                items: [
+                    {
+                        title: 'DGNX/USD',
+                        onSelect: () => {
+                            setPriceMode(CHART_PRICE_MODE.USD)
+                        }
+                    },
+                    {
+                        title: 'DGNX/AVAX',
+                        onSelect: () => {
+                            setPriceMode(CHART_PRICE_MODE.AVAX)
+                        }
+                    }
+                ]
+            })
+            tv.createDropdown({
+                title: 'Backing',
+                align: 'left',
+                items: [
+                    {
+                        title: 'Total backing',
+                        onSelect: () => {
+                            setBackingType(BACKING_TYPE.TOTAL)
+                        }
+                    },
+                    {
+                        title: 'Backing per DGNX',
+                        onSelect: () => {
+                            setBackingType(BACKING_TYPE.ONE)
+                        }
+                    }
+                ]
+            })
         })
 
         // Set the bg color in a couple of steps so it always works regarding of the user internet speed
@@ -169,7 +218,7 @@ export const Chart = (props: {
         setTimeout(() => {
             applyOverrides(tv)
         }, 7000)
-    }, [props.wantToken])
+    }, [props.wantToken, backingType, priceMode])
 
     return (
         <div

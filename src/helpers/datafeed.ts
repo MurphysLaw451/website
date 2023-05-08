@@ -85,11 +85,10 @@ export const datafeed = () => ({
     console.log('[getBars]: Method call', symbolInfo, resolution, periodParams)
 
     fetch(
-      `https://d1r85dh2p10srm.cloudfront.net/getData/avalanche/0x51e48670098173025c477d9aa3f0eff7bf9f7812/${periodParams.to}/${resolutionToTimeframe[resolution]}/${periodParams.countBack}`
+      `${process.env.NEXT_PUBLIC_BACKING_API_ENDPOINT}/getData/avalanche/0x51e48670098173025c477d9aa3f0eff7bf9f7812/${periodParams.to}/${resolutionToTimeframe[resolution]}/${periodParams.countBack}`
     )
       .then((x) => x.json())
       .then((data: DatafeedResult) => {
-        console.log(symbolInfo)
         // Get data based on symbol.
         let bars: IOHLCV[]
 
@@ -112,11 +111,18 @@ export const datafeed = () => ({
             volume: 0,
           }))
         } else if (symbolInfo.name.includes('BACKING/')) {
-          const wantTokenName = symbolInfo.name.split('/')[1]
+          const backingtype = symbolInfo.name.split('/')[1]
+
+          let backingKey = 'totalBacking'
+          if (backingtype === 'ONE') {
+            backingKey = 'oneTokenBacking'
+          }
+
+          const wantTokenName = symbolInfo.name.split('/')[2]
           bars = data.bars.map((bar) => {
             const backingOhlc = bar.wantTokens.find(
               (wantToken) => wantToken.symbol === wantTokenName
-            ).totalBacking
+            )[backingKey]
             return {
               time: bar.timestamp * 1000,
               open: backingOhlc.o,
