@@ -223,7 +223,7 @@ const WalletInfo = (props: any) => {
                     </div>
                     <div className="flex">
                         <div className="flex-grow">Stablecoins</div>
-                        <div>${showAmount(walletData, ['0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E'])}</div>
+                        <div>${showAmount(walletData, ['0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E', '0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7'])}</div>
                     </div>
                 </>
                     )
@@ -234,7 +234,7 @@ const WalletInfo = (props: any) => {
 }
 
 const getDgnxAmount = async (address: string) => {
-    const dataRaw = await fetch(`https://eoyuad8uvibmehw.m.pipedream.net?module=account&action=tokenbalance&contractaddress=0x51e48670098173025c477d9aa3f0eff7bf9f7812&address=${address}`)
+    const dataRaw = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/snowtrace?module=account&action=tokenbalance&contractaddress=0x51e48670098173025c477d9aa3f0eff7bf9f7812&address=${address}`)
     const data = await dataRaw.json()
 
     if (data.message !== 'OK') {
