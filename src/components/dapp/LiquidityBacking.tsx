@@ -114,7 +114,7 @@ export const LiquidityBacking = (props: RouteObject) => {
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
                 <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl">
-                    <div className="flex mb-6">
+                    <div className="flex">
                         <h3 className="text-xl flex-grow mb-3">Total backing</h3>
                     </div>
                     {!loading && totalBacking > 0 && <div className="text-right text-2xl">
@@ -126,7 +126,7 @@ export const LiquidityBacking = (props: RouteObject) => {
                     </div>}
                 </div>
                 <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl">
-                    <div className="flex mb-6">
+                    <div className="flex">
                         <h3 className="text-xl flex-grow mb-3">Your backing</h3>
                     </div>
                     {isConnected && baseTokenBalance
@@ -153,18 +153,23 @@ export const LiquidityBacking = (props: RouteObject) => {
                 </div>
 
                 <div className="lg:col-span-2 dark:bg-slate-800 bg-gray-100 p-6 rounded-xl h-[30em]">
-                    <Chart wantToken={activeWantToken} />
+                    <Chart wantTokenName={activeWantToken?.info?.name} />
                 </div>
 
                 <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl">
                     <h1 className="text-2xl my-4">Burn DGNX for backing</h1>
-                    <BurnForBacking
-                        baseTokenAmount={baseTokenBalance}
-                        baseTokenDecimals={baseTokenDecimals}
-                        activeWantToken={activeWantToken}
-                        provider={provider}
-                        forceRefetch={forceRefetch}
-                    />
+                    <p className="mb-3">How much DGNX do you want to burn?</p>
+                    <div className="flex justify-center">
+                        <div>
+                            <BurnForBacking
+                                baseTokenAmount={baseTokenBalance}
+                                baseTokenDecimals={baseTokenDecimals}
+                                activeWantToken={activeWantToken}
+                                provider={provider}
+                                forceRefetch={forceRefetch}
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react"
 import { HiOutlineExternalLink } from "react-icons/hi"
 import { RouteObject } from "react-router-dom"
 import { Button } from "../Button"
+import { Chart } from "./elements/Chart"
+import BigNumber from "bignumber.js"
 
 const numberFormatter2 = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 const numberFormatter4 = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 })
@@ -65,130 +67,6 @@ const getAddressData = async (address: string, retryNum: number = 0) => {
             return getAddressData(address, retryNum + 1)
         }
     }
-}
-
-const TradingViewWidget = () => {
-    let tvScriptLoadingPromise;
-    const onLoadScriptRef = useRef<any>();
-
-    const { theme } = useTheme()
-
-    useEffect(
-        () => {
-            onLoadScriptRef.current = createWidget;
-
-            if (!tvScriptLoadingPromise) {
-                tvScriptLoadingPromise = new Promise((resolve) => {
-                    const script = document.createElement('script');
-                    script.id = 'tradingview-widget-loading-script';
-                    script.src = 'https://s3.tradingview.com/tv.js';
-                    script.type = 'text/javascript';
-                    script.onload = resolve;
-
-                    document.head.appendChild(script);
-                });
-            }
-
-            tvScriptLoadingPromise.then(() => onLoadScriptRef.current && onLoadScriptRef.current());
-
-            return () => onLoadScriptRef.current = null;
-
-            function createWidget() {
-                if (document.getElementById('tradingview_4246e') && 'TradingView' in window) {
-                    // @ts-ignore
-                    new window.TradingView.MediumWidget({
-                        symbols: [["DGNX / WAVAX", "DGNXWAVAX|12M"]],
-                        chartOnly: false,
-                        width: "100%",
-                        height: "100%",
-                        locale: "en",
-                        colorTheme: theme === 'light' ? 'light' : 'dark',
-                        autosize: true,
-                        showVolume: false,
-                        hideDateRanges: false,
-                        hideMarketStatus: false,
-                        hideSymbolLogo: false,
-                        scalePosition: "right",
-                        scaleMode: "Normal",
-                        fontFamily: "-apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif",
-                        fontSize: "10",
-                        noTimeScale: true,
-                        valuesTracking: "1",
-                        changeMode: "price-and-percent",
-                        chartType: "candlesticks",
-                        upColor: "#22ab94",
-                        downColor: "#f7525f",
-                        borderUpColor: "#22ab94",
-                        borderDownColor: "#f7525f",
-                        wickUpColor: "#22ab94",
-                        wickDownColor: "#f7525f",
-                        container_id: "tradingview_4246e",
-                        backgroundColor: theme === 'light' ? '#F3F4F6' : '#20293A'
-                    });
-                }
-
-                if (document.getElementById('tradingview_4246f') && 'TradingView' in window) {
-                    // @ts-ignore
-                    new window.TradingView.MediumWidget({
-                        symbols: [
-                            "DGNXWAVAX * COINBASE:AVAXUSD|12M"
-                        ],
-                        chartOnly: false,
-                        width: "100%",
-                        height: "100%",
-                        locale: "en",
-                        colorTheme: theme === 'light' ? 'light' : 'dark',
-                        autosize: true,
-                        showVolume: false,
-                        hideDateRanges: false,
-                        hideMarketStatus: false,
-                        hideSymbolLogo: false,
-                        scalePosition: "right",
-                        scaleMode: "Normal",
-                        fontFamily: "-apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif",
-                        fontSize: "10",
-                        noTimeScale: true,
-                        valuesTracking: "1",
-                        changeMode: "price-and-percent",
-                        chartType: "candlesticks",
-                        upColor: "#22ab94",
-                        downColor: "#f7525f",
-                        borderUpColor: "#22ab94",
-                        borderDownColor: "#f7525f",
-                        wickUpColor: "#22ab94",
-                        wickDownColor: "#f7525f",
-                        container_id: "tradingview_4246f",
-                        backgroundColor: theme === 'light' ? '#F3F4F6' : '#20293A'
-                    });
-                }
-            }
-        },
-        [theme]
-    );
-
-    return (
-        <div className="flex flex-col lg:flex-row w-full">
-            <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full h-[500px]">
-                <h3 className="text-xl mb-4">DGNX / wAVAX chart</h3>
-                <div className='tradingview-widget-container'>
-                    <div id='tradingview_4246e' />
-                    <div className="tradingview-widget-copyright">
-                        <a href="https://www.tradingview.com/" rel="noreferrer" target="_blank">tradingview</a>
-                    </div>
-                </div>
-            </div>
-            <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full h-[500px]">
-                <h3 className="text-xl mb-4">DGNX / USD chart</h3>
-                <div className='tradingview-widget-container'>
-                    <div id='tradingview_4246f' />
-                    <div className="tradingview-widget-copyright">
-                        <a href="https://www.tradingview.com/" rel="noreferrer" target="_blank">tradingview</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-    
 }
 
 const WalletInfo = (props: any) => {
@@ -265,6 +143,17 @@ const TxnsCount = (props: { item: { buys: number, sells: number } }) => {
     )
 }
 
+const getBackingAmount = async () => {
+    const to = Math.floor(new Date().getTime() / 1000)
+    const resultRaw = await fetch(`${process.env.NEXT_PUBLIC_BACKING_API_ENDPOINT}/getData/avalanche/0x51e48670098173025c477d9aa3f0eff7bf9f7812/${to}/M/1`)
+    const result = await resultRaw.json();
+    const backingUsd= result.bars?.[0].wantTokens.find(
+        (wantToken) => wantToken.symbol === 'USDC.e'
+    )
+
+    return new BigNumber(backingUsd.oneTokenBackingValue).div(new BigNumber(10).pow(backingUsd.decimals)).toNumber()
+}
+
 export const Dashboard = (props: RouteObject) => {
     const [dexData, setDexData] = useState<any>()
 
@@ -286,18 +175,14 @@ export const Dashboard = (props: RouteObject) => {
         getDgnxAmount('0x8a0e3264da08bf999aff5a50aabf5d2dc89fab79').then(amount => setDisburserAmount(amount as number))
         getDgnxAmount('0x2c7d8bb6aba4fff56cddbf9ea47ed270a10098f7').then(amount => setLockerAmount(amount as number))
 
-        getAddressData('0x31CE1540414361cFf99e83a05e4ad6d35D425202').then(data => {
-            const fiatAvax = showFiatAmount(data, ['0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7'], true) as number
-            const fiatUsd = showFiatAmount(data, ['0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E'], true) as number
-            setBackingAmountUsd(fiatAvax + fiatUsd)
-        })
+        getBackingAmount().then(setBackingAmountUsd)
     }, [])
 
     return (
         <div>
             <h1 className="text-4xl mb-4">Dashboard</h1>
-            <div className="flex flex-col lg:flex-row w-full">
-                <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl">
                     <h3 className="text-xl">TraderJoe</h3>
                     {dexData
                         ? (
@@ -317,7 +202,7 @@ export const Dashboard = (props: RouteObject) => {
                         : '...'
                     }
                 </div>
-                <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
+                <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl">
                     <h3 className="text-xl">Pangolin</h3>
                     {dexData
                         ? (
@@ -337,19 +222,19 @@ export const Dashboard = (props: RouteObject) => {
                         : '...'
                     }
                 </div>
-                <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
+                <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl">
                     <h3 className="text-xl mb-3">Ø Averages</h3>
                     {dexData ? <div className="flex">
                         <div className="flex-grow">Market cap</div>
-                        <div>{(burnAmount && disburserAmount && lockerAmount) ? numberFormatter2.format((21000000 - burnAmount - disburserAmount - lockerAmount) * parseFloat(dexData.traderJoe.priceUsd)) : '...'}</div>
+                        <div>${(burnAmount && disburserAmount && lockerAmount) ? numberFormatter2.format((21000000 - burnAmount - disburserAmount - lockerAmount) * parseFloat(dexData.traderJoe.priceUsd)) : '...'}</div>
                     </div> : null}
                     {dexData ? <div className="flex">
                         <div className="flex-grow">Market cap FDV</div>
-                        <div>{burnAmount ? numberFormatter2.format((21000000 - burnAmount) * parseFloat(dexData.traderJoe.priceUsd)) : '...'}</div>
+                        <div>${burnAmount ? numberFormatter2.format((21000000 - burnAmount) * parseFloat(dexData.traderJoe.priceUsd)) : '...'}</div>
                     </div> : null}
                     {dexData ? <div className="flex">
                         <div className="flex-grow">Market price</div>
-                        <div>{numberFormatter4.format((dexData.traderJoe.liquidity.usd * parseFloat(dexData.traderJoe.priceUsd) + dexData.pangolin.liquidity.usd * parseFloat(dexData.pangolin.priceUsd)) / (dexData.traderJoe.liquidity.usd + dexData.pangolin.liquidity.usd))}</div>
+                        <div>${numberFormatter4.format((dexData.traderJoe.liquidity.usd * parseFloat(dexData.traderJoe.priceUsd) + dexData.pangolin.liquidity.usd * parseFloat(dexData.pangolin.priceUsd)) / (dexData.traderJoe.liquidity.usd + dexData.pangolin.liquidity.usd))}</div>
                     </div> : null}
                     {dexData ? <div className="flex">
                         <div className="flex-grow">Native price</div>
@@ -357,14 +242,22 @@ export const Dashboard = (props: RouteObject) => {
                     </div> : null}
                     {dexData ? <div className="flex">
                         <div className="flex-grow">Liquidity backing price</div>
-                        <div>${(backingAmountUsd && burnAmount ? numberFormatter4.format(backingAmountUsd / (21000000 - burnAmount)) : '...')}</div>
+                        <div>${backingAmountUsd && numberFormatter4.format(backingAmountUsd)}</div>
                     </div> : null}
                 </div>
             </div>
-            <TradingViewWidget />
 
-            <div className="flex flex-col lg:flex-row w-full">
-                <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
+            <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl lg:col-span-3 h-[600px] gap-8 mb-8">
+                <div className="flex flex-col h-full">
+                    <h3 className="text-xl">Price & Backing</h3>
+                    <div className="flex-grow">
+                        <Chart wantTokenName="USDC.e" />
+                    </div>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl">
                     <h3 className="text-xl mb-3">Supply</h3>
                     {/* <div className="flex">
                         <div className="flex-grow">Minted supply</div>
@@ -391,7 +284,7 @@ export const Dashboard = (props: RouteObject) => {
                         <div>{lockerAmount? numberFormatter2.format(lockerAmount) : '...'}</div>
                     </div>
                 </div>
-                <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
+                <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl">
                     <h3 className="text-xl mb-3">Volume 24h</h3>
                     {dexData ? <div className="flex">
                         <div className="flex-grow">TraderJoe</div>
@@ -416,8 +309,8 @@ export const Dashboard = (props: RouteObject) => {
                 </div>
             </div>
 
-            <div className="flex flex-col lg:flex-row w-full">
-                <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl">
                     <h3 className="text-xl">Price change</h3>
                     {dexData ? <table className="min-w-full">
                         <tbody className="">
@@ -449,7 +342,7 @@ export const Dashboard = (props: RouteObject) => {
                         </tbody>
                     </table> : null}
                 </div>
-                <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
+                <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl">
                     <h3 className="text-xl">Transactions (buys / sells)</h3>
                     {dexData ? <table className="min-w-full">
                         <tbody className="">
@@ -482,21 +375,15 @@ export const Dashboard = (props: RouteObject) => {
                     </table> : null}
                 </div>
             </div>
-            
-            <div className="flex flex-col lg:flex-row w-full">
-                <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl">
                     <WalletInfo name="Marketing" address="0x16eF18E42A7d72E52E9B213D7eABA269B90A4643" />
                 </div>
-                <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
-                    <WalletInfo name="Liquidity Backing" address="0x31CE1540414361cFf99e83a05e4ad6d35D425202" />
-                </div>
-            </div>
-
-            <div className="flex flex-col lg:flex-row w-full">
-                <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
+                <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl">
                     <WalletInfo name="Platform" address="0xcA01A9d36F47561F03226B6b697B14B9274b1B10" />
                 </div>
-                <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
+                <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl">
                     <h3 className="text-xl">Burnt</h3>
                     {burnAmount && dexData
                         ? (
