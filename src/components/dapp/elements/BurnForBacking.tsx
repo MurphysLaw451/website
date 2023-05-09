@@ -142,7 +142,6 @@ export const BurnForBacking = (props: {
 
     return (
         <>
-            <p className="mb-3">How much DGNX do you want to burn?</p>
             <div className="inline-block mb-3 py-6">
                 {!showSlippage && <p className="text-xs text-right">
                     Slippage:{' '}

@@ -5,27 +5,30 @@ import clsx from 'clsx';
 import { CustomIndicator, IPineStudyResult, LibraryPineStudy, OhlcStudyPlotStyle, RawStudyMetaInfoId } from '../../../../public/charting_library/charting_library';
 import { StudyPlotType } from '../../../../public/charting_library/charting_library';
 import { BACKING_TYPE, CHART_PRICE_MODE } from '../../../types';
+import { useTheme } from 'next-themes';
 
-const applyOverrides = (tv: any) => {
+const applyOverrides = (tv: any, bgColor: string) => {
     try {
         tv?.applyOverrides?.({
             // @ts-ignore
             'paneProperties.backgroundType': "solid",
-            "paneProperties.background": "#1e293b"
+            "paneProperties.background": bgColor
         })
     } catch (e) { }
 }
 
 
 export const Chart = (props: {
-    wantToken: { decimals: number; address: string; info: { name: string }},
+    wantTokenName: string,
     className?: string 
 }) => {
     const [backingType, setBackingType] = useState<BACKING_TYPE>(BACKING_TYPE.TOTAL)
     const [priceMode, setPriceMode] = useState<CHART_PRICE_MODE>(CHART_PRICE_MODE.USD)
 
+    const { theme } = useTheme()
+
     useEffect(() => {
-        if (!props?.wantToken?.info?.name) {
+        if (!props?.wantTokenName) {
             return;
         }
 
@@ -34,7 +37,9 @@ export const Chart = (props: {
             backingName = 'Backing per 1 DGNX'
         }
 
-        const backingChartName = `${backingName} in ${props.wantToken.info.name}`
+        const backingChartName = `${backingName} in ${props.wantTokenName}`
+
+        const bgColor = theme === 'light' ? '#F3F4F6' : '#1e293b'
 
         // @ts-ignore
         const tv = new TradingView.widget({
@@ -44,13 +49,13 @@ export const Chart = (props: {
             // @ts-ignore
             interval: '1', // default interval
             autosize: true, // displays the chart in the fullscreen mode
-            theme: 'Dark',
+            theme: theme === 'light' ? 'Light' : 'Dark',
             disabled_features: ["header_symbol_search", "symbol_search_hot_key", "header_compare"],
-            custom_css_url: '/custom_chart.css',
+            custom_css_url: theme === 'light' ? '/custom_chart_light.css' : '/custom_chart.css',
             custom_font_family: '\'Space Mono\'',
-            toolbar_bg: '#1e293b',
+            toolbar_bg: bgColor,
             layoutType: '2h',
-            loading_screen: { backgroundColor: "#1e293b" },
+            loading_screen: { backgroundColor: bgColor },
             datafeed: datafeed(),
             library_path: '/charting_library/',
             container: 'tv_chart_container',
@@ -121,7 +126,7 @@ export const Chart = (props: {
                                 this._context = context;
                                 this._input = inputCallback;
 
-                                const symbol = `BACKING/${backingType}/${props.wantToken.info.name}`;
+                                const symbol = `BACKING/${backingType}/${props.wantTokenName}`;
                                 this._context.new_sym(
                                     symbol,
                                     PineJS.Std.period(this._context)
@@ -200,25 +205,25 @@ export const Chart = (props: {
 
         // Set the bg color in a couple of steps so it always works regarding of the user internet speed
         setTimeout(() => {
-            applyOverrides(tv)
+            applyOverrides(tv, bgColor)
         }, 200)
 
         setTimeout(() => {
-            applyOverrides(tv)
+            applyOverrides(tv, bgColor)
         }, 800)
 
         setTimeout(() => {
-            applyOverrides(tv)
+            applyOverrides(tv, bgColor)
         }, 1500)
 
         setTimeout(() => {
-            applyOverrides(tv)
+            applyOverrides(tv, bgColor)
         }, 3000)
 
         setTimeout(() => {
-            applyOverrides(tv)
+            applyOverrides(tv, bgColor)
         }, 7000)
-    }, [props.wantToken, backingType, priceMode])
+    }, [props.wantTokenName, backingType, priceMode, theme])
 
     return (
         <div
