@@ -39,8 +39,8 @@ const getVaultData = async (provider: ethers.providers.Provider, controller: Con
     const vault = Vault__factory.connect(vaultAddress, provider);
 
     // Get token info and amount of tokens in the vault
-    const amountOfTokensInVault = vault.countAssets;
-    const tokensIndices = Array.from(Array(amountOfTokensInVault).keys());
+    const amountOfTokensInVault: BigNumber = await vault.countAssets();
+    const tokensIndices = Array.from(Array(amountOfTokensInVault.toNumber()).keys());
     const tokenInfo = await Promise.all(tokensIndices.map(async (index) => {
         const tokenAddress: string = await vault.allAssets(index);
         const balance: BigNumber = await vault.balanceOf(tokenAddress);
@@ -62,7 +62,9 @@ const getVaultData = async (provider: ethers.providers.Provider, controller: Con
 const getVaultsData = async (provider: ethers.providers.Provider, controller: Controller, vaultCount: number) => {
     const vaultsIndices = Array.from(Array(vaultCount).keys());
     const vaultData = (await Promise.all(vaultsIndices.map(async (index) => {
-        return getVaultData(provider, controller, index)
+        const data = await getVaultData(provider, controller, index);
+        console.log({data});
+        return data;
     }))).flat().reduce((acc, val) => {
         if (!acc[val.tokenAddress]) {
             acc[val.tokenAddress] = 0n;
