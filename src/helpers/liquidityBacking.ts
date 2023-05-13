@@ -63,7 +63,6 @@ const getVaultsData = async (provider: ethers.providers.Provider, controller: Co
     const vaultsIndices = Array.from(Array(vaultCount).keys());
     const vaultData = (await Promise.all(vaultsIndices.map(async (index) => {
         const data = await getVaultData(provider, controller, index);
-        console.log({data});
         return data;
     }))).flat().reduce((acc, val) => {
         if (!acc[val.tokenAddress]) {
@@ -90,8 +89,6 @@ const getVaultsData = async (provider: ethers.providers.Provider, controller: Co
         }
     }))
 
-    console.log(vaultDataIncNames)
-
     return vaultDataIncNames;
 };
 
@@ -105,7 +102,6 @@ export const getStats = async (provider: ethers.providers.Provider) => {
     const counts = await controller.counts();
 
     const supply = await controller.totalSupplyBaseToken()
-    console.log({supply: supply.toString()})
 
     const [vaultData, wantTokenData] = await Promise.all([
         getVaultsData(provider, controller, Number(counts.countVaults)),

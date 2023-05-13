@@ -142,7 +142,7 @@ export const BurnForBacking = (props: {
 
     return (
         <>
-            <div className="inline-block mb-3 py-6">
+            <div className="mb-3 py-6">
                 {!showSlippage && <p className="text-xs text-right">
                     Slippage:{' '}
                     <span
@@ -165,8 +165,9 @@ export const BurnForBacking = (props: {
                     </span>
                 </p>}
                 <input
-                    className="dark:bg-slate-900 border dark:border-dark-800 dark:text-slate-200 py-1 leading-3 w-64"
+                    className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none dark:bg-slate-900 border dark:border-dark-800 dark:text-slate-200 text-2xl py-2 my-2 leading-3 w-full"
                     type="number"
+                    placeholder="0"
                     onChange={(e) => setAmountToBurn(BigNumber(10).pow(props.baseTokenDecimals).times(BigNumber(parseFloat(e.target.value || '0'))))}
                     ref={tokensToBurnInputRef}
                 />
@@ -187,13 +188,13 @@ export const BurnForBacking = (props: {
                     <>
                         {allowance.isGreaterThanOrEqualTo(amountToBurn)
                             ? <button
-                                className="bg-orange-500 hover:bg-orange-400 text-white dark:bg-orange-600 py-1 px-3 rounded-lg dark:hover:bg-orange-700 flex justify-end mr-0 ml-auto my-3"
+                                className="bg-orange-500 hover:bg-orange-400 text-white dark:bg-orange-600 py-1 px-3 rounded-lg dark:hover:bg-orange-700 flex w-full p-2 text-2xl justify-center my-3"
                                 onClick={() => execBurn()}
                             >
                                 {txRunning ? <Spinner className="" /> : 'Burn'}
                             </button>
                             : <button
-                                className="bg-orange-500 hover:bg-orange-400 text-white dark:bg-orange-600 py-1 px-3 rounded-lg dark:hover:bg-orange-700 flex justify-end mr-0 ml-auto my-3"
+                                className="bg-orange-500 hover:bg-orange-400 text-white dark:bg-orange-600 py-1 px-3 rounded-lg dark:hover:bg-orange-700 flex w-full p-2 text-2xl justify-center my-3"
                                 onClick={async () => {
                                     setTxRunning(true);
                                     await approveBaseToken(signer, ethers.BigNumber.from(amountToBurn.toFixed()))

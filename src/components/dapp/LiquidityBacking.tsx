@@ -109,8 +109,8 @@ export const LiquidityBacking = (props: RouteObject) => {
                                     return <option key={token.address} value={token.address} selected={tokenIsUSDC(token.address)}>{token.info.name}</option>
                                 })}
                             </select>
-                    </div>
-                )}
+                        </div>
+                    )}
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
                 <div className="dark:bg-slate-800 bg-gray-100 p-6 rounded-xl">
@@ -160,7 +160,7 @@ export const LiquidityBacking = (props: RouteObject) => {
                     <h1 className="text-2xl my-4">Burn DGNX for backing</h1>
                     <p className="mb-3">How much DGNX do you want to burn?</p>
                     <div className="flex justify-center">
-                        <div>
+                        <div className="flex-grow">
                             <BurnForBacking
                                 baseTokenAmount={baseTokenBalance}
                                 baseTokenDecimals={baseTokenDecimals}
