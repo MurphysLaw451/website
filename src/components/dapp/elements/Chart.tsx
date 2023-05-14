@@ -47,7 +47,7 @@ export const Chart = (props: {
 
             symbol: `DGNX/${priceMode}`, // default symbol
             // @ts-ignore
-            interval: '1', // default interval
+            interval: '1D', // default interval
             autosize: true, // displays the chart in the fullscreen mode
             theme: theme === 'light' ? 'Light' : 'Dark',
             disabled_features: ["header_symbol_search", "symbol_search_hot_key", "header_compare"],
@@ -124,6 +124,8 @@ export const Chart = (props: {
                         constructor: function() {
                             this.init = function(context, inputCallback) {
                                 this._context = context;
+                                console.log(this._context)
+                                console.log(PineJS.Std.period(this._context))
                                 this._input = inputCallback;
 
                                 const symbol = `BACKING/${backingType}/${props.wantTokenName}`;
@@ -144,18 +146,6 @@ export const Chart = (props: {
                                 var l = PineJS.Std.low(this._context);
                                 var c = PineJS.Std.close(this._context);
                                 return [o,h,l,c];
-
-                                // console.log(context)
-
-                                // var direction = Math.sign(Math.random() - 0.5);
-                                // var value = Math.random() * 200;
-
-                                // var open  = value + 8 * direction;
-                                // var high = value + 15;
-                                // var low = value - 15;
-                                // var close = value - 8 * direction;
-
-                                // return [open, high, low, close];
                             }
                         }
                     }

@@ -9,7 +9,6 @@ plugins:
   - serverless-api-cloudfront
 
 custom:
-  secrets: ${ssm:/aws/reference/secretsmanager/dgnx-website}
   corsAllowedOrigin:
     dev: http://localhost:3000
     staging: http://staging.dgnx.finance.s3-website-eu-west-1.amazonaws.com
