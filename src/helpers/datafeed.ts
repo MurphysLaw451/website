@@ -92,7 +92,7 @@ export const datafeed = () => ({
         let bars: IOHLCV[]
 
         if (symbolInfo.name === 'DGNX/USD') {
-          bars = data.bars.map((bar) => ({
+          bars = data.bars?.map((bar) => ({
             time: bar.timestamp * 1000,
             open: bar.usd.o,
             close: bar.usd.c,
@@ -101,7 +101,7 @@ export const datafeed = () => ({
             volume: 0,
           }))
         } else if (symbolInfo.name === 'DGNX/AVAX') {
-          bars = data.bars.map((bar) => ({
+          bars = data.bars?.map((bar) => ({
             time: bar.timestamp * 1000,
             open: bar.native.o,
             close: bar.native.c,
@@ -134,7 +134,7 @@ export const datafeed = () => ({
         }
 
         setTimeout(() =>
-          onHistoryCallback(bars, { noData: data.bars.length === 0 })
+          onHistoryCallback(bars, { noData: data.bars?.length === 0 })
         )
       })
   },
