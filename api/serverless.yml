@@ -22,7 +22,6 @@ provider:
   runtime: nodejs18.x
 
   environment:
-    DGNX_API_KEY: ${self:custom.secrets.${opt:stage, 'dev'}-DGNX_API_KEY}
     CORS_ALLOWED_ORIGIN: ${self:custom.corsAllowedOrigin.${opt:stage, self:provider.stage}}
 
 functions:
