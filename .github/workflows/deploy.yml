@@ -34,7 +34,7 @@ jobs:
           npm run build
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.DGNX_WEBSITE_AWS_ACCOUNT_ID }}
           aws-secret-access-key: ${{ secrets.DGNX_WEBSITE_AWS_ACCOUNT_KEY }}
