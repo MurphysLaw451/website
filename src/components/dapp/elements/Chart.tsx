@@ -29,7 +29,7 @@ export const Chart = (props: {
 
     useEffect(() => {
         // @ts-ignore
-        if (!props?.wantTokenName || !TradingView) {
+        if (!props?.wantTokenName || typeof TradingView === 'undefined') {
             return;
         }
 
