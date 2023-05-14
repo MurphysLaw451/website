@@ -45,7 +45,7 @@ jobs:
       - name: Deploy API to staging
         run: |
           ./node_modules/serverless/bin/serverless.js config credentials --provider aws --key ${{ secrets.DGNX_WEBSITE_AWS_ACCOUNT_ID }} --secret ${{ secrets.DGNX_WEBSITE_AWS_ACCOUNT_KEY }} --profile dgnx
-          cd api && SNOWTRACE_API_KEY=test ../node_modules/serverless/bin/serverless.js deploy -s staging --force
+          cd api && ../node_modules/serverless/bin/serverless.js deploy -s staging --force --param="SNOWTRACE_API_KEY=${{ secrets.SNOWTRACE_API_KEY }}"
         env:
           SNOWTRACE_API_KEY: test
 
