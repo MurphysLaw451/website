@@ -28,7 +28,8 @@ export const Chart = (props: {
     const { theme } = useTheme()
 
     useEffect(() => {
-        if (!props?.wantTokenName) {
+        // @ts-ignore
+        if (!props?.wantTokenName || !TradingView) {
             return;
         }
 
@@ -213,7 +214,8 @@ export const Chart = (props: {
         setTimeout(() => {
             applyOverrides(tv, bgColor)
         }, 7000)
-    }, [props.wantTokenName, backingType, priceMode, theme])
+        // @ts-ignore
+    }, [props.wantTokenName, backingType, priceMode, theme, TradingView])
 
     return (
         <div
