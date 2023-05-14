@@ -1,6 +1,8 @@
 service: dgnx-website
 frameworkVersion: '2 || 3'
 
+useDotenv: true
+
 package:
   individually: true
 
