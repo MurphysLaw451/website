@@ -29,7 +29,7 @@ export const Chart = (props: {
 
     useEffect(() => {
         // @ts-ignore
-        if (!props?.wantTokenName || typeof TradingView === 'undefined') {
+        if (!props?.wantTokenName || window.TradingView) {
             return;
         }
 
@@ -43,7 +43,7 @@ export const Chart = (props: {
         const bgColor = theme === 'light' ? '#F3F4F6' : '#1e293b'
 
         // @ts-ignore
-        const tv = new TradingView.widget({
+        const tv = new window.TradingView.widget({
             // debug: true,
 
             symbol: `DGNX/${priceMode}`, // default symbol
@@ -215,7 +215,7 @@ export const Chart = (props: {
             applyOverrides(tv, bgColor)
         }, 7000)
         // @ts-ignore
-    }, [props.wantTokenName, backingType, priceMode, theme, TradingView])
+    }, [props.wantTokenName, backingType, priceMode, theme, window.TradingView])
 
     return (
         <div
