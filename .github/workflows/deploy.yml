@@ -6,6 +6,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: staging
     steps:
       - name: Checkout
         uses: actions/checkout@v1
@@ -25,13 +26,13 @@ jobs:
       - name: Install dependencies
         run: npm ci --ignore-scripts
 
-      - name: Build with env
-        run: |
-          NEXT_PUBLIC_API_ENDPOINT=https://d1ong9dtp04x2b.cloudfront.net
-          NEXT_PUBLIC_BACKING_API_ENDPOINT=production endpoint
-          NEXT_PUBLIC_CONTROLLER_ADDRESS=production address
-          NEXT_PUBLIC_USDC_ADDRESSES=0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e,0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664
-          npm run build
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_ENDPOINT: ${{ vars.NEXT_PUBLIC_API_ENDPOINT }}
+          NEXT_PUBLIC_BACKING_API_ENDPOINT: ${{ vars.NEXT_PUBLIC_BACKING_API_ENDPOINT }}
+          NEXT_PUBLIC_CONTROLLER_ADDRESS: ${{ vars.NEXT_PUBLIC_CONTROLLER_ADDRESS }}
+          NEXT_PUBLIC_USDC_ADDRESSES: ${{ vars.NEXT_PUBLIC_USDC_ADDRESSES }}
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -43,7 +44,9 @@ jobs:
       - name: Deploy API to production
         run: |
           ./node_modules/serverless/bin/serverless.js config credentials --provider aws --key ${{ secrets.DGNX_WEBSITE_AWS_ACCOUNT_ID }} --secret ${{ secrets.DGNX_WEBSITE_AWS_ACCOUNT_KEY }} --profile dgnx
-          cd api && ../node_modules/serverless/bin/serverless.js deploy -s production
+          cd api && ../node_modules/serverless/bin/serverless.js deploy -s production --force --param="SNOWTRACE_API_KEY=${{ secrets.SNOWTRACE_API_KEY }}"
+        env:
+          SNOWTRACE_API_KEY: test
 
       - name: Deploy static site to S3 bucket
         run: aws s3 sync ./out/ s3://dgnx.finance/ --delete
