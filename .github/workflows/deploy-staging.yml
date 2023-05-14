@@ -27,13 +27,13 @@ jobs:
       - name: Install dependencies
         run: npm ci --ignore-scripts
 
-      - name: Build
-        run: npm run build
-        env:
-          NEXT_PUBLIC_API_ENDPOINT: ${{ vars.NEXT_PUBLIC_API_ENDPOINT }}
-          NEXT_PUBLIC_BACKING_API_ENDPOINT: ${{ vars.NEXT_PUBLIC_BACKING_API_ENDPOINT }}
-          NEXT_PUBLIC_CONTROLLER_ADDRESS: ${{ vars.NEXT_PUBLIC_CONTROLLER_ADDRESS }}
-          NEXT_PUBLIC_USDC_ADDRESSES: ${{ vars.NEXT_PUBLIC_USDC_ADDRESSES }}
+      # - name: Build
+      #   run: npm run build
+      #   env:
+      #     NEXT_PUBLIC_API_ENDPOINT: ${{ vars.NEXT_PUBLIC_API_ENDPOINT }}
+      #     NEXT_PUBLIC_BACKING_API_ENDPOINT: ${{ vars.NEXT_PUBLIC_BACKING_API_ENDPOINT }}
+      #     NEXT_PUBLIC_CONTROLLER_ADDRESS: ${{ vars.NEXT_PUBLIC_CONTROLLER_ADDRESS }}
+      #     NEXT_PUBLIC_USDC_ADDRESSES: ${{ vars.NEXT_PUBLIC_USDC_ADDRESSES }}
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -49,5 +49,5 @@ jobs:
         env:
           SNOWTRACE_API_KEY: test
 
-      - name: Deploy static site to S3 bucket
-        run: aws s3 sync ./out/ s3://staging.dgnx.finance/ --delete
+      # - name: Deploy static site to S3 bucket
+      #   run: aws s3 sync ./out/ s3://staging.dgnx.finance/ --delete
