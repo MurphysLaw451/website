@@ -25,7 +25,7 @@ provider:
 
   environment:
     CORS_ALLOWED_ORIGIN: ${self:custom.corsAllowedOrigin.${opt:stage, self:provider.stage}}
-    SNOWTRACE_API_KEY: ${param.SNOWTRACE_API_KEY}
+    SNOWTRACE_API_KEY: ${param:SNOWTRACE_API_KEY}
 
 functions:
   snowtraceProxy:
