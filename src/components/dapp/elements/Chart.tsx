@@ -17,6 +17,15 @@ const applyOverrides = (tv: any, bgColor: string) => {
     } catch (e) { }
 }
 
+const callWhenTVLoaded = async (callback: Function) => {
+    if (typeof window.TradingView !== 'undefined') {
+        return callback(true);
+    }
+
+    await new Promise(resolve => setTimeout(resolve, 300))
+    return callWhenTVLoaded(callback);
+}
+
 
 export const Chart = (props: {
     wantTokenName: string,
@@ -24,12 +33,19 @@ export const Chart = (props: {
 }) => {
     const [backingType, setBackingType] = useState<BACKING_TYPE>(BACKING_TYPE.TOTAL)
     const [priceMode, setPriceMode] = useState<CHART_PRICE_MODE>(CHART_PRICE_MODE.USD)
+    const [tvLoaded, setTvLoaded] = useState(false)
+    const [loadTvCalled, setLoadTvCalled] = useState(false)
 
+    if (!tvLoaded && !loadTvCalled) {
+        setLoadTvCalled(true)
+        callWhenTVLoaded(setTvLoaded)
+    }
+    
     const { theme } = useTheme()
 
     useEffect(() => {
         // @ts-ignore
-        if (!props?.wantTokenName || window.TradingView) {
+        if (!props?.wantTokenName || !tvLoaded) {
             return;
         }
 
@@ -214,8 +230,7 @@ export const Chart = (props: {
         setTimeout(() => {
             applyOverrides(tv, bgColor)
         }, 7000)
-        // @ts-ignore
-    }, [props.wantTokenName, backingType, priceMode, theme, window.TradingView])
+    }, [props.wantTokenName, backingType, priceMode, theme, tvLoaded])
 
     return (
         <div
