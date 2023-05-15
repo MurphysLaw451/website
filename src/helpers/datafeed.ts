@@ -20,7 +20,7 @@ type DatafeedResult = {
     native: DatafeedOHLC
     timestamp: number
     wantTokens: {
-      sym: string
+      name: string
       bOneOHLC: DatafeedOHLC
       priceOHLC: DatafeedOHLC
       bTotOHLC: DatafeedOHLC
@@ -120,7 +120,7 @@ export const datafeed = () => ({
           const wantTokenName = symbolInfo.name.split('/')[2]
           bars = data.bars.map((bar) => {
             const backingOhlc = bar.wantTokens.find(
-              (wantToken) => wantToken.sym === wantTokenName
+              (wantToken) => wantToken.name === wantTokenName
             )[backingKey]
             return {
               time: bar.timestamp * 1000,
