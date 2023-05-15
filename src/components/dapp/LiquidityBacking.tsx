@@ -9,9 +9,9 @@ import { BNtoNumber } from "../../helpers/number";
 import { BurnForBacking } from "./elements/BurnForBacking";
 import { Chart } from "./elements/Chart";
 
-const provider = new ethers.providers.JsonRpcProvider('https://avalanche-mainnet-fork.mastertoco.de/', {
-    name: 'avalanche',
-    chainId: 43114
+const provider = new ethers.providers.JsonRpcProvider(process.env.NEXT_PUBLIC_RPC, {
+    name: process.env.NEXT_PUBLIC_NAME,
+    chainId: +process.env.NEXT_PUBLIC_CHAIN_ID
 });
 
 const WalletBacking = (props: { amountBaseTokens: number; backingValue: number; wantTokenName?: string }) => {
