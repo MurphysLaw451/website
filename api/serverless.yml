@@ -14,7 +14,7 @@ custom:
   corsAllowedOrigin:
     dev: http://localhost:3000
     staging: http://staging.dgnx.finance.s3-website-eu-west-1.amazonaws.com
-    production: https://www.dgnx.finance
+    production: https://dgnx.finance
 
 provider:
   name: aws

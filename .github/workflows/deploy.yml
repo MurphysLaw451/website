@@ -33,6 +33,9 @@ jobs:
           NEXT_PUBLIC_BACKING_API_ENDPOINT: ${{ vars.NEXT_PUBLIC_BACKING_API_ENDPOINT }}
           NEXT_PUBLIC_CONTROLLER_ADDRESS: ${{ vars.NEXT_PUBLIC_CONTROLLER_ADDRESS }}
           NEXT_PUBLIC_USDC_ADDRESSES: ${{ vars.NEXT_PUBLIC_USDC_ADDRESSES }}
+          NEXT_PUBLIC_RPC: ${{ vars.NEXT_PUBLIC_RPC }}
+          NEXT_PUBLIC_CHAIN_ID: ${{ vars.NEXT_PUBLIC_CHAIN_ID }}
+          NEXT_PUBLIC_NAME: ${{ vars.NEXT_PUBLIC_NAME }}
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
