@@ -1,8 +1,8 @@
 import { BigNumber, ethers } from "ethers";
-import { Controller__factory } from "../../types/factories/Controller__factory";
+import { Erc20__factory } from "../../types";
 import { Controller } from "../../types/Controller";
+import { Controller__factory } from "../../types/factories/Controller__factory";
 import { Vault__factory } from "../../types/factories/Vault__factory";
-import { Erc20, Erc20__factory } from "../../types";
 
 const getWantTokenData = async (provider: ethers.providers.Provider, controller: Controller, index: number) => {
     const address = await controller.allWantTokens(index);
@@ -15,7 +15,7 @@ const getWantTokenData = async (provider: ethers.providers.Provider, controller:
     return { info, address, decimals }
 }
 
-const getWanttokens = async (provider: ethers.providers.Provider, controller: Controller, wantTokenCount: number) => {
+const getWantTokens = async (provider: ethers.providers.Provider, controller: Controller, wantTokenCount: number) => {
     const indices = Array.from(Array(wantTokenCount).keys());
     const wantTokenData = (await Promise.all(indices.map(async (index) => {
         const data = await getWantTokenData(provider, controller, index)
@@ -105,7 +105,7 @@ export const getStats = async (provider: ethers.providers.Provider) => {
 
     const [vaultData, wantTokenData] = await Promise.all([
         getVaultsData(provider, controller, Number(counts.countVaults)),
-        getWanttokens(provider, controller, Number(counts.countWantTokens)),
+        getWantTokens(provider, controller, Number(counts.countWantTokens)),
     ]);
 
     return { vaultData, wantTokenData }
