@@ -148,7 +148,7 @@ const getBackingAmount = async () => {
     const resultRaw = await fetch(`${process.env.NEXT_PUBLIC_BACKING_API_ENDPOINT}/getData/avalanche/${process.env.NEXT_PUBLIC_TOKEN_ADDRESS}/${to}/M/1`)
     const result = await resultRaw.json();
     const backingUsd = result.bars?.[0].wantTokens.find(
-        (wantToken) => wantToken.sym === 'USDC.e'
+        (wantToken) => wantToken.name === 'USDC.e'
     )
     return new BigNumber(backingUsd.bOne).div(new BigNumber(10).pow(backingUsd.dec)).toNumber()
 }
