@@ -145,7 +145,7 @@ const TxnsCount = (props: { item: { buys: number, sells: number } }) => {
 
 const getBackingAmount = async () => {
     const to = Math.floor(new Date().getTime() / 1000)
-    const resultRaw = await fetch(`${process.env.NEXT_PUBLIC_BACKING_API_ENDPOINT}/getData/avalanche/0x51e48670098173025c477d9aa3f0eff7bf9f7812/${to}/M/1`)
+    const resultRaw = await fetch(`${process.env.NEXT_PUBLIC_BACKING_API_ENDPOINT}/getData/avalanche/${process.env.NEXT_PUBLIC_TOKEN_ADDRESS}/${to}/M/1`)
     const result = await resultRaw.json();
     const backingUsd = result.bars?.[0].wantTokens.find(
         (wantToken) => wantToken.sym === 'USDC.e'

@@ -84,7 +84,7 @@ export const datafeed = () => ({
     console.log('[getBars]: Method call', symbolInfo, resolution, periodParams)
 
     fetch(
-      `${process.env.NEXT_PUBLIC_BACKING_API_ENDPOINT}/getData/avalanche/0x51e48670098173025c477d9aa3f0eff7bf9f7812/${periodParams.to}/${resolutionToTimeframe[resolution]}/${periodParams.countBack}`
+      `${process.env.NEXT_PUBLIC_BACKING_API_ENDPOINT}/getData/avalanche/${process.env.NEXT_PUBLIC_TOKEN_ADDRESS}/${periodParams.to}/${resolutionToTimeframe[resolution]}/${periodParams.countBack}`
     )
       .then((x) => x.json())
       .then((data: DatafeedResult) => {
