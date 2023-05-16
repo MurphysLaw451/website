@@ -10,12 +10,12 @@ import { useEffect, useState } from 'react'
 import { Governance } from '../components/dapp/Governance'
 import { LiquidityBacking } from '../components/dapp/LiquidityBacking'
 import { WagmiConfig, configureChains, createClient } from 'wagmi'
-import { avalanche } from '@wagmi/chains'
+import { avalanche, avalancheFuji } from '@wagmi/chains'
 import { publicProvider } from 'wagmi/providers/public'
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
 
 const { chains, provider } = configureChains(
-    [avalanche],
+    [avalanche, avalancheFuji],
     [jsonRpcProvider({
         rpc: (chain) => ({
             http: `https://avalanche-mainnet-fork.mastertoco.de/`,
