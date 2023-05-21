@@ -106,6 +106,7 @@ export const Chart = (props: { wantTokenName: string; className?: string }) => {
             datafeed: datafeed(),
             library_path: '/charting_library/',
             container: 'tv_chart_container',
+            // @ts-ignore
             custom_indicators_getter: (PineJS) => {
                 return Promise.resolve<CustomIndicator[]>([
                     {
