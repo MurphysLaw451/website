@@ -183,9 +183,10 @@ export const Chart = (props: { wantTokenName: string; className?: string }) => {
             },
         })
 
+        tv.chart().priceFormatter().format = numberFormatter.shortenPrice
+
         tv.onChartReady(() => {
             tv.chart(0).createStudy(backingChartName, false, true)
-            tv.chart().priceFormatter().format = numberFormatter.shortenPrice
             tv.createDropdown({
                 title: 'Price symbol',
                 align: 'left',
