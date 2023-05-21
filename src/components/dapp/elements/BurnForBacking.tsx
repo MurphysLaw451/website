@@ -30,9 +30,7 @@ const calculateReturnAmount = async (
     }
 
     let expectedOutput: ethers.BigNumber
-    if (amountToBurn.gt(baseTokenAmount)) {
-        toast.error(`You've tried to spend more than you have. Try less`)
-    } else {
+    if (!amountToBurn.gt(baseTokenAmount)) {
         if (allowance.isGreaterThanOrEqualTo(amountToBurn)) {
             expectedOutput = (await burnForBacking(
                 signer,
