@@ -1,38 +1,43 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { setTimeout } from 'timers';
-import { datafeed } from '../../../helpers/datafeed';
-import clsx from 'clsx';
-import { CustomIndicator, IPineStudyResult, LibraryPineStudy, OhlcStudyPlotStyle, RawStudyMetaInfoId } from '../../../../public/charting_library/charting_library';
-import { StudyPlotType } from '../../../../public/charting_library/charting_library';
-import { BACKING_TYPE, CHART_PRICE_MODE } from '../../../types';
-import { useTheme } from 'next-themes';
+import clsx from 'clsx'
+import { useTheme } from 'next-themes'
+import { useEffect, useState } from 'react'
+import { setTimeout } from 'timers'
+import {
+    CustomIndicator,
+    OhlcStudyPlotStyle,
+    RawStudyMetaInfoId,
+    StudyPlotType,
+} from '../../../../public/charting_library/charting_library'
+import { datafeed } from '../../../helpers/datafeed'
+import { numberFormatter } from '../../../helpers/price-formatter'
+import { BACKING_TYPE, CHART_PRICE_MODE } from '../../../types'
 
 const applyOverrides = (tv: any, bgColor: string) => {
     try {
         tv?.applyOverrides?.({
             // @ts-ignore
-            'paneProperties.backgroundType': "solid",
-            "paneProperties.background": bgColor
+            'paneProperties.backgroundType': 'solid',
+            'paneProperties.background': bgColor,
         })
-    } catch (e) { }
+    } catch (e) {}
 }
 
 const callWhenTVLoaded = async (callback: Function) => {
     if (typeof window.TradingView !== 'undefined') {
-        return callback(true);
+        return callback(true)
     }
 
-    await new Promise(resolve => setTimeout(resolve, 300))
-    return callWhenTVLoaded(callback);
+    await new Promise((resolve) => setTimeout(resolve, 300))
+    return callWhenTVLoaded(callback)
 }
 
-
-export const Chart = (props: {
-    wantTokenName: string,
-    className?: string 
-}) => {
-    const [backingType, setBackingType] = useState<BACKING_TYPE>(BACKING_TYPE.TOTAL)
-    const [priceMode, setPriceMode] = useState<CHART_PRICE_MODE>(CHART_PRICE_MODE.USD)
+export const Chart = (props: { wantTokenName: string; className?: string }) => {
+    const [backingType, setBackingType] = useState<BACKING_TYPE>(
+        BACKING_TYPE.TOTAL
+    )
+    const [priceMode, setPriceMode] = useState<CHART_PRICE_MODE>(
+        CHART_PRICE_MODE.USD
+    )
     const [tvLoaded, setTvLoaded] = useState(false)
     const [loadTvCalled, setLoadTvCalled] = useState(false)
 
@@ -40,13 +45,13 @@ export const Chart = (props: {
         setLoadTvCalled(true)
         callWhenTVLoaded(setTvLoaded)
     }
-    
+
     const { theme } = useTheme()
 
     useEffect(() => {
         // @ts-ignore
         if (!props?.wantTokenName || !tvLoaded) {
-            return;
+            return
         }
 
         let backingName = 'Total backing'
@@ -67,16 +72,23 @@ export const Chart = (props: {
             interval: '1D', // default interval
             autosize: true, // displays the chart in the fullscreen mode
             theme: theme === 'light' ? 'Light' : 'Dark',
-            disabled_features: ["header_symbol_search", "symbol_search_hot_key", "header_compare"],
-            custom_css_url: theme === 'light' ? '/custom_chart_light.css' : '/custom_chart.css',
-            custom_font_family: '\'Space Mono\'',
+            disabled_features: [
+                'header_symbol_search',
+                'symbol_search_hot_key',
+                'header_compare',
+            ],
+            custom_css_url:
+                theme === 'light'
+                    ? '/custom_chart_light.css'
+                    : '/custom_chart.css',
+            custom_font_family: "'Space Mono'",
             toolbar_bg: bgColor,
             layoutType: '2h',
             loading_screen: { backgroundColor: bgColor },
             datafeed: datafeed(),
             library_path: '/charting_library/',
             container: 'tv_chart_container',
-            custom_indicators_getter: PineJS => {
+            custom_indicators_getter: (PineJS) => {
                 return Promise.resolve<CustomIndicator[]>([
                     {
                         name: backingChartName,
@@ -86,7 +98,7 @@ export const Chart = (props: {
                             description: backingChartName,
                             shortDescription: backingChartName,
                             format: {
-                                type: 'inherit'
+                                type: 'inherit',
                             },
                             is_hidden_study: false,
                             is_price_study: false,
@@ -127,7 +139,8 @@ export const Chart = (props: {
                                         color: '#2196F3',
                                         drawBorder: false,
                                         drawWick: true,
-                                        plottype: 'ohlc_candles' as OhlcStudyPlotStyle.OhlcCandles, // might be 'ohlc_bars' for bars
+                                        plottype:
+                                            'ohlc_candles' as OhlcStudyPlotStyle.OhlcCandles, // might be 'ohlc_bars' for bars
                                         visible: true,
                                         wickColor: '#2196F3',
                                     },
@@ -138,40 +151,41 @@ export const Chart = (props: {
                             styles: {},
                             inputs: [],
                         },
-                        constructor: function() {
-                            this.init = function(context, inputCallback) {
-                                this._context = context;
+                        constructor: function () {
+                            this.init = function (context, inputCallback) {
+                                this._context = context
                                 console.log(this._context)
                                 console.log(PineJS.Std.period(this._context))
-                                this._input = inputCallback;
+                                this._input = inputCallback
 
-                                const symbol = `BACKING/${backingType}/${props.wantTokenName}`;
+                                const symbol = `BACKING/${backingType}/${props.wantTokenName}`
                                 this._context.new_sym(
                                     symbol,
                                     PineJS.Std.period(this._context)
-                                );
+                                )
                             }
 
-                            this.main = function(context, inputCallback) {
-                                this._context = context;
-                                this._input = inputCallback;
+                            this.main = function (context, inputCallback) {
+                                this._context = context
+                                this._input = inputCallback
 
-                                this._context.select_sym(1);
+                                this._context.select_sym(1)
 
-                                var o = PineJS.Std.open(this._context);
-                                var h = PineJS.Std.high(this._context);
-                                var l = PineJS.Std.low(this._context);
-                                var c = PineJS.Std.close(this._context);
-                                return [o,h,l,c];
+                                var o = PineJS.Std.open(this._context)
+                                var h = PineJS.Std.high(this._context)
+                                var l = PineJS.Std.low(this._context)
+                                var c = PineJS.Std.close(this._context)
+                                return [o, h, l, c]
                             }
-                        }
-                    }
-                ]);
+                        },
+                    },
+                ])
             },
-        });
+        })
 
         tv.onChartReady(() => {
-            tv.chart(0).createStudy(backingChartName, false, true);
+            tv.chart(0).createStudy(backingChartName, false, true)
+            tv.chart().priceFormatter().format = numberFormatter.shortenPrice
             tv.createDropdown({
                 title: 'Price symbol',
                 align: 'left',
@@ -180,15 +194,15 @@ export const Chart = (props: {
                         title: 'DGNX/USD',
                         onSelect: () => {
                             setPriceMode(CHART_PRICE_MODE.USD)
-                        }
+                        },
                     },
                     {
                         title: 'DGNX/AVAX',
                         onSelect: () => {
                             setPriceMode(CHART_PRICE_MODE.AVAX)
-                        }
-                    }
-                ]
+                        },
+                    },
+                ],
             })
             tv.createDropdown({
                 title: 'Backing',
@@ -198,15 +212,15 @@ export const Chart = (props: {
                         title: 'Total backing',
                         onSelect: () => {
                             setBackingType(BACKING_TYPE.TOTAL)
-                        }
+                        },
                     },
                     {
                         title: 'Backing per DGNX',
                         onSelect: () => {
                             setBackingType(BACKING_TYPE.ONE)
-                        }
-                    }
-                ]
+                        },
+                    },
+                ],
             })
         })
 
@@ -234,8 +248,8 @@ export const Chart = (props: {
 
     return (
         <div
-            className={clsx(props.className, "h-full w-full")}
+            className={clsx(props.className, 'h-full w-full')}
             id="tv_chart_container"
         />
-    );
-};
+    )
+}

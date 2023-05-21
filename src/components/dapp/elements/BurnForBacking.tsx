@@ -1,12 +1,19 @@
-import BigNumber from "bignumber.js"
-import { useCallback, useEffect, useRef, useState } from "react"
-import { debounce } from "../../../helpers/debounce"
-import { BNtoNumber } from "../../../helpers/number"
-import { approveBaseToken, burnForBacking, getControllerAllowance, getExpectedWantTokensByBurningBaseTokens } from "../../../helpers/liquidityBacking"
-import { ethers } from "ethers"
-import { AiOutlineCheckCircle } from "react-icons/ai"
-import { useAccount, useSigner } from "wagmi"
-import { Spinner } from "./Spinner"
+import BigNumber from 'bignumber.js'
+import { ethers } from 'ethers'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { AiOutlineCheckCircle } from 'react-icons/ai'
+import { useAccount, useSigner } from 'wagmi'
+import { debounce } from '../../../helpers/debounce'
+import {
+    approveBaseToken,
+    burnForBacking,
+    getControllerAllowance,
+    getExpectedWantTokensByBurningBaseTokens,
+} from '../../../helpers/liquidityBacking'
+import { BNtoNumber } from '../../../helpers/number'
+import { Spinner } from './Spinner'
+
+import { toast } from 'react-toastify'
 
 const calculateReturnAmount = async (
     signer: ethers.Signer,
@@ -14,67 +21,78 @@ const calculateReturnAmount = async (
     wantTokenAddress: string,
     allowance: BigNumber,
     amountToBurn: BigNumber,
+    baseTokenAmount: BigNumber,
     setExpectedWantTokenAmount: Function,
-    setSalculatingWantTokenAmount: Function
+    setCalculatingWantTokenAmount: Function
 ) => {
-    if (allowance?.eq(0) || amountToBurn?.eq(0)) {
-        return;
+    if (amountToBurn?.eq(0)) {
+        return
     }
 
-    setExpectedWantTokenAmount(BigNumber(0))
-    setSalculatingWantTokenAmount(true)
-
-    let expectedOutput: ethers.BigNumber;
-    if (allowance.isGreaterThanOrEqualTo(amountToBurn)) {
-        expectedOutput = await burnForBacking(
-            signer,
-            wantTokenAddress,
-            ethers.BigNumber.from(amountToBurn.toFixed()),
-            ethers.BigNumber.from(0),
-            true
-        ) as ethers.BigNumber;
+    let expectedOutput: ethers.BigNumber
+    if (amountToBurn.gt(baseTokenAmount)) {
+        toast.error(`You've tried to spend more than you have. Try less`)
     } else {
-        expectedOutput = await getExpectedWantTokensByBurningBaseTokens(
-            provider,
-            wantTokenAddress,
-            ethers.BigNumber.from(amountToBurn.toFixed())
-        )
-    }
+        if (allowance.isGreaterThanOrEqualTo(amountToBurn)) {
+            expectedOutput = (await burnForBacking(
+                signer,
+                wantTokenAddress,
+                ethers.BigNumber.from(amountToBurn.toFixed()),
+                ethers.BigNumber.from(0),
+                true
+            )) as ethers.BigNumber
+        } else {
+            expectedOutput = await getExpectedWantTokensByBurningBaseTokens(
+                provider,
+                wantTokenAddress,
+                ethers.BigNumber.from(amountToBurn.toFixed())
+            )
+        }
 
-    setExpectedWantTokenAmount(BigNumber(expectedOutput.toString()))
-    setSalculatingWantTokenAmount(false)
+        setExpectedWantTokenAmount(BigNumber(expectedOutput.toString()))
+    }
+    setCalculatingWantTokenAmount(false)
 }
 
-const calculateReturnDebounced = debounce(async (
-    signer: ethers.Signer,
-    provider: ethers.providers.Provider,
-    wantTokenAddress: string,
-    allowance: BigNumber,
-    amountToBurn: BigNumber,
-    setExpectedWantTokenAmount: Function,
-    setSalculatingWantTokenAmount: Function
-) => {
-    if (amountToBurn?.isLessThanOrEqualTo(0)) {
-        return;
-    }
+const calculateReturnDebounced = debounce(
+    async (
+        signer: ethers.Signer,
+        provider: ethers.providers.Provider,
+        wantTokenAddress: string,
+        allowance: BigNumber,
+        amountToBurn: BigNumber,
+        baseTokenAmount: BigNumber,
+        setExpectedWantTokenAmount: Function,
+        setCalculatingWantTokenAmount: Function
+    ) => {
+        if (amountToBurn?.isLessThanOrEqualTo(0)) {
+            return
+        }
 
-    calculateReturnAmount(
-        signer,
-        provider,
-        wantTokenAddress,
-        allowance,
-        amountToBurn,
-        setExpectedWantTokenAmount,
-        setSalculatingWantTokenAmount
-    )
-})
+        calculateReturnAmount(
+            signer,
+            provider,
+            wantTokenAddress,
+            allowance,
+            amountToBurn,
+            baseTokenAmount,
+            setExpectedWantTokenAmount,
+            setCalculatingWantTokenAmount
+        )
+    }
+)
 
 export const BurnForBacking = (props: {
-    provider: ethers.providers.Provider,
-    baseTokenAmount: BigNumber,
-    baseTokenDecimals: number,
-    activeWantToken: { decimals: number; address: string; info: { name: string } },
-    forceRefetch: Function,
+    provider: ethers.providers.Provider
+    baseTokenAmount: BigNumber
+    baseTokenDecimals: number
+    activeWantToken: {
+        decimals: number
+        address: string
+        info: { name: string }
+    }
+    forceRefetch: Function
+    isLoading: boolean
 }) => {
     const tokensToBurnInputRef = useRef<HTMLInputElement>()
     const slippageInputRef = useRef<HTMLInputElement>()
@@ -84,36 +102,53 @@ export const BurnForBacking = (props: {
     const [allowance, setAllowance] = useState(BigNumber(0))
     const [txRunning, setTxRunning] = useState(false)
 
-    const [calculatingWantTokenAmount, setSalculatingWantTokenAmount] = useState(false)
-    const [expectedWantTokenAmount, setExpectedWantTokenAmount] = useState(BigNumber(0))
+    const [calculatingWantTokenAmount, setCalculatingWantTokenAmount] =
+        useState(false)
+    const [expectedWantTokenAmount, setExpectedWantTokenAmount] = useState(
+        BigNumber(0)
+    )
     const { address, isConnected } = useAccount()
     const [hash, setTxHash] = useState('')
     const { data: signer } = useSigner()
-
     const updateAllowance = async () => {
-        return getControllerAllowance(props.provider, address).then(allowance => {
-            setAllowance(BigNumber(allowance.toString()))
-        })
+        return getControllerAllowance(props.provider, address).then(
+            (allowance) => {
+                setAllowance(BigNumber(allowance.toString()))
+            }
+        )
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    const debouncedCalculateReturnAmount = useCallback(calculateReturnDebounced, [])
+    const debouncedCalculateReturnAmount = useCallback(
+        calculateReturnDebounced,
+        []
+    )
 
     useEffect(() => {
+        setCalculatingWantTokenAmount(true)
         debouncedCalculateReturnAmount(
             signer,
             props.provider,
             props.activeWantToken?.address,
             allowance,
             amountToBurn,
+            props.baseTokenAmount,
             setExpectedWantTokenAmount,
-            setSalculatingWantTokenAmount
+            setCalculatingWantTokenAmount
         )
-    }, [signer, props.provider, props.activeWantToken, amountToBurn, allowance, debouncedCalculateReturnAmount])
+    }, [
+        signer,
+        props.provider,
+        props.activeWantToken,
+        props.baseTokenAmount,
+        amountToBurn,
+        allowance,
+        debouncedCalculateReturnAmount,
+    ])
 
     useEffect(() => {
         if (!isConnected || !address) {
-            return;
+            return
         }
 
         updateAllowance()
@@ -129,119 +164,253 @@ export const BurnForBacking = (props: {
 
     const execBurn = async () => {
         setTxRunning(true)
-        const hash = await burnForBacking(
+        const toastId = toast.loading('Burn is being processed', {
+            autoClose: false,
+        })
+        const hash = (await burnForBacking(
             signer,
             props.activeWantToken.address,
             ethers.BigNumber.from(amountToBurn.toFixed()),
-            ethers.BigNumber.from(expectedWantTokenAmount.times(1 - slippage / 100).integerValue().toFixed()),
-        ) as string;
-        setTxHash(hash);
+            ethers.BigNumber.from(
+                expectedWantTokenAmount
+                    .times(1 - slippage / 100)
+                    .integerValue()
+                    .toFixed()
+            )
+        )) as string
+        setTxHash(hash)
+        toast.dismiss(toastId)
+        if (!!hash) {
+            setAmountToBurn(BigNumber(0))
+            tokensToBurnInputRef.current.value = ''
+            toast.success('Burn for backing successful', { autoClose: 3000 })
+        } else {
+            toast.error('Burn for backing failed! Please try again', {
+                autoClose: 5000,
+            })
+        }
         setTxRunning(false)
         props.forceRefetch()
+    }
+
+    const execApprove = async () => {
+        setTxRunning(true)
+        const toastId = toast.loading('Waiting for approval...', {
+            autoClose: false,
+        })
+        const isApproved = await approveBaseToken(
+            signer,
+            ethers.BigNumber.from(amountToBurn.toFixed())
+        )
+        toast.dismiss(toastId)
+        if (isApproved) {
+            toast.success('Approval successfully', { autoClose: 3000 })
+        } else {
+            toast.error('Approval failed! Please try again', {
+                autoClose: 5000,
+            })
+        }
+        await updateAllowance()
+        await calculateReturnAmount(
+            signer,
+            props.provider,
+            props.activeWantToken.address,
+            allowance,
+            amountToBurn,
+            props.baseTokenAmount,
+            setExpectedWantTokenAmount,
+            setCalculatingWantTokenAmount
+        )
+        setTxRunning(false)
+    }
+
+    const updateBurnAmount = (amount: BigNumber) => {
+        let burnAmount = amount
+        if (burnAmount.gt(props.baseTokenAmount)) {
+            burnAmount = props.baseTokenAmount
+            tokensToBurnInputRef.current.value = BNtoNumber(
+                props.baseTokenAmount,
+                props.baseTokenDecimals
+            ).toString()
+        }
+
+        setAmountToBurn(burnAmount)
     }
 
     return (
         <>
             <div className="mb-3 py-6">
-                {!showSlippage && <p className="text-xs text-right">
-                    Slippage:{' '}
-                    <span
-                        className="underline cursor-pointer"
-                        onClick={() => { setShowSlippage(true) }}
-                    >
-                        {slippage}%
-                    </span>
-                </p>}
-                {showSlippage && <p className="text-xs text-right">
-                    Set slippage:{' '}
-                    <span className="cursor-pointer hover:underline" onClick={() => { setSlippage(0.5); setShowSlippage(false); }}>0.5%</span><span className="px-1">|</span>
-                    <span className="cursor-pointer hover:underline" onClick={() => { setSlippage(1); setShowSlippage(false); }}>1%</span><span className="px-1">|</span>
-                    <span className="" onClick={() => {  }}>
-                        <input ref={slippageInputRef} type="text" className="text-xs p-0 m-0 w-6 dark:bg-slate-900 border dark:border-dark-800 dark:text-slate-200" />%
-                        <AiOutlineCheckCircle className="cursor-pointer inline ml-1 text-sm" onClick={() => {
-                            setSlippage(parseFloat(slippageInputRef.current.value || '0.5'));
-                            setShowSlippage(false);
-                        }} />
-                    </span>
-                </p>}
+                {!showSlippage && (
+                    <p className="text-right text-xs">
+                        Slippage:{' '}
+                        <span
+                            className="cursor-pointer underline"
+                            onClick={() => {
+                                setShowSlippage(true)
+                            }}
+                        >
+                            {slippage}%
+                        </span>
+                    </p>
+                )}
+                {showSlippage && (
+                    <p className="text-right text-xs">
+                        Set slippage:{' '}
+                        <span
+                            className="cursor-pointer hover:underline"
+                            onClick={() => {
+                                setSlippage(0.5)
+                                setShowSlippage(false)
+                            }}
+                        >
+                            0.5%
+                        </span>
+                        <span className="px-1">|</span>
+                        <span
+                            className="cursor-pointer hover:underline"
+                            onClick={() => {
+                                setSlippage(1)
+                                setShowSlippage(false)
+                            }}
+                        >
+                            1%
+                        </span>
+                        <span className="px-1">|</span>
+                        <span className="" onClick={() => {}}>
+                            <input
+                                ref={slippageInputRef}
+                                type="text"
+                                className="dark:border-dark-800 m-0 w-6 border p-0 text-xs dark:bg-slate-900 dark:text-slate-200"
+                            />
+                            %
+                            <AiOutlineCheckCircle
+                                className="ml-1 inline cursor-pointer text-sm"
+                                onClick={() => {
+                                    setSlippage(
+                                        parseFloat(
+                                            slippageInputRef.current.value ||
+                                                '0.5'
+                                        )
+                                    )
+                                    setShowSlippage(false)
+                                }}
+                            />
+                        </span>
+                    </p>
+                )}
                 <input
-                    className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none dark:bg-slate-900 border dark:border-dark-800 dark:text-slate-200 text-2xl py-2 my-2 leading-3 w-full"
+                    className="dark:border-dark-800 my-2 w-full border py-2 text-2xl leading-3 [appearance:textfield] dark:bg-slate-900 dark:text-slate-200 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                     type="number"
                     placeholder="0"
-                    onChange={(e) => setAmountToBurn(BigNumber(10).pow(props.baseTokenDecimals).times(BigNumber(parseFloat(e.target.value || '0'))))}
+                    disabled={txRunning}
+                    onChange={(e) =>
+                        updateBurnAmount(
+                            BigNumber(10)
+                                .pow(props.baseTokenDecimals)
+                                .times(
+                                    BigNumber(parseFloat(e.target.value || '0'))
+                                )
+                        )
+                    }
                     ref={tokensToBurnInputRef}
                 />
-                <p className="text-xs text-right">
+                <p className="text-right text-xs">
                     Max:{' '}
                     <span
-                        className="underline cursor-pointer"
+                        className="cursor-pointer underline"
                         onClick={() => {
-                            tokensToBurnInputRef.current.value = BNtoNumber(props.baseTokenAmount, props.baseTokenDecimals).toString()
+                            tokensToBurnInputRef.current.value = BNtoNumber(
+                                props.baseTokenAmount,
+                                props.baseTokenDecimals
+                            ).toString()
                             setAmountToBurn(props.baseTokenAmount)
                         }}
                     >
-                        {BNtoNumber(props.baseTokenAmount, props.baseTokenDecimals)}
+                        {BNtoNumber(
+                            props.baseTokenAmount,
+                            props.baseTokenDecimals
+                        )}
                     </span>
                 </p>
-                
+
                 {amountToBurn.isGreaterThan(0) && (
                     <>
-                        {allowance.isGreaterThanOrEqualTo(amountToBurn)
-                            ? <button
-                                className="bg-orange-500 hover:bg-orange-400 text-white dark:bg-orange-600 py-1 px-3 rounded-lg dark:hover:bg-orange-700 flex w-full p-2 text-2xl justify-center my-3"
+                        {allowance.isGreaterThanOrEqualTo(amountToBurn) ? (
+                            <button
+                                className="my-3 flex w-full justify-center rounded-lg bg-orange-500 p-2 px-3 py-1 text-2xl text-white hover:bg-orange-400 dark:bg-orange-600 dark:hover:bg-orange-700"
                                 onClick={() => execBurn()}
                             >
                                 {txRunning ? <Spinner className="" /> : 'Burn'}
                             </button>
-                            : <button
-                                className="bg-orange-500 hover:bg-orange-400 text-white dark:bg-orange-600 py-1 px-3 rounded-lg dark:hover:bg-orange-700 flex w-full p-2 text-2xl justify-center my-3"
-                                onClick={async () => {
-                                    setTxRunning(true);
-                                    await approveBaseToken(signer, ethers.BigNumber.from(amountToBurn.toFixed()))
-                                    await updateAllowance();
-                                    await calculateReturnAmount(
-                                        signer,
-                                        props.provider,
-                                        props.activeWantToken.address,
-                                        allowance,
-                                        amountToBurn,
-                                        setExpectedWantTokenAmount,
-                                        setSalculatingWantTokenAmount
-                                    );
-                                    setTxRunning(false);
-                                }}
+                        ) : (
+                            <button
+                                className="my-3 flex w-full justify-center rounded-lg bg-orange-500 p-2 px-3 py-1 text-2xl text-white hover:bg-orange-400 dark:bg-orange-600 dark:hover:bg-orange-700"
+                                onClick={() => execApprove()}
                             >
-                                {txRunning ? <Spinner className="" /> : 'Approve'}
-                            </button>}
+                                {txRunning ? (
+                                    <Spinner className="" />
+                                ) : (
+                                    'Approve'
+                                )}
+                            </button>
+                        )}
                     </>
                 )}
-                
             </div>
             <div />
 
-            {hash && <div>
-                Tx successful! <a className="text-orange-600" href={`https://snowtrace.io/tx/${hash}`} target="_blank" rel="noreferrer">Check transaction on Snowtrace</a>
-            </div>}
-            {calculatingWantTokenAmount && <p className="">Calculating expected output...</p>}
-            {amountToBurn.isGreaterThan(0) && expectedWantTokenAmount.isGreaterThan(0) && (
-                <>
-                    <div />
-                    <div className="inline-block text-sm">
-                        {allowance.isGreaterThanOrEqualTo(amountToBurn)
-                            ? 'Includes token tax, fees, etc'
-                            : 'Estimated output. Approve to get exact values'
-                        }
-                        <div className="flex gap-x-5">
-                            <p className="flex-grow">Expected output:</p>
-                            <p className="text-right">{BNtoNumber(expectedWantTokenAmount, props.activeWantToken.decimals).toFixed(8)} {props.activeWantToken.info.name}</p>
-                        </div>
-                        <div className="flex gap-x-5">
-                            <p className="flex-grow">Minimum received:</p>
-                            <p className="text-right">{BNtoNumber(expectedWantTokenAmount.times(1 - slippage / 100), props.activeWantToken.decimals).toFixed(8)} {props.activeWantToken.info.name}</p>
-                        </div>
-                    </div>
-                </>
+            {hash && (
+                <div>
+                    Tx successful!{' '}
+                    <a
+                        className="text-orange-600"
+                        href={`https://snowtrace.io/tx/${hash}`}
+                        target="_blank"
+                        rel="noreferrer"
+                    >
+                        Check transaction on Snowtrace
+                    </a>
+                </div>
             )}
+            {(calculatingWantTokenAmount || props.isLoading) &&
+                amountToBurn.isGreaterThan(0) && (
+                    <p className="">Calculating expected output...</p>
+                )}
+            {!calculatingWantTokenAmount &&
+                !props.isLoading &&
+                amountToBurn.isGreaterThan(0) &&
+                expectedWantTokenAmount.isGreaterThan(0) && (
+                    <>
+                        <div />
+                        <div className="inline-block text-sm">
+                            {allowance.isGreaterThanOrEqualTo(amountToBurn)
+                                ? 'Includes token tax, fees, etc'
+                                : 'Estimated output. Approve to get exact values'}
+                            <div className="flex gap-x-5">
+                                <p className="flex-grow">Expected output:</p>
+                                <p className="text-right">
+                                    {BNtoNumber(
+                                        expectedWantTokenAmount,
+                                        props.activeWantToken.decimals
+                                    ).toFixed(8)}{' '}
+                                    {props.activeWantToken.info.name}
+                                </p>
+                            </div>
+                            <div className="flex gap-x-5">
+                                <p className="flex-grow">Minimum received:</p>
+                                <p className="text-right">
+                                    {BNtoNumber(
+                                        expectedWantTokenAmount.times(
+                                            1 - slippage / 100
+                                        ),
+                                        props.activeWantToken.decimals
+                                    ).toFixed(8)}{' '}
+                                    {props.activeWantToken.info.name}
+                                </p>
+                            </div>
+                        </div>
+                    </>
+                )}
         </>
     )
 }
