@@ -1,8 +1,11 @@
+import { numberFormatter } from './price-formatter'
+
 type DatafeedOHLC = {
   o: number
   h: number
   l: number
   c: number
+  volume?: number
 }
 
 type IOHLCV = {
@@ -19,10 +22,15 @@ type DatafeedResult = {
     usd: DatafeedOHLC
     native: DatafeedOHLC
     timestamp: number
+    tokenTimeWindow: string
     wantTokens: {
       name: string
+      dec: number
+      bOne: string
       bOneOHLC: DatafeedOHLC
+      price: string
       priceOHLC: DatafeedOHLC
+      bTot: string
       bTotOHLC: DatafeedOHLC
     }[]
   }[]
@@ -82,6 +90,8 @@ export const datafeed = () => ({
     onErrorCallback: Function
   ) => {
     console.log('[getBars]: Method call', symbolInfo, resolution, periodParams)
+    ;(window as any).lbtv.chart(0).priceFormatter().format =
+      numberFormatter.shortenPrice
 
     fetch(
       `${process.env.NEXT_PUBLIC_BACKING_API_ENDPOINT}/getData/avalanche/${process.env.NEXT_PUBLIC_TOKEN_ADDRESS}/${periodParams.to}/${resolutionToTimeframe[resolution]}/${periodParams.countBack}`
