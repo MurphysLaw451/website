@@ -90,13 +90,10 @@ export const datafeed = () => ({
     onErrorCallback: Function
   ) => {
     console.log('[getBars]: Method call', symbolInfo, resolution, periodParams)
-    
-    ;(window as any).lbtv.chart(0).priceFormatter().format = (
-      a: any,
-      b: any
-    ) => {
-      console.log({ a, b })
-      return a.toString()
+    ;(window as any).lbtv.chart().priceFormatter().format = (n: number) => {
+      const shortNumber = numberFormatter.shortenPrice(n)
+      console.log(shortNumber)
+      return shortNumber
     }
 
     fetch(
