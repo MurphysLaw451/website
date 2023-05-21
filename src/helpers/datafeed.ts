@@ -90,11 +90,6 @@ export const datafeed = () => ({
     onErrorCallback: Function
   ) => {
     console.log('[getBars]: Method call', symbolInfo, resolution, periodParams)
-    ;(window as any).lbtv.chart().priceFormatter().format = (n: number) => {
-      const shortNumber = numberFormatter.shortenPrice(n)
-      console.log(shortNumber)
-      return shortNumber
-    }
 
     fetch(
       `${process.env.NEXT_PUBLIC_BACKING_API_ENDPOINT}/getData/avalanche/${process.env.NEXT_PUBLIC_TOKEN_ADDRESS}/${periodParams.to}/${resolutionToTimeframe[resolution]}/${periodParams.countBack}`

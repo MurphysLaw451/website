@@ -82,6 +82,24 @@ export const Chart = (props: { wantTokenName: string; className?: string }) => {
                     ? '/custom_chart_light.css'
                     : '/custom_chart.css',
             custom_font_family: "'Space Mono'",
+            customFormatters: {
+                timeFormatter: null,
+                dateFormatter: null,
+                priceFormatterFactory: () => {
+                    return {
+                        format: (price) => numberFormatter.shortenPrice(price),
+                    }
+                },
+                studyFormatterFactory: (format) => {
+                    if (format.type === 'price') {
+                        return {
+                            format: (price) =>
+                                numberFormatter.shortenPrice(price),
+                        }
+                    }
+                    return null
+                },
+            },
             toolbar_bg: bgColor,
             layoutType: '2h',
             loading_screen: { backgroundColor: bgColor },
@@ -183,10 +201,9 @@ export const Chart = (props: { wantTokenName: string; className?: string }) => {
             },
         })
 
-        ;(window as any).lbtv = tv
-
         tv.onChartReady(() => {
             tv.chart(0).createStudy(backingChartName, false, true)
+
             tv.createDropdown({
                 title: 'Price symbol',
                 align: 'left',
