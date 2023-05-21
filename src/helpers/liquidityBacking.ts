@@ -156,6 +156,7 @@ export const approveBaseToken = async (signer: ethers.Signer, amountToApprove: B
         await new Promise(resolve => setTimeout(resolve, 1000))
     } catch (e) {
         console.log('error',e)
+        return false;
     }
 
     return true;

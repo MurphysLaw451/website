@@ -16,7 +16,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>DegenX</title>
+        <title>DegenX Ecosystem</title>
         <meta
           name="description"
           content="DegenX is multichain ecosystem that offers a suite of decentralized applications (dApps) and services to provide solutions for projects and individuals in the DeFi space. $DGNX is a multichain token with liquidity backing."

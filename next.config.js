@@ -1,4 +1,4 @@
-const withTM = require('next-transpile-modules')(['@lifi/widget']);
+const withTM = require('next-transpile-modules')(['@lifi/widget'])
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -16,8 +16,8 @@ const nextConfig = {
     scrollRestoration: true,
   },
   images: {
-    unoptimized: true
-  }
+    unoptimized: true,
+  },
 }
 
 module.exports = withTM(nextConfig)
