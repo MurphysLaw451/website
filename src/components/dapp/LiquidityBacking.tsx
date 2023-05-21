@@ -17,11 +17,12 @@ import { BNtoNumber } from '../../helpers/number'
 import { BurnForBacking } from './elements/BurnForBacking'
 import { Chart } from './elements/Chart'
 
+const chainId = +process.env.NEXT_PUBLIC_CHAIN_ID
 const provider = new ethers.providers.JsonRpcProvider(
     process.env.NEXT_PUBLIC_RPC,
     {
         name: process.env.NEXT_PUBLIC_NAME,
-        chainId: +process.env.NEXT_PUBLIC_CHAIN_ID,
+        chainId,
     }
 )
 
@@ -94,7 +95,7 @@ export const LiquidityBacking = (props: RouteObject) => {
         if (!activeWantToken) {
             return
         }
-        
+
         setLoading(true)
         setTotalBacking(0)
         setBackingPerDGNX(0)
@@ -138,35 +139,39 @@ export const LiquidityBacking = (props: RouteObject) => {
     return (
         <div>
             <div className="mb-8 flex flex-col items-center lg:flex-row">
-                <h1 className="mb-4 flex-grow text-4xl">Liquidity Backing</h1>
-                {stats?.wantTokenData && (
-                    <div className="flex items-center gap-3">
-                        <p>Show backing in</p>
-                        <select
-                            onChange={(e) =>
-                                setActiveWantToken(
-                                    stats.wantTokenData.find(
-                                        (wantToken) =>
-                                            wantToken.address === e.target.value
+                <h1 className="flex-grow text-4xl">Liquidity Backing</h1>
+            </div>
+            <div className="mb-8 flex flex-col items-center lg:flex-row">
+                <span className="mr-4 text-2xl">Show backing values in</span>
+                {stats?.wantTokenData &&
+                    stats.wantTokenData.map((token) => {
+                        return (
+                            <span
+                                className="mx-3 inline-block w-12 cursor-pointer rounded-full opacity-70 ring-orange-600 ring-offset-white hover:opacity-100 data-[selected=true]:opacity-100 data-[selected=true]:ring data-[selected=true]:ring-offset-4 dark:ring-white dark:ring-offset-gray-900"
+                                data-selected={
+                                    activeWantToken.address === token.address
+                                }
+                                data-address={token.address}
+                                title={token.info.name}
+                                onClick={(e) =>
+                                    setActiveWantToken(
+                                        stats.wantTokenData.find(
+                                            (wantToken) =>
+                                                wantToken.address ===
+                                                token.address
+                                        )
                                     )
-                                )
-                            }
-                            className="dark:border-dark-800 border py-3 leading-3 dark:bg-slate-900 dark:text-slate-200"
-                        >
-                            {stats.wantTokenData.map((token) => {
-                                return (
-                                    <option
-                                        key={token.address}
-                                        value={token.address}
-                                        selected={tokenIsUSDC(token.address)}
-                                    >
-                                        {token.info.name}
-                                    </option>
-                                )
-                            })}
-                        </select>
-                    </div>
-                )}
+                                }
+                            >
+                                <img
+                                    className="inline-block"
+                                    src={`/wanttokens/${chainId}/${token.address}.png`}
+                                    alt={token.info.name}
+                                    title={token.info.name}
+                                />
+                            </span>
+                        )
+                    })}
             </div>
             <div className="mb-8 grid grid-cols-1 gap-8 lg:grid-cols-3">
                 <div className="rounded-xl bg-gray-100 p-6 dark:bg-slate-800">

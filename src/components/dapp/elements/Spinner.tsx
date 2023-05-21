@@ -1,4 +1,3 @@
-import clsx from "clsx"
 
 export const Spinner = (props: { className?: string }) => {
     return (
