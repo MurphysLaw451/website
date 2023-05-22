@@ -11,10 +11,10 @@ const RoadmapItem = (props) => {
                 </div>
                 <div className="hidden sm:flex w-full bg-gray-200 h-0.5 dark:bg-gray-700"></div>
             </div>
-            <div className="mt-3 sm:pr-8 lg:ml-2">
+            <div className="mt-3 sm:pr-6 lg:ml-2">
                 <h3 className="text-lg text-center md:text-left font-semibold text-gray-900 dark:text-slate-400">{props.title}</h3>
                 <time className="block text-center md:text-left mb-2 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">{props.time}</time>
-                <div className="text-base text-center md:text-left font-normal text-gray-500 dark:text-gray-400">{props.items.map(item => <div key={item}>{item}</div>)}</div>
+                <div className="text-base text-center md:text-left font-normal text-gray-500 dark:text-gray-400">{props.items.map(item => <div key={item} className='mb-3'>{item}</div>)}</div>
             </div>
         </li>
     )
@@ -51,8 +51,8 @@ export function Roadmap() {
                             title={`${translations.roadmap.phase.en} 3`}
                             time={translations.roadmap.future.en}
                             items={[
-                                `${translations.roadmap.locker.en}`,
                                 `${translations.roadmap.stake.en}`,
+                                `${translations.roadmap.locker.en}`,
                                 `${translations.roadmap.dp.en}`
                             ]}
                         />
@@ -60,8 +60,8 @@ export function Roadmap() {
                             title={`${translations.roadmap.phase.en} 4`}
                             time={translations.roadmap.future.en}
                             items={[
-                                `${translations.roadmap.dex.en}`,
                                 `${translations.roadmap.swap.en}`,
+                                `${translations.roadmap.dex.en}`,
                                 `${translations.roadmap.nftv2.en}`
                             ]}
                         />

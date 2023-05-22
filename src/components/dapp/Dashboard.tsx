@@ -193,9 +193,6 @@ export const Dashboard = (props: RouteObject) => {
                                     {dexData.traderJoe.priceChange.h24 > 0 ? '↑' : '↓'}
                                     {dexData.traderJoe.priceChange.h24}%
                                 </p>
-                                <Button className="w-full" href="https://traderjoexyz.com/trade?inputCurrency=AVAX&outputCurrency=0x51e48670098173025C477D9AA3f0efF7BF9f7812#/" target="_blank" color="orange">
-                                    Buy on TJ    
-                                </Button> 
                             </>
                         )
                         : '...'
@@ -213,9 +210,6 @@ export const Dashboard = (props: RouteObject) => {
                                     {dexData.pangolin.priceChange.h24 > 0 ? '↑' : '↓'}
                                     {dexData.pangolin.priceChange.h24}%
                                 </p>
-                                <Button className="w-full" href="https://app.pangolin.exchange/#/swap?outputCurrency=0x51e48670098173025c477d9aa3f0eff7bf9f7812" target="_blank" color="orange">
-                                    Buy on Pangolin
-                                </Button>
                             </>
                         )
                         : '...'

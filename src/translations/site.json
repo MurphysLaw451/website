@@ -272,10 +272,10 @@
             "en": "Liquidity Backing"
         },
         "bridge": {
-            "en": "LockeR"
+            "en": "Bridge"
         },
         "locker": {
-            "en": "StakeR"
+            "en": "LockeR"
         },
         "stake": {
             "en": "StakeR"
