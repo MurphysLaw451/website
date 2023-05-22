@@ -71,7 +71,9 @@ export const Chart = (props: { wantTokenName: string; className?: string }) => {
             // @ts-ignore
             interval: '1D', // default interval
             autosize: true, // displays the chart in the fullscreen mode
+            iframe_loading_compatibility_mode: false,
             theme: theme === 'light' ? 'Light' : 'Dark',
+            enabled_features: ['iframe_loading_compatibility_mode'],
             disabled_features: [
                 'header_symbol_search',
                 'symbol_search_hot_key',

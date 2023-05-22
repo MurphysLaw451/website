@@ -8,7 +8,7 @@ import Sidebar from './Sidebar'
 
 export function DappHeader() {
     return (
-        <header className="fixed w-full py-3 dark:bg-gray-900">
+        <header className="fixed w-full py-3 dark:bg-gray-900 z-10">
             <DappContainer>
                 <nav className="relative z-50 flex justify-between">
                     <div className="flex items-center md:gap-x-12">
