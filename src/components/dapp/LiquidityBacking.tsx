@@ -144,34 +144,38 @@ export const LiquidityBacking = (props: RouteObject) => {
             </div>
             <div className="mb-8 flex flex-col items-center lg:flex-row">
                 <span className="mr-4 text-2xl">Show backing values in</span>
-                {stats?.wantTokenData &&
-                    stats.wantTokenData.map((token) => (
-                        <span
-                            key={token.address}
-                            className="mx-3 inline-block w-12 cursor-pointer rounded-full opacity-70 ring-orange-600 ring-offset-white hover:opacity-100 data-[selected=true]:opacity-100 data-[selected=true]:ring data-[selected=true]:ring-offset-4 dark:ring-white dark:ring-offset-gray-900"
-                            data-selected={
-                                activeWantToken.address === token.address
-                            }
-                            data-address={token.address}
-                            title={token.info.name}
-                            onClick={(e) =>
-                                setActiveWantToken(
-                                    stats.wantTokenData.find(
-                                        (wantToken) =>
-                                            wantToken.address === token.address
-                                    )
-                                )
-                            }
-                        >
-                            <Image
-                                className="inline-block"
-                                src={`/wanttokens/${chainId}/${token.address}.png`}
-                                alt={token.info.name}
+                <div className="flex flex-row mt-8 mb-2 lg:mt-0 lg:mb-0">
+                    {stats?.wantTokenData &&
+                        stats.wantTokenData.map((token) => (
+                            <span
+                                key={token.address}
+                                className="mx-3 inline-block cursor-pointer rounded-full opacity-70 ring-orange-600 ring-offset-white hover:opacity-100 data-[selected=true]:opacity-100 data-[selected=true]:ring data-[selected=true]:ring-offset-4 dark:ring-white dark:ring-offset-gray-900"
+                                data-selected={
+                                    activeWantToken.address === token.address
+                                }
+                                data-address={token.address}
                                 title={token.info.name}
-                                unoptimized
-                            />
-                        </span>
-                    ))}
+                                onClick={(e) =>
+                                    setActiveWantToken(
+                                        stats.wantTokenData.find(
+                                            (wantToken) =>
+                                                wantToken.address ===
+                                                token.address
+                                        )
+                                    )
+                                }
+                            >
+                                <Image
+                                    className="inline-block w-12"
+                                    src={`/wanttokens/${chainId}/${token.address}.png`}
+                                    alt={token.info.name}
+                                    title={token.info.name}
+                                    width={48}
+                                    height={48}
+                                />
+                            </span>
+                        ))}
+                </div>
             </div>
             <div className="mb-8 grid grid-cols-1 gap-8 lg:grid-cols-3">
                 <div className="rounded-xl bg-gray-100 p-6 dark:bg-slate-800">
