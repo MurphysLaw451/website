@@ -8,7 +8,7 @@ import Sidebar from './Sidebar'
 
 export function DappHeader() {
     return (
-        <header className="fixed w-full py-3 dark:bg-gray-900 z-10">
+        <header className="fixed w-full py-3 bg-white dark:bg-gray-900 z-10">
             <DappContainer>
                 <nav className="relative z-50 flex justify-between">
                     <div className="flex items-center md:gap-x-12">
@@ -31,11 +31,11 @@ export function DappHeader() {
                             showAvatar={false}
                             showBalance={true}
                             customTheme={{
-                                '--ck-connectbutton-background': '#ff8340',
+                                '--ck-connectbutton-background': '#FF6C26',
                                 '--ck-connectbutton-active-background':
-                                    '#ff8340',
+                                    '#FF6C26',
                                 '--ck-connectbutton-hover-background':
-                                    '#E97035',
+                                    '#F59766',
                                 '--ck-connectbutton-color': '#ffffff',
                                 '--ck-connectbutton-border-radius': '8px',
                             }}
