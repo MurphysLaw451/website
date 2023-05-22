@@ -37,19 +37,23 @@ type DatafeedResult = {
 }
 
 const configurationData = {
-  supported_resolutions: ['1', '5', '15', '30', '60', '240', '720', '1D'],
+  supported_resolutions: [
+    '1',
+    /*'5', '15', '30',*/ '60',
+    /* '240', '720',*/ '1D',
+  ],
   exchanges: [],
   symbols_types: [],
 }
 
 const resolutionToTimeframe = {
   '1': 'M',
-  '5': 'M',
-  '15': 'M',
-  '30': 'M',
+  // '5': 'M',
+  // '15': 'M',
+  // '30': 'M',
   '60': 'H',
-  '240': 'H',
-  '720': 'H',
+  // '240': 'H',
+  // '720': 'H',
   '1D': 'D',
 }
 
