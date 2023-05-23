@@ -32,23 +32,17 @@ const WalletBacking = (props: {
     backingValue: number
     wantTokenName?: string
 }) => {
-    if (
-        !props.amountBaseTokens ||
-        !props.backingValue ||
-        !props.wantTokenName
-    ) {
-        return <p>...</p>
-    }
-
     return (
         <>
             <div className="flex">
                 <div className="flex-grow">DGNX in wallet</div>
-                <div>{props.amountBaseTokens.toFixed(3)}</div>
+                <div>{props.amountBaseTokens.toFixed(3) || 0}</div>
             </div>
             <div className="flex">
-                <div className="flex-grow">Value in {props.wantTokenName}</div>
-                <div>{props.backingValue.toFixed(8)}</div>
+                <div className="flex-grow">
+                    Value in {props.wantTokenName || 0}
+                </div>
+                <div>{props.backingValue.toFixed(8) || 0}</div>
             </div>
         </>
     )
@@ -144,7 +138,7 @@ export const LiquidityBacking = (props: RouteObject) => {
             </div>
             <div className="mb-8 flex flex-col items-center lg:flex-row">
                 <span className="mr-4 text-2xl">Show backing values in</span>
-                <div className="flex flex-row mt-8 mb-2 lg:mt-0 lg:mb-0">
+                <div className="mt-8 mb-2 flex flex-row lg:mt-0 lg:mb-0">
                     {stats?.wantTokenData &&
                         stats.wantTokenData.map((token) => (
                             <span
@@ -184,17 +178,17 @@ export const LiquidityBacking = (props: RouteObject) => {
                             Total backing
                         </h3>
                     </div>
-                    {!loading && totalBacking > 0 && (
+                    {!loading && (
                         <div className="text-right text-2xl">
-                            {totalBacking.toFixed(3)}{' '}
+                            {totalBacking.toFixed(3) || 0}{' '}
                             {activeWantToken.info.name}
                         </div>
                     )}
-                    {!loading && backingPerDGNX > 0 && (
+                    {!loading && (
                         <div className="flex">
                             <div className="flex-grow"></div>
                             <div>
-                                {backingPerDGNX.toFixed(8)}{' '}
+                                {backingPerDGNX.toFixed(8) || 0}{' '}
                                 {activeWantToken.info.name} / DGNX
                             </div>
                         </div>

@@ -15,7 +15,7 @@ import { ConnectKitProvider, getDefaultClient } from 'connectkit'
 
 const client = createClient(
     getDefaultClient({
-        chains: [avalancheFuji, avalanche],
+        chains: [avalanche, avalancheFuji],
         autoConnect: true,
         walletConnectProjectId:
             process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,

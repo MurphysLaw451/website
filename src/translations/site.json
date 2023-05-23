@@ -48,7 +48,7 @@
                 "en": "Are you doxxed?"
             },
             "answer": {
-                "en": "Our team is doxxed through SolidProof. You can view the certificate <a class=\"text-orange-500\" href=\"https://github.com/solidproof/projects/blob/main/DGNX/KYC_Certificate_DegenX.png\">here</a>."
+                "en": "Our team is doxxed through SolidProof. You can view the certificate <a class=\"text-orange-500\" href=\"https://github.com/solidproof/projects/blob/main/DGNX/KYC_Certificate_DegenX.png\" target=\"_blank\">here</a>."
             }
         },
         "questionAudit": {
@@ -56,7 +56,7 @@
                 "en": "Are the contracts audited?"
             },
             "answer": {
-                "en": "Yes! All current contracts can be viewed <a class=\"text-orange-500\" href=\"https://github.com/solidproof/projects/tree/main/DGNX\">here</a>. New contracts will be audited before launch, which one of the reasons of the development fund."
+                "en": "Yes! All current contracts can be viewed <a class=\"text-orange-500\" href=\"https://github.com/solidproof/projects/tree/main/DGNX\" target=\"_blank\">here</a>. New contracts will be audited before launch, which one of the reasons of the development fund."
             }
         },
         "questionRoadmap": {
