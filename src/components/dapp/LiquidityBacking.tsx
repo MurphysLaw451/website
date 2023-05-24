@@ -36,13 +36,13 @@ const WalletBacking = (props: {
         <>
             <div className="flex">
                 <div className="flex-grow">DGNX in wallet</div>
-                <div>{props.amountBaseTokens.toFixed(3) || 0}</div>
+                <div>{props.amountBaseTokens?.toFixed(3) || 0}</div>
             </div>
             <div className="flex">
                 <div className="flex-grow">
                     Value in {props.wantTokenName || 0}
                 </div>
-                <div>{props.backingValue.toFixed(8) || 0}</div>
+                <div>{props.backingValue?.toFixed(8) || 0}</div>
             </div>
         </>
     )
