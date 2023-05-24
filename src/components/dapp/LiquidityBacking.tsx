@@ -178,13 +178,13 @@ export const LiquidityBacking = (props: RouteObject) => {
                             Total backing
                         </h3>
                     </div>
-                    {!loading && (
+                    {!loading && activeWantToken && (
                         <div className="text-right text-2xl">
                             {totalBacking?.toFixed(3) || 0}{' '}
                             {activeWantToken.info.name}
                         </div>
                     )}
-                    {!loading && (
+                    {!loading && activeWantToken && (
                         <div className="flex">
                             <div className="flex-grow"></div>
                             <div>
