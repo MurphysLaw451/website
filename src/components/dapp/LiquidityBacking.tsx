@@ -180,7 +180,7 @@ export const LiquidityBacking = (props: RouteObject) => {
                     </div>
                     {!loading && (
                         <div className="text-right text-2xl">
-                            {totalBacking.toFixed(3) || 0}{' '}
+                            {totalBacking?.toFixed(3) || 0}{' '}
                             {activeWantToken.info.name}
                         </div>
                     )}
@@ -188,7 +188,7 @@ export const LiquidityBacking = (props: RouteObject) => {
                         <div className="flex">
                             <div className="flex-grow"></div>
                             <div>
-                                {backingPerDGNX.toFixed(8) || 0}{' '}
+                                {backingPerDGNX?.toFixed(8) || 0}{' '}
                                 {activeWantToken.info.name} / DGNX
                             </div>
                         </div>
