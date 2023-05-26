@@ -32,6 +32,7 @@ const callWhenTVLoaded = async (callback: Function) => {
 }
 
 export const Chart = (props: { wantTokenName: string; className?: string }) => {
+    const containerId = Math.random().toString()
     const [backingType, setBackingType] = useState<BACKING_TYPE>(
         BACKING_TYPE.TOTAL
     )
@@ -107,7 +108,7 @@ export const Chart = (props: { wantTokenName: string; className?: string }) => {
             loading_screen: { backgroundColor: bgColor },
             datafeed: datafeed(),
             library_path: '/charting_library/',
-            container: 'tv_chart_container',
+            container: `tv_chart_container_${containerId}`,
             // @ts-ignore
             custom_indicators_getter: (PineJS) => {
                 return Promise.resolve<CustomIndicator[]>([
@@ -270,7 +271,7 @@ export const Chart = (props: { wantTokenName: string; className?: string }) => {
     return (
         <div
             className={clsx(props.className, 'h-full w-full')}
-            id="tv_chart_container"
+            id={`tv_chart_container_${containerId}`}
         />
     )
 }
