@@ -70,7 +70,7 @@ export const Chart = (props: { wantTokenName: string; className?: string }) => {
 
             symbol: `DGNX/${priceMode}`, // default symbol
             // @ts-ignore
-            interval: '1D', // default interval
+            interval: '1H', // default interval
             autosize: true, // displays the chart in the fullscreen mode
             iframe_loading_compatibility_mode: false,
             theme: theme === 'light' ? 'Light' : 'Dark',
