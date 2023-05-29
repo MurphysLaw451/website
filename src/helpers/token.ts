@@ -10,7 +10,6 @@ export const getTokenData = async (
   provider: ethers.providers.Provider,
   address: string
 ) => {
-  console.log('get', address)
   if (cachedTokenData[address]) {
     return cachedTokenData[address]
   }
