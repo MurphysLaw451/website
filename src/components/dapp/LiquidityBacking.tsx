@@ -179,7 +179,7 @@ export const LiquidityBacking = (props: RouteObject) => {
                         </h3>
                     </div>
                     {!loading && activeWantToken && (
-                        <div className="text-right text-2xl">
+                        <div className="text-right text-2xl ">
                             {totalBacking?.toFixed(3) || 0}{' '}
                             {activeWantToken.info.name}
                         </div>
@@ -216,7 +216,7 @@ export const LiquidityBacking = (props: RouteObject) => {
 
                 <div className="rounded-xl bg-gray-100 p-6 dark:bg-slate-800">
                     <h3 className="mb-3 text-xl">Backing breakdown</h3>
-                    <div className="flex flex-col">
+                    <div className="flex flex-col gap-2">
                         {stats?.vaultData ? (
                             stats?.vaultData.map((vaultItem) => {
                                 return (
@@ -224,6 +224,16 @@ export const LiquidityBacking = (props: RouteObject) => {
                                         key={vaultItem.tokenAddress}
                                         className="flex"
                                     >
+                                        <div className="mr-2 flex-grow-0 self-center shrink-0">
+                                            <Image
+                                                className="w-5"
+                                                src={`/tokens/${chainId}/${vaultItem.tokenAddress}.png`}
+                                                alt={vaultItem.name}
+                                                title={vaultItem.name}
+                                                width={20}
+                                                height={20}
+                                            />
+                                        </div>
                                         <div className="flex-grow">
                                             {vaultItem.name}
                                         </div>

@@ -19,7 +19,7 @@ const client = createClient(
         autoConnect: true,
         walletConnectProjectId:
             process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,
-        infuraId: process.env.NEXT_PUBLIC_INFURA_ID,
+        // infuraId: process.env.NEXT_PUBLIC_INFURA_ID,
         appName: 'DegenX Ecosystem DAPP',
     })
 )
