@@ -9,7 +9,7 @@ import { RiGovernmentFill } from 'react-icons/ri'
 const navigation = [
     { name: 'Dashboard', icon: HiHome, href: '', count: undefined },
     { name: 'Buy $DGNX', icon: HiCurrencyDollar, href: 'buy', count: undefined },
-    { name: 'Liquidity Backing', icon: FaPiggyBank, href: 'liquidity-backing', count: undefined },
+    // { name: 'Liquidity Backing', icon: FaPiggyBank, href: 'liquidity-backing', count: undefined },
     { name: 'Governance', icon: RiGovernmentFill, href: 'governance', count: undefined },
 ]
 
