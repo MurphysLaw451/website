@@ -43,7 +43,7 @@ export function Roadmap() {
                             time={translations.roadmap.ongoing.en}
                             items={[
                                 `✓ ${translations.roadmap.dao.en}`,
-                                `${translations.roadmap.liqBacking.en}`,
+                                `✓ ${translations.roadmap.liqBacking.en}`,
                                 `${translations.roadmap.bridge.en}`
                             ]}
                         />
