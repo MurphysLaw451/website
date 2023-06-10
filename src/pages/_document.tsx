@@ -21,6 +21,16 @@ export default function Document(props) {
           type="text/javascript"
           src="/charting_library/charting_library.js">
         </script>
+
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-SHQ22SS768"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+
+          gtag('config', 'G-SHQ22SS768');
+        </script>
+
       </Head>
       <body className="flex h-full flex-col bg-white dark:bg-gray-900 ">
         <Main />
