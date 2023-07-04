@@ -36,7 +36,7 @@
             "en": "Join in!"
         },
         "subtitle": {
-            "en": "Did we already mentioned we are bridging the token to other chains without diluting the supply?"
+            "en": "Did we already mention that we are bridging the token to other chains without diluting the supply?"
         }
     },
     "faq": {
@@ -331,7 +331,7 @@
             "en": "Liquidity: 1%"
         },
         "liquidity": {
-            "en": "1% of buys and sells stay in the LP to creating a stable price floor and ensuring there is always liquidity to sell $DGNX."
+            "en": "1% of buy and sell transactions are retained within the liquidity pool (LP), which helps establish a stable price floor and ensures continuous liquidity for selling $DGNX."
         },
         "backingTitle": {
             "en": "Backing: 4%"
