@@ -38,6 +38,8 @@ jobs:
           NEXT_PUBLIC_CHAIN_ID: ${{ vars.NEXT_PUBLIC_CHAIN_ID }}
           NEXT_PUBLIC_NAME: ${{ vars.NEXT_PUBLIC_NAME }}
           NEXT_PUBLIC_TOKEN_ADDRESS: ${{ vars.NEXT_PUBLIC_TOKEN_ADDRESS }}
+          NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID: ${{ vars.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID }}
+          NEXT_PUBLIC_INFURA_ID: ${{ vars.NEXT_PUBLIC_INFURA_ID }}
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
