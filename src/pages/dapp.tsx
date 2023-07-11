@@ -14,6 +14,23 @@ import Sidebar from '../components/dapp/elements/Sidebar'
 
 import { ConnectKitProvider, getDefaultConfig } from 'connectkit'
 
+const { chains, provider } = configureChains(
+    [avalanche, avalancheFuji],
+    [publicProvider()]
+)
+
+const client = createClient({
+    ...getDefaultConfig({
+        chains,
+        autoConnect: true,
+        walletConnectProjectId:
+            process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID!,
+        infuraId: process.env.NEXT_PUBLIC_INFURA_ID!,
+        appName: 'DegenX Ecosystem DAPP',
+    }),
+    provider,
+})
+
 export default function Dapp() {
     const [ready, setReady] = useState(false)
     const { theme } = useTheme()
@@ -25,23 +42,6 @@ export default function Dapp() {
     if (!ready) {
         return null
     }
-
-    const { chains, provider } = configureChains(
-        [avalanche, avalancheFuji],
-        [publicProvider()]
-    )
-
-    const client = createClient({
-        ...getDefaultConfig({
-            chains,
-            autoConnect: true,
-            walletConnectProjectId:
-                process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID!,
-            infuraId: process.env.NEXT_PUBLIC_INFURA_ID!,
-            appName: 'DegenX Ecosystem DAPP',
-        }),
-        provider,
-    })
 
     return (
         <BrowserRouter>
