@@ -3,7 +3,8 @@ import { useTheme } from 'next-themes'
 import Head from 'next/head'
 import { useEffect, useState } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import { WagmiConfig, createClient } from 'wagmi'
+import { WagmiConfig, configureChains, createClient } from 'wagmi'
+import { publicProvider } from 'wagmi/providers/public'
 import { BuyDGNX } from '../components/dapp/BuyDGNX'
 import { Dashboard } from '../components/dapp/Dashboard'
 import { Governance } from '../components/dapp/Governance'
@@ -11,18 +12,24 @@ import { LiquidityBacking } from '../components/dapp/LiquidityBacking'
 import { DappHeader } from '../components/dapp/elements/DappHeader'
 import Sidebar from '../components/dapp/elements/Sidebar'
 
-import { ConnectKitProvider, getDefaultClient } from 'connectkit'
+import { ConnectKitProvider, getDefaultConfig } from 'connectkit'
 
-const client = createClient(
-    getDefaultClient({
-        chains: [avalanche, avalancheFuji],
+const { chains, provider } = configureChains(
+    [avalanche, avalancheFuji],
+    [publicProvider()]
+)
+
+const client = createClient({
+    ...getDefaultConfig({
+        chains,
         autoConnect: true,
         walletConnectProjectId:
-            process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,
-        // infuraId: process.env.NEXT_PUBLIC_INFURA_ID,
+            process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID!,
+        infuraId: process.env.NEXT_PUBLIC_INFURA_ID!,
         appName: 'DegenX Ecosystem DAPP',
-    })
-)
+    }),
+    provider,
+})
 
 export default function Dapp() {
     const [ready, setReady] = useState(false)
