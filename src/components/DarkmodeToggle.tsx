@@ -1,6 +1,6 @@
-import clsx from "clsx";
-import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
+import clsx from 'clsx'
+import { useTheme } from 'next-themes'
+import { useEffect, useState } from 'react'
 
 export const DarkmodeToggle = () => {
     const [ready, setReady] = useState(false)
@@ -15,15 +15,20 @@ export const DarkmodeToggle = () => {
     }
 
     useEffect(() => {
-        if ((theme === 'system' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) || theme === '"default"') {
+        if (
+            (theme === 'system' &&
+                window.matchMedia &&
+                window.matchMedia('(prefers-color-scheme: dark)').matches) ||
+            theme === '"default"'
+        ) {
             setTheme('dark')
         }
 
-        setReady(true);
+        setReady(true)
     }, [theme, setTheme])
 
     if (!ready) {
-        return null;
+        return null
     }
 
     return (
@@ -31,22 +36,20 @@ export const DarkmodeToggle = () => {
             id="theme-toggle"
             type="button"
             onClick={updateLightmode}
-            className="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5"
+            className="rounded-full p-2.5 text-sm text-light-800 transition-colors hover:bg-degenOrange hover:text-light-100  dark:text-light-200 dark:hover:bg-activeblue"
         >
             <svg
                 id="theme-toggle-dark-icon"
-                className={clsx(`w-5 h-5`, theme === 'dark' && 'hidden')}
+                className={clsx(`h-5 w-5`, theme === 'dark' && 'hidden')}
                 fill="currentColor"
                 viewBox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg"
             >
-                <path
-                    d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"
-                ></path>
+                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
             </svg>
             <svg
                 id="theme-toggle-light-icon"
-                className={clsx(`w-5 h-5`, theme === 'light' && 'hidden')}
+                className={clsx(`h-5 w-5`, theme === 'light' && 'hidden')}
                 fill="currentColor"
                 viewBox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg"

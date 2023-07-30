@@ -62,7 +62,7 @@ export const Chart = (props: { wantTokenName: string; className?: string }) => {
 
         const backingChartName = `${backingName} in ${props.wantTokenName}`
 
-        const bgColor = theme === 'light' ? '#F3F4F6' : '#1e293b'
+        const bgColor = theme === 'light' ? '#f2f3f9' : '#023148'
 
         // @ts-ignore
         const tv = new window.TradingView.widget({

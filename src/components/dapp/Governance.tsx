@@ -1,34 +1,40 @@
-import { RouteObject } from "react-router-dom"
-import { Button } from "../Button"
+import { RouteObject } from 'react-router-dom'
+import { Button } from '../Button'
+import { H1 } from '../H1'
+import { H2 } from '../H2'
 
 export const Governance = (props: RouteObject) => {
     return (
         <div>
-            <h1 className="text-4xl mb-4">Governance</h1>
-            <p>
-                Our DAO is controlled by proposals. The proposals are used to decide in which direction the organization will move in the future. You can vote by delegating your voting power to yourself. Your voting power is measured by the amount of DGNX you are holding. After you have delegated your voting power to yourself or a trusted address, you are able to participate in voting.
-            </p>
+            <H1>Governance</H1>
+            <div className="rounded-xl border-2 border-degenOrange bg-light-100 p-5 font-bold text-light-800 dark:border-activeblue dark:bg-darkblue  dark:text-light-600">
+                Our DAO is controlled by proposals. The proposals are used to
+                decide in which direction the organization will move in the
+                future. You can vote by delegating your voting power to
+                yourself. Your voting power is measured by the amount of DGNX
+                you are holding. After you have delegated your voting power to
+                yourself or a trusted address, you are able to participate in
+                voting.
+                <hr className="my-3 border-2 border-light-800 dark:border-light-600" />
+                Important: You need to delegate your voting power BEFORE a
+                proposal being created. If you delegate it after a proposal
+                being created, you will not be able to participate in voting.
+            </div>
 
-            <hr className="my-3 border-slate-500" />
+            <H2 className="mt-3">Proposal types</H2>
 
-            <p>
-                Important: You need to delegate your voting power BEFORE a proposal being created. If you delegate it after a proposal being created, you will not be able to participate in voting.
-            </p>
-
-            <h2 className="text-2xl my-4">Proposal types</h2>
-
-            <div className="flex flex-col sm:flex-row items-start w-full">
-                <div className=" dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
-                    <h3 className="text-xl mb-4">Off-chain</h3>
-                    <ul className="list-disc ml-6">
+            <div className="flex w-full flex-col items-start font-bold text-light-800 dark:text-light-600 sm:flex-row">
+                <div className=" mr-8 mb-8 w-full rounded-xl border-2 border-degenOrange bg-light-100 p-6 dark:border-activeblue dark:bg-darkblue">
+                    <H2>Off-chain</H2>
+                    <ul className="ml-6 list-disc">
                         <li>Organizational</li>
                         <li>Operative</li>
                         <li>Community decisions</li>
                     </ul>
                 </div>
-                <div className=" dark:bg-slate-800 bg-gray-100 p-6 rounded-xl mr-8 mb-8 w-full">
-                    <h3 className="text-xl mb-4">On-chain</h3>
-                    <ul className="list-disc ml-6">
+                <div className=" mr-8 mb-8 w-full rounded-xl border-2 border-degenOrange bg-light-100 p-6 dark:border-activeblue dark:bg-darkblue">
+                    <H2>On-chain</H2>
+                    <ul className="ml-6 list-disc">
                         <li>Changing fees</li>
                         <li>Changing contracts</li>
                         <li>Disbursement of earmarked funds</li>
@@ -36,8 +42,12 @@ export const Governance = (props: RouteObject) => {
                 </div>
             </div>
 
-            <div className="flex items-center justify-center w-full mb-6">
-                <Button target="_blank" color="orange" href="https://www.tally.xyz/gov/degenx-ecosystem">
+            <div className="mb-6 flex w-full items-center justify-center">
+                <Button
+                    target="_blank"
+                    color="blue"
+                    href="https://www.tally.xyz/gov/degenx-ecosystem"
+                >
                     Go to governance page
                 </Button>
             </div>

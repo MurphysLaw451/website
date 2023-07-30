@@ -1,9 +1,17 @@
 const defaultTheme = require('tailwindcss/defaultTheme')
+const plugin = require('tailwindcss/plugin')
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: 'class',
   content: ['./src/**/*.{ts,tsx}'],
+  plugins: [
+    plugin(function ({ addBase }) {
+      addBase({
+        html: { fontSize: '14px' },
+      })
+    }),
+  ],
   theme: {
     extend: {
       colors: {
@@ -20,7 +28,7 @@ module.exports = {
           900: '#CB531E',
         },
         grey: {
-          200: '#f1eae8'
+          200: '#f1eae8',
         },
       },
     },
@@ -44,11 +52,36 @@ module.exports = {
         '4xl': '2rem',
       },
       fontFamily: {
-        sans: ['Space Mono', ...defaultTheme.fontFamily.sans],
-        display: ['Space Mono', ...defaultTheme.fontFamily.sans],
+        sans: ['montserrat', ...defaultTheme.fontFamily.sans],
+        display: ['montserrat', ...defaultTheme.fontFamily.sans],
+        title: ['Orbitron', ...defaultTheme.fontFamily.sans],
       },
       maxWidth: {
         '2xl': '40rem',
+      },
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+      },
+      colors: {
+        activeblue: '#225271',
+        darkblue: '#023148',
+        light: {
+          100: '#f2f3f9',
+          200: '#dbe8ea',
+          600: '#97A2B6',
+          800: '#878992',
+        },
+        dark: '#020618',
+        degenOrange: '#ff6c26',
+        rusty: '#d64900',
+        broccoli: '#00705a',
+        techGreen: '#0f978e',
+        persianGreen: '#00ac8c',
+        seafoamGreen: '#78cc97',
+
+        error: '#ff264d',
+        success: '#00ac8c',
+        yellow: '#ffd926',
       },
     },
   },
