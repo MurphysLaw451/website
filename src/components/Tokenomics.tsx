@@ -11,29 +11,19 @@ const testimonials = [
       content: translations.tokenomics.burn.en,
     },
     {
-      title: translations.tokenomics.marketingTitle.en,
-      content: translations.tokenomics.marketing.en,
-    },
-  ],
-  [
-    {
-      title: translations.tokenomics.liquidityTitle.en,
-      content: translations.tokenomics.liquidity.en,
-    },
-    {
       title: translations.tokenomics.backingTitle.en,
       content: translations.tokenomics.backing.en,
     },
   ],
   [
     {
+      title: translations.tokenomics.marketingTitle.en,
+      content: translations.tokenomics.marketing.en,
+    },
+    {
       title: translations.tokenomics.developmentTitle.en,
       content: translations.tokenomics.development.en,
     },
-    // {
-    //   title: 'Investment fund: 2%',
-    //   content: '2% of all transactions will be sent to an investment fund for the growth of DegenX.',
-    // },
   ],
 ]
 
@@ -58,7 +48,7 @@ export function Tokenomics() {
         </div>
         <ul
           role="list"
-          className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-6 sm:gap-8 lg:mt-20 lg:max-w-none lg:grid-cols-3"
+          className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-6 sm:gap-8 lg:mt-20 lg:max-w-none lg:grid-cols-2"
         >
           {testimonials.map((column, columnIndex) => (
             <li key={columnIndex}>
