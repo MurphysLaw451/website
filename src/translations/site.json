@@ -327,23 +327,17 @@
         "marketing": {
             "en": "1% of the AVAX used to buy DGNX is sent to a marketing wallet. This will be utilized to market the project and grow the community"
         },
-        "liquidityTitle": {
-            "en": "Liquidity: 1%"
-        },
-        "liquidity": {
-            "en": "1% of buy and sell transactions are retained within the liquidity pool (LP), which helps establish a stable price floor and ensures continuous liquidity for selling $DGNX."
-        },
         "backingTitle": {
-            "en": "Backing: 4%"
+            "en": "Backing: 3%"
         },
         "backing": {
-            "en": "4% of all buys and sells are sent to the liquidity backing pool, giving $DGNX an ever increasing minimum value."
+            "en": "3% of all buys and sells are sent to the liquidity backing pool, giving $DGNX an ever increasing minimum value."
         },
         "developmentTitle": {
-            "en": "Development: 2%"
+            "en": "Development: 1%"
         },
         "development": {
-            "en": "2% of all transactions will be used to cover development costs, including audits."
+            "en": "1% of all transactions will be used to cover development costs, including audits."
         }
     },
     "team": {
