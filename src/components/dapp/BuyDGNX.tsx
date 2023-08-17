@@ -19,7 +19,7 @@ export const BuyDGNX = (props: RouteObject) => {
         <>
             <div className="lifi-container">
                 <h1 className="text-4xl mb-4">Buy $DGNX</h1>
-                <p className="text-sm">Note: the <a href="https://docs.dgnx.finance/whitepaper/tokenomics/tax" target="_blank" rel="noreferrer" className="text-orange-500 underline">5% tax</a> is not included below!</p>
+                <p className="text-sm">Note: the <a href="https://docs.dgnx.finance/ecosystem/tokenomics#taxes--fees" target="_blank" rel="noreferrer" className="text-orange-500 underline">5% tax</a> is not included below!</p>
                 <div className="flex gap-6">
                     <div className="min-w-[392px]">
                         <LiFiWidgetDynamic
