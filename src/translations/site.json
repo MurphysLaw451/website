@@ -1,395 +1,395 @@
 {
-    "backing": {
-        "title": {
-            "en": "Liquidity Backing"
-        },
-        "subtitle": {
-            "en": "A guaranteed minimum value for $DGNX"
-        },
-        "featureBacking": {
-            "title": {
-                "en": "Backing"
-            },
-            "description": {
-                "en": "The DGNX token is backed by its base assets, providing an ever-increasing minimal value that is balanced between blue-chip investments, stable assets, and volatile moonshots. This ensures that the DGNX token will retain its value and provide a steady return on investment for its holders. With its unique balance of assets, the DGNX token is an excellent choice for those looking for stability and growth in their investments."
-            }
-        },
-        "featureLiquidity": {
-            "title": {
-                "en": "Liquidity"
-            },
-            "description": {
-                "en": "The DGNX token is unique in that a set percentage, 2%, of every buy and sell transaction is sent to the Liquidity Backing pool. This ensures that the token's minimal value can never decrease, and it provides added stability and security for its holders. With this innovative feature, the DGNX token is an excellent choice for those looking for more security."
-            }
-        },
-        "featureBurn": {
-            "title": {
-                "en": "Burn"
-            },
-            "description": {
-                "en": "The DGNX token is designed to provide added stability and security for its holders. If the market price ever drops below the intrinsic minimal value, holders have the option to burn their DGNX tokens for their share of the Liquidity Backing. This ensures that the token's minimal value can never decrease, and holders can always expect to be able to sell or burn their DGNX."
-            }
-        }
+  "backing": {
+    "title": {
+      "en": "Liquidity Backing"
     },
-    "cta": {
-        "title": {
-            "en": "Join in!"
-        },
-        "subtitle": {
-            "en": "Did we already mention that we are bridging the token to other chains without diluting the supply?"
-        }
+    "subtitle": {
+      "en": "A guaranteed minimum value for $DGNX"
     },
-    "faq": {
-        "title": {
-            "en": "More info"
-        },
-        "questionDoxxed": {
-            "question": {
-                "en": "Are you doxxed?"
-            },
-            "answer": {
-                "en": "Our team is doxxed through SolidProof. You can view the certificate <a class=\"text-orange-500\" href=\"https://github.com/solidproof/projects/blob/main/DGNX/KYC_Certificate_DegenX.png\" target=\"_blank\">here</a>."
-            }
-        },
-        "questionAudit": {
-            "question": {
-                "en": "Are the contracts audited?"
-            },
-            "answer": {
-                "en": "Yes! All current contracts can be viewed <a class=\"text-orange-500\" href=\"https://github.com/solidproof/projects/tree/main/DGNX\" target=\"_blank\">here</a>. New contracts will be audited before launch, which one of the reasons of the development fund."
-            }
-        },
-        "questionRoadmap": {
-            "question": {
-                "en": "What is the roadmap?"
-            },
-            "answer": {
-                "en": "Our token and DAO are launched and we are now developing the liquidity backing and bridge."
-            }
-        },
-        "questionTeam": {
-            "question": {
-                "en": "Who is the team?"
-            },
-            "answer": {
-                "en": "We are a group of around 20 degens, specialised in development, marketing and even construction!"
-            }
-        }
+    "featureBacking": {
+      "title": {
+        "en": "Backing"
+      },
+      "description": {
+        "en": "The DGNX token is backed by its base assets, providing an ever-increasing minimal value that is balanced between blue-chip investments, stable assets, and volatile moonshots. This ensures that the DGNX token will retain its value and provide a steady return on investment for its holders. With its unique balance of assets, the DGNX token is an excellent choice for those looking for stability and growth in their investments."
+      }
     },
-    "features": {
-        "dgnx": {
-            "en": "$DGNX"
-        },
-        "description": {
-            "en": "Three unique features that make us stand out"
-        },
-        "baselineName": {
-            "en": "Baseline value"
-        },
-        "baselineSummary": {
-            "en": "Ever increasing minimum value of $DGNX."
-        },
-        "baselineDesc": {
-            "en": "You can always burn your $DGNX to get the backing back, even if the market price is lower than the backing price."
-        },
-        "daoName": {
-            "en": "DAO token"
-        },
-        "daoSummary": {
-            "en": "Vote in our DAO and be part of the direction DegenX takes."
-        },
-        "daoDesc": {
-            "en": "All contracts are owned by the DAO and the project is truly community-led."
-        },
-        "rewardsName": {
-            "en": "Rewards"
-        },
-        "rewardsSummary": {
-            "en": "Earn by staking $DGNX."
-        },
-        "rewardsDesc": {
-            "en": "We are developing several revenue generating services, like StakeX and Factor and will distributing the revenue to stakers. Earn by staking $DGNX"
-        }
+    "featureLiquidity": {
+      "title": {
+        "en": "Liquidity"
+      },
+      "description": {
+        "en": "The DGNX token is unique in that a set percentage, 2%, of every buy and sell transaction is sent to the Liquidity Backing pool. This ensures that the token's minimal value can never decrease, and it provides added stability and security for its holders. With this innovative feature, the DGNX token is an excellent choice for those looking for more security."
+      }
     },
-    "footer": {
-        "copyright": {
-            "en": "Copyright"
-        },
-        "reservedRights": {
-            "en": "DegenX. All rights reserved."
-        }
+    "featureBurn": {
+      "title": {
+        "en": "Burn"
+      },
+      "description": {
+        "en": "The DGNX token is designed to provide added stability and security for its holders. If the market price ever drops below the intrinsic minimal value, holders have the option to burn their DGNX tokens for their share of the Liquidity Backing. This ensures that the token's minimal value can never decrease, and holders can always expect to be able to sell or burn their DGNX."
+      }
+    }
+  },
+  "cta": {
+    "title": {
+      "en": "Join in!"
     },
-    "header": {
-        "launchApp": {
-            "en": "Launch App"
-        },
-        "projects": {
-            "en": "Projects"
-        },
-        "tokenomics": {
-            "en": "Tokenomics"
-        },
-        "backing": {
-            "en": "Backing"
-        },
-        "team": {
-            "en": "Team"
-        },
-        "roadmap": {
-            "en": "Roadmap"
-        },
-        "buy": {
-            "en": "Buy"
-        }
+    "subtitle": {
+      "en": "Did we already mention that we are bridging the token to other chains without diluting the supply?"
+    }
+  },
+  "faq": {
+    "title": {
+      "en": "More info"
     },
-    "hero": {
-        "degenx": {
-            "en": "DegenX"
-        },
-        "a": {
-            "en": "A"
-        },
-        "defi": {
-            "en": "DeFi"
-        },
-        "powerhouse": {
-            "en": "Powerhouse"
-        },
-        "heroDesc": {
-            "en": "DegenX is a multichain ecosystem of DeFi products that provides value for both projects and users. Revenue is distributed to stakers of $DGNX, the governance token of DegenX with liquidity backing: a minimum guaranteed price that only grows."
-        },
-        "buyNow": {
-            "en": "Buy $DGNX now"
-        },
-        "gitbook": {
-            "en": "Docs"
-        }
+    "questionDoxxed": {
+      "question": {
+        "en": "Are you doxxed?"
+      },
+      "answer": {
+        "en": "Our team is doxxed through SolidProof. You can view the certificate <a class=\"text-orange-500\" href=\"https://github.com/solidproof/projects/blob/main/DGNX/KYC_Certificate_DegenX.png\" target=\"_blank\">here</a>."
+      }
+    },
+    "questionAudit": {
+      "question": {
+        "en": "Are the contracts audited?"
+      },
+      "answer": {
+        "en": "Yes! All current contracts can be viewed <a class=\"text-orange-500\" href=\"https://github.com/solidproof/projects/tree/main/DGNX\" target=\"_blank\">here</a>. New contracts will be audited before launch, which one of the reasons of the development fund."
+      }
+    },
+    "questionRoadmap": {
+      "question": {
+        "en": "What is the roadmap?"
+      },
+      "answer": {
+        "en": "Our token and DAO are launched, as well as the liquidity backing. We are now developing the bridge and DEX, Broccoliswap."
+      }
+    },
+    "questionTeam": {
+      "question": {
+        "en": "Who is the team?"
+      },
+      "answer": {
+        "en": "We are a group of around 20 degens, specialised in development, marketing and even construction!"
+      }
+    }
+  },
+  "features": {
+    "dgnx": {
+      "en": "$DGNX"
+    },
+    "description": {
+      "en": "Three unique features that make us stand out"
+    },
+    "baselineName": {
+      "en": "Baseline value"
+    },
+    "baselineSummary": {
+      "en": "Ever increasing minimum value of $DGNX."
+    },
+    "baselineDesc": {
+      "en": "You can always burn your $DGNX to get the backing back, even if the market price is lower than the backing price."
+    },
+    "daoName": {
+      "en": "DAO token"
+    },
+    "daoSummary": {
+      "en": "Vote in our DAO and be part of the direction DegenX takes."
+    },
+    "daoDesc": {
+      "en": "All contracts are owned by the DAO and the project is truly community-led."
+    },
+    "rewardsName": {
+      "en": "Rewards"
+    },
+    "rewardsSummary": {
+      "en": "Earn by staking $DGNX."
+    },
+    "rewardsDesc": {
+      "en": "We are developing several revenue generating services, like StakeX and Factor and will distributing the revenue to stakers. Earn by staking $DGNX"
+    }
+  },
+  "footer": {
+    "copyright": {
+      "en": "Copyright"
+    },
+    "reservedRights": {
+      "en": "DegenX. All rights reserved."
+    }
+  },
+  "header": {
+    "launchApp": {
+      "en": "Launch App"
     },
     "projects": {
-        "title": {
-            "en": "Nine projects to rule them all"
-        },
-        "meetEcosystem": {
-            "en": "Meet the DegenX ecosystem"
-        },
-        "features": {
-            "liqBacking": {
-                "title": {
-                    "en": "Liquidity Backing"
-                },
-                "description": {
-                    "en": "$DGNX is the driving force behind the revolutionary DegenX ecosystem. With its solid foundation in a base asset, the DGNX token boasts an ever-growing intrinsic value and is further strengthened by the power of onchain DAO governance."
-                }
-            },
-            "swap": {
-                "title": {
-                    "en": "Swap"
-                },
-                "description": {
-                    "en": "Our upcoming swap is the ultimate user-friendly decentralized exchange. With compatibility across EVM networks, our DEX is built on a cutting-edge decentralized AMM system, which allows for seamless and effortless trading of multiple cryptocurrencies across multiple chains. Get ready to experience the future of decentralized trading with our upcoming Swap."
-                }
-            },
-            "dao": {
-                "title": {
-                    "en": "DAO"
-                },
-                "description": {
-                    "en": "Be a part of something truly exciting and join the DGNX token holder community, where you will become a true owner of the DegenX ecosystem. We are revolutionizing the way organizations are run by offering an alternative to centralized structures, operations, and decision-making processes. With DGNX token, you can truly be in control of the future of the project."
-                }
-            },
-            "bridge": {
-                "title": {
-                    "en": "Bridge"
-                },
-                "description": {
-                    "en": "DGNX will be bridged across several EVM chains including Ethereum and BSC. This allows for a wider distribution of the limited supply of 21 million tokens across multiple blockchain networks, providing greater accessibility and utility for users."
-                }
-            },
-            "stake": {
-                "title": {
-                    "en": "StakeX"
-                },
-                "description": {
-                    "en": "StakeX is the ultimate multichain staking smart contract. Whether you're looking to stake $DGNX or add a staking protocol to your project, StakeX has you covered. With its unparalleled security and innovation, StakeX sets a new standard in the blockchain world. Take your project to the next level with DegenX StakeX."
-                }
-            },
-            "locker": {
-                "title": {
-                    "en": "LockeR"
-                },
-                "description": {
-                    "en": "Experience the future of token management with LockeR, the most advanced multichain token locker on the blockchain. With just a few simple steps, easily lock up liquidity, developer tokens, or your own tokens for added security. Our process is fast, easy, and secure, and includes unique options such as contract-based unlocking through voting."
-                }
-            },
-            "factor": {
-                "title": {
-                    "en": "Factor"
-                },
-                "description": {
-                    "en": "Advance your project with DegenX Factor, a top-of-the-line blockchain service for projects looking to implement unique features for their tokens. Our technology guarantees a steady increase in the floor price for your tokens, bringing security and stability to your holders. Whether you're starting a new venture or upgrading an existing one, DegenX Factor is the perfect solution to take your token to the next level."
-                }
-            },
-            "clinic": {
-                "title": {
-                    "en": "Clinic"
-                },
-                "description": {
-                    "en": "DegenX Clinic is a unique project that will serve as a real-world example for our community to come together in a resort-like environment. Designed to help recover from rugpulls in other projects, DegenX Clinic will also be able to generate income by renting it out when not in use. These profits will be used to maintain the facility and further increase the value of our token. Join us in creating a safe haven for the crypto community with DegenX Clinic."
-                }
-            }
-        }
-    },
-    "roadmap": {
-        "title": {
-            "en": "Roadmap"
-        },
-        "phase": {
-            "en": "Phase"
-        },
-        "done": {
-            "en": "Done!"
-        },
-        "ongoing": {
-            "en": "Ongoing"
-        },
-        "future": {
-            "en": "Future"
-        },
-
-        "tokenLaunch": {
-            "en": "Token Launch"
-        },
-        "website": {
-            "en": "Website"
-        },
-        "dAPP": {
-            "en": "dAPP"
-        },
-        "dao": {
-            "en": "DAO"
-        },
-        "liqBacking": {
-            "en": "Liquidity Backing"
-        },
-        "bridge": {
-            "en": "Bridge"
-        },
-        "locker": {
-            "en": "LockeR"
-        },
-        "stake": {
-            "en": "StakeR"
-        },
-        "dp": {
-            "en": "D&P"
-        },
-        "dex": {
-            "en": "DEX"
-        },
-        "swap": {
-            "en": "Swap"
-        },
-        "nftv2": {
-            "en": "NFT V2"
-        },
-        "nftMarketplace": {
-            "en": "NFT Marketplace"
-        },
-        "factor": {
-            "en": "Factor"
-        },
-        "clinic": {
-            "en": "Clinic"
-        },
-        "tbd": {
-            "en": "TBD..."
-        }
+      "en": "Projects"
     },
     "tokenomics": {
-        "title": {
-            "en": "Tokenomics"
-        },
-        "totalSupply": {
-            "en": "Total supply (across all chains)"
-        },
-        "checkSnowtrace": {
-            "en": "Check on Snowtrace"
-        },
-        "burnTitle": {
-            "en": "Burn: 1% on sell"
-        },
-        "burn": {
-            "en": "This makes $DGNX deflationary. Additionally, the burn mechanism increases the backing of the circulating supply, leading to ever increasing baseline value."
-        },
-        "marketingTitle": {
-            "en": "Marketing: 1% on buy"
-        },
-        "marketing": {
-            "en": "1% of the AVAX used to buy DGNX is sent to a marketing wallet. This will be utilized to market the project and grow the community"
-        },
-        "liquidityTitle": {
-            "en": "Liquidity: 1%"
-        },
-        "liquidity": {
-            "en": "1% of buy and sell transactions are retained within the liquidity pool (LP), which helps establish a stable price floor and ensures continuous liquidity for selling $DGNX."
-        },
-        "backingTitle": {
-            "en": "Backing: 4%"
-        },
-        "backing": {
-            "en": "4% of all buys and sells are sent to the liquidity backing pool, giving $DGNX an ever increasing minimum value."
-        },
-        "developmentTitle": {
-            "en": "Development: 2%"
-        },
-        "development": {
-            "en": "2% of all transactions will be used to cover development costs, including audits."
-        }
+      "en": "Tokenomics"
+    },
+    "backing": {
+      "en": "Backing"
     },
     "team": {
-        "title": {
-            "en": "The team"
-        },
-        "doxxedThroughSolidProof": {
-            "en": "Our team is doxxed through SolidProof, view"
-        },
-        "here": {
-            "en": "here"
-        },
-        "roles": {
-            "communityManagement": {
-                "en": "Community Management"
-            },
-            "design": {
-                "en": "Design"
-            },
-            "operations": {
-                "en": "Operations"
-            },
-            "blockchainAnalyticsSecurity": {
-                "en": "Blockchain Analytics & Security"
-            },
-            "leadSolidityDev": {
-                "en": "Tech Lead & Solidity Developer"
-            },
-            "developer": {
-                "en": "Developer"
-            },
-            "marcom": {
-                "en": "Marketing & Community Management"
-            },
-            "marketing": {
-                "en": "Marketing"
-            },
-            "operationsMarketing": {
-                "en": "Operations & Marketing"
-            },
-            "productManagerDeveloper": {
-                "en": "Product Manager & Developer"
-            },
-            "frontendDev": {
-                "en": "Frontend Developer"
-            }
-        }
+      "en": "Team"
+    },
+    "roadmap": {
+      "en": "Roadmap"
+    },
+    "buy": {
+      "en": "Buy"
     }
+  },
+  "hero": {
+    "degenx": {
+      "en": "DegenX"
+    },
+    "a": {
+      "en": "A"
+    },
+    "defi": {
+      "en": "DeFi"
+    },
+    "powerhouse": {
+      "en": "Powerhouse"
+    },
+    "heroDesc": {
+      "en": "DegenX is a multichain ecosystem of DeFi products that provides value for both projects and users. Revenue is distributed to stakers of $DGNX, the governance token of DegenX with liquidity backing: a minimum guaranteed price that only grows."
+    },
+    "buyNow": {
+      "en": "Buy $DGNX now"
+    },
+    "gitbook": {
+      "en": "Docs"
+    }
+  },
+  "projects": {
+    "title": {
+      "en": "Nine projects to rule them all"
+    },
+    "meetEcosystem": {
+      "en": "Meet the DegenX ecosystem"
+    },
+    "features": {
+      "liqBacking": {
+        "title": {
+          "en": "Liquidity Backing"
+        },
+        "description": {
+          "en": "$DGNX is the driving force behind the revolutionary DegenX ecosystem. With its solid foundation in a base asset, the DGNX token boasts an ever-growing intrinsic value and is further strengthened by the power of onchain DAO governance."
+        }
+      },
+      "swap": {
+        "title": {
+          "en": "Swap"
+        },
+        "description": {
+          "en": "Our upcoming swap is the ultimate user-friendly decentralized exchange. With compatibility across EVM networks, our DEX is built on a cutting-edge decentralized AMM system, which allows for seamless and effortless trading of multiple cryptocurrencies across multiple chains. Get ready to experience the future of decentralized trading with our upcoming Swap."
+        }
+      },
+      "dao": {
+        "title": {
+          "en": "DAO"
+        },
+        "description": {
+          "en": "Be a part of something truly exciting and join the DGNX token holder community, where you will become a true owner of the DegenX ecosystem. We are revolutionizing the way organizations are run by offering an alternative to centralized structures, operations, and decision-making processes. With DGNX token, you can truly be in control of the future of the project."
+        }
+      },
+      "bridge": {
+        "title": {
+          "en": "Bridge"
+        },
+        "description": {
+          "en": "DGNX will be bridged across several EVM chains including Ethereum and BSC. This allows for a wider distribution of the limited supply of 21 million tokens across multiple blockchain networks, providing greater accessibility and utility for users."
+        }
+      },
+      "stake": {
+        "title": {
+          "en": "StakeX"
+        },
+        "description": {
+          "en": "StakeX is the ultimate multichain staking smart contract. Whether you're looking to stake $DGNX or add a staking protocol to your project, StakeX has you covered. With its unparalleled security and innovation, StakeX sets a new standard in the blockchain world. Take your project to the next level with DegenX StakeX."
+        }
+      },
+      "locker": {
+        "title": {
+          "en": "LockeR"
+        },
+        "description": {
+          "en": "Experience the future of token management with LockeR, the most advanced multichain token locker on the blockchain. With just a few simple steps, easily lock up liquidity, developer tokens, or your own tokens for added security. Our process is fast, easy, and secure, and includes unique options such as contract-based unlocking through voting."
+        }
+      },
+      "factor": {
+        "title": {
+          "en": "Factor"
+        },
+        "description": {
+          "en": "Advance your project with DegenX Factor, a top-of-the-line blockchain service for projects looking to implement unique features for their tokens. Our technology guarantees a steady increase in the floor price for your tokens, bringing security and stability to your holders. Whether you're starting a new venture or upgrading an existing one, DegenX Factor is the perfect solution to take your token to the next level."
+        }
+      },
+      "clinic": {
+        "title": {
+          "en": "Clinic"
+        },
+        "description": {
+          "en": "DegenX Clinic is a unique project that will serve as a real-world example for our community to come together in a resort-like environment. Designed to help recover from rugpulls in other projects, DegenX Clinic will also be able to generate income by renting it out when not in use. These profits will be used to maintain the facility and further increase the value of our token. Join us in creating a safe haven for the crypto community with DegenX Clinic."
+        }
+      }
+    }
+  },
+  "roadmap": {
+    "title": {
+      "en": "Roadmap"
+    },
+    "phase": {
+      "en": "Phase"
+    },
+    "done": {
+      "en": "Done!"
+    },
+    "ongoing": {
+      "en": "Ongoing"
+    },
+    "future": {
+      "en": "Future"
+    },
+
+    "tokenLaunch": {
+      "en": "Token Launch"
+    },
+    "website": {
+      "en": "Website"
+    },
+    "dAPP": {
+      "en": "dAPP"
+    },
+    "dao": {
+      "en": "DAO"
+    },
+    "liqBacking": {
+      "en": "Liquidity Backing"
+    },
+    "bridge": {
+      "en": "Bridge"
+    },
+    "locker": {
+      "en": "LockeR"
+    },
+    "stake": {
+      "en": "StakeR"
+    },
+    "dp": {
+      "en": "D&P"
+    },
+    "dex": {
+      "en": "DEX"
+    },
+    "swap": {
+      "en": "Swap"
+    },
+    "nftv2": {
+      "en": "NFT V2"
+    },
+    "nftMarketplace": {
+      "en": "NFT Marketplace"
+    },
+    "factor": {
+      "en": "Factor"
+    },
+    "clinic": {
+      "en": "Clinic"
+    },
+    "tbd": {
+      "en": "TBD..."
+    }
+  },
+  "tokenomics": {
+    "title": {
+      "en": "Tokenomics"
+    },
+    "totalSupply": {
+      "en": "Total supply (across all chains)"
+    },
+    "checkSnowtrace": {
+      "en": "Check on Snowtrace"
+    },
+    "burnTitle": {
+      "en": "Burn: 1% on sell"
+    },
+    "burn": {
+      "en": "This makes $DGNX deflationary. Additionally, the burn mechanism increases the backing of the circulating supply, leading to ever increasing baseline value."
+    },
+    "marketingTitle": {
+      "en": "Marketing: 1% on buy"
+    },
+    "marketing": {
+      "en": "1% of the AVAX used to buy DGNX is sent to a marketing wallet. This will be utilized to market the project and grow the community"
+    },
+    "liquidityTitle": {
+      "en": "Liquidity: 1%"
+    },
+    "liquidity": {
+      "en": "1% of buy and sell transactions are retained within the liquidity pool (LP), which helps establish a stable price floor and ensures continuous liquidity for selling $DGNX."
+    },
+    "backingTitle": {
+      "en": "Backing: 4%"
+    },
+    "backing": {
+      "en": "4% of all buys and sells are sent to the liquidity backing pool, giving $DGNX an ever increasing minimum value."
+    },
+    "developmentTitle": {
+      "en": "Development: 2%"
+    },
+    "development": {
+      "en": "2% of all transactions will be used to cover development costs, including audits."
+    }
+  },
+  "team": {
+    "title": {
+      "en": "The team"
+    },
+    "doxxedThroughSolidProof": {
+      "en": "Our team is doxxed through SolidProof, view"
+    },
+    "here": {
+      "en": "here"
+    },
+    "roles": {
+      "communityManagement": {
+        "en": "Community Management"
+      },
+      "design": {
+        "en": "Design"
+      },
+      "operations": {
+        "en": "Operations"
+      },
+      "blockchainAnalyticsSecurity": {
+        "en": "Blockchain Analytics & Security"
+      },
+      "leadSolidityDev": {
+        "en": "Tech Lead & Solidity Developer"
+      },
+      "developer": {
+        "en": "Developer"
+      },
+      "marcom": {
+        "en": "Marketing & Community Management"
+      },
+      "marketing": {
+        "en": "Marketing"
+      },
+      "operationsMarketing": {
+        "en": "Operations & Marketing"
+      },
+      "productManagerDeveloper": {
+        "en": "Product Manager & Developer"
+      },
+      "frontendDev": {
+        "en": "Frontend Developer"
+      }
+    }
+  }
 }

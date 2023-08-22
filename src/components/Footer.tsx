@@ -13,6 +13,7 @@ import { Container } from './Container'
 import logoImage from '../images/logo_large.png'
 
 import translations from '../translations/site.json'
+import { SiLinktree } from 'react-icons/si'
 
 export function Footer() {
     return (
@@ -63,6 +64,13 @@ export function Footer() {
                             className="group"
                         >
                             <FaTiktok className="h-6 w-6 text-gray-500" />
+                        </Link>
+                        <Link
+                            href="https://linktr.ee/DEGENX"
+                            target="_blank"
+                            className="group"
+                        >
+                            <SiLinktree className="h-6 w-6 text-gray-500" />
                         </Link>
                     </div>
                     <p className="mt-6 text-sm text-slate-500 sm:mt-0">

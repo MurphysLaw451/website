@@ -1,16 +1,12 @@
 import Head from 'next/head'
 
 import { CallToAction } from '../components/CallToAction'
-import { Faqs } from '../components/Faqs'
 import { Team } from '../components/Team'
-import { Roadmap } from '../components/Roadmap'
 import { Footer } from '../components/Footer'
 import { Header } from '../components/Header'
 import { Hero } from '../components/Hero'
-import { Backing } from '../components/Backing'
 import { Projects } from '../components/Projects'
-import { Features } from '../components/Features'
-import { Tokenomics } from '../components/Tokenomics'
+import { Empower } from '../components/Empower'
 
 export default function Home() {
   return (
@@ -25,14 +21,10 @@ export default function Home() {
       <Header />
       <main>
         <Hero />
+        <Empower />
         <Projects />
-        <Features />
         <CallToAction />
-        <Tokenomics />
-        <Backing />
         <Team />
-        <Roadmap />
-        <Faqs />
       </main>
       <Footer />
     </>

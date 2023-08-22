@@ -4,8 +4,9 @@ const plugin = require('tailwindcss/plugin')
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: 'class',
-  content: ['./src/**/*.{ts,tsx}'],
+  content: ['./src/**/*.{ts,tsx}', './node_modules/flowbite-react/**/*.{js,jsx,ts,tsx}'],
   plugins: [
+    require('flowbite/plugin'),
     plugin(function ({ addBase }) {
       addBase({
         html: { fontSize: '14px' },
@@ -65,6 +66,7 @@ module.exports = {
       colors: {
         activeblue: '#225271',
         darkblue: '#023148',
+        darkerblue: '#081D2E',
         light: {
           100: '#f2f3f9',
           200: '#dbe8ea',

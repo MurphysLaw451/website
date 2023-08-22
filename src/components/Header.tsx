@@ -1,6 +1,8 @@
 import { Fragment } from 'react'
 import Image from 'next/image'
-import { FaTelegramPlane } from 'react-icons/fa'
+import { FaDiscord, FaTelegramPlane } from 'react-icons/fa'
+import { SiLinktree } from 'react-icons/si'
+import { BsArrowUpRight } from 'react-icons/bs'
 import Link from 'next/link'
 import { Popover, Transition } from '@headlessui/react'
 import clsx from 'clsx'
@@ -116,54 +118,78 @@ function MobileNavigation() {
 
 export function Header() {
     return (
-        <header className="py-10">
+        <header className="py-5">
             <Container>
-                <nav className="relative z-50 flex justify-between">
-                    <div className="flex items-center md:gap-x-12">
+                <nav className="relative z-50 flex justify-between flex-col sm:flex-row items-center gap-y-3">
+                    <div className="flex items-center lg:gap-x-12">
                         <Link href="#" aria-label="Home">
                             <Image
-                                className="h-14 w-14"
                                 src={logoImage}
                                 alt=""
-                                width={56}
-                                height={56}
+                                height={48}
                             />
                         </Link>
-                        <div className="hidden md:flex md:gap-x-6">
+                        <div className="hidden lg:flex lg:gap-x-1 xl:gap-x-5">
                             <NavLink href="#projects">
-                                {translations.header.projects.en}
+                                $DGNX
                             </NavLink>
                             <NavLink href="#tokenomics">
-                                {translations.header.tokenomics.en}
+                                Ecosystem
                             </NavLink>
                             <NavLink href="#backing">
-                                {translations.header.backing.en}
+                                Roadmap
                             </NavLink>
                             <NavLink href="#team">
-                                {translations.header.team.en}
+                                Social
                             </NavLink>
                             <NavLink href="#roadmap">
-                                {translations.header.roadmap.en}
+                                Team
                             </NavLink>
                             <NavLink href="/dapp/buy">
-                                {translations.header.buy.en}
+                                Buy
                             </NavLink>
                         </div>
                     </div>
-                    <div className="flex items-center gap-x-5 md:gap-x-8">
-                        <Link
-                            href="https://t.me/DegenXportal"
-                            className="group"
-                            target="_blank"
-                        >
-                            <FaTelegramPlane className="h-6 w-6 text-gray-500 dark:text-slate-400" />
-                        </Link>
+                    <div className="flex items-center gap-x-5 md:gap-x-3 xl:gap-x-3 flex-col sm:flex-row">
+                        <div className="flex gap-x-5 md:gap-x-3 xl:gap-x-3">
+                            <Link
+                                href="https://t.me/DegenXportal"
+                                className="group text-light-600 hover:border-degenOrange border-b-2 border-transparent pb-2"
+                                target="_blank"
+                            >
+                                <FaTelegramPlane className="h-6 w-6 " />
+                            </Link>
+                            <Link
+                                href="https://twitter.com/DegenEcosystem"
+                                className="group text-light-600 hover:border-degenOrange border-b-2 border-transparent pb-2"
+                                target="_blank"
+                            >
+                                <div className="h-6 text-center  text-2xl -mt-1">𝕏</div>
+                            </Link>
+                            <Link
+                                href="https://discord.gg/BMaVtEVkgC"
+                                className="group text-light-600 hover:border-degenOrange border-b-2 border-transparent pb-2"
+                                target="_blank"
+                            >
+                                <FaDiscord className="h-6 w-6 " />
+                            </Link>
+                            <Link
+                                href="https://linktr.ee/DEGENX"
+                                className="group text-light-600 hover:border-degenOrange border-b-2 border-transparent pb-2"
+                                target="_blank"
+                            >
+                                <SiLinktree className="h-6 w-6 " />
+                            </Link>
+                        </div>
                         <DarkmodeToggle />
-                        <Button className="" href="/dapp" color="orange">
-                            <span>{translations.header.launchApp.en}</span>
-                        </Button>
-                        <div className="-mr-1 md:hidden">
-                            <MobileNavigation />
+                        <div className="flex gap-1 items-center">
+                            <Button className="flex gap-1 lg:ml-3" href="/dapp" color="orange">
+                                <span>{translations.header.launchApp.en}</span>
+                                <BsArrowUpRight />
+                            </Button>
+                            <div className="-mr-1 lg:hidden">
+                                <MobileNavigation />
+                            </div>
                         </div>
                     </div>
                 </nav>

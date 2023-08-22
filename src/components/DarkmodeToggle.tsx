@@ -2,6 +2,9 @@ import clsx from 'clsx'
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
 
+/**
+ * Always use dark mode for now
+ */
 export const DarkmodeToggle = () => {
     const [ready, setReady] = useState(false)
     const { theme, setTheme } = useTheme()
@@ -15,14 +18,15 @@ export const DarkmodeToggle = () => {
     }
 
     useEffect(() => {
-        if (
-            (theme === 'system' &&
-                window.matchMedia &&
-                window.matchMedia('(prefers-color-scheme: dark)').matches) ||
-            theme === '"default"'
-        ) {
-            setTheme('dark')
-        }
+        setTheme('dark')
+        // if (
+        //     (theme === 'system' &&
+        //         window.matchMedia &&
+        //         window.matchMedia('(prefers-color-scheme: dark)').matches) ||
+        //     theme === '"default"'
+        // ) {
+        //     setTheme('dark')
+        // }
 
         setReady(true)
     }, [theme, setTheme])
@@ -30,6 +34,8 @@ export const DarkmodeToggle = () => {
     if (!ready) {
         return null
     }
+
+    return null;
 
     return (
         <button
