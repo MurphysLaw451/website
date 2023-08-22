@@ -13,7 +13,7 @@ import { SiLinktree } from 'react-icons/si'
 
 export function CallToAction() {
     return (
-        <Container className="pt-10 pb-10">
+        <Container className="pt-10 pb-10" id="join">
             <div className="rounded-lg mt-5 border-2 border-activeblue bg-darkerblue p-5 lg:px-16 lg:py-12 grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-8">
                 <div className="md:col-span-2">
                     <p className="text-light-600 font-bold mb-5">

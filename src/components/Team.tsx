@@ -11,7 +11,7 @@ import solidproofImage from '../images/solidproof.png'
 
 export function Team() {
     return (
-        <Container className="pt-10 pb-10 text-center">
+        <Container className="pt-10 pb-10 text-center" id="team">
             <div className="rounded-lg mt-5 border-2 border-activeblue bg-darkerblue p-5 lg:px-16 lg:py-12">
                 <H1 className="">Introducing the <span className="text-techGreen dark:text-techGreen ">team</span></H1>
                 <p className="text-light-600">

@@ -37,7 +37,7 @@ const Slide = (props: {
 
 export function Projects() {
     return (
-        <Container className="pt-10 pb-10 text-center">
+        <Container className="pt-10 pb-10 text-center" id="ecosystem">
             <div className="text-center">
                 <H1 className="">
                     <span className="text-techGreen">Explore</span> our ecosystem

@@ -16,7 +16,7 @@ const Block = (props: { title: String; text: string }) => {
 
 export function Empower() {
     return (
-        <Container className="pt-10 pb-10 text-center">
+        <Container className="pt-10 pb-10 text-center" id="holder">
             <div className="text-center md:text-left">
                 <H1 className="">
                     <span className="text-white">Feel</span>

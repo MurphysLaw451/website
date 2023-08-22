@@ -39,7 +39,7 @@ const RoadmapItem = (props: {
 
 export function Roadmap() {
     return (
-        <div className="relative max-w-7xl mx-auto">
+        <div className="relative max-w-7xl mx-auto" id="roadmap">
             <div className="absolute hidden md:block top-0 bottom-0 left-0 right-0 z-0" style={{
             backgroundImage: `url(${roadmap.src})`,
             backgroundRepeat: 'no-repeat',

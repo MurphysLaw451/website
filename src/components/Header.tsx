@@ -130,19 +130,19 @@ export function Header() {
                             />
                         </Link>
                         <div className="hidden lg:flex lg:gap-x-1 xl:gap-x-5">
-                            <NavLink href="#projects">
+                            <NavLink href="#holder">
                                 $DGNX
                             </NavLink>
-                            <NavLink href="#tokenomics">
+                            <NavLink href="#ecosystem">
                                 Ecosystem
                             </NavLink>
-                            <NavLink href="#backing">
+                            <NavLink href="#roadmap">
                                 Roadmap
                             </NavLink>
-                            <NavLink href="#team">
+                            <NavLink href="#join">
                                 Social
                             </NavLink>
-                            <NavLink href="#roadmap">
+                            <NavLink href="#team">
                                 Team
                             </NavLink>
                             <NavLink href="/dapp/buy">
