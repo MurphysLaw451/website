@@ -47,7 +47,7 @@ export default function Document(props) {
           gtag('config', 'G-SHQ22SS768');`}
                 </script>
             </Head>
-            <body className="flex h-full flex-col bg-light-200 bg-fixed dark:bg-gradient-radial dark:from-darkblue dark:to-dark ">
+            <body className="flex h-full flex-col bg-light-200 bg-fixed dark:bg-gradient-radial dark:from-darkblue dark:to-dark">
                 <Main />
                 <NextScript />
             </body>

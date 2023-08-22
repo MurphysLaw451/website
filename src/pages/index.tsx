@@ -7,6 +7,8 @@ import { Header } from '../components/Header'
 import { Hero } from '../components/Hero'
 import { Projects } from '../components/Projects'
 import { Empower } from '../components/Empower'
+import { Discover } from '../components/Discover'
+import { Roadmap } from '../components/Roadmap'
 
 export default function Home() {
   return (
@@ -23,6 +25,8 @@ export default function Home() {
         <Hero />
         <Empower />
         <Projects />
+        <Discover />
+        <Roadmap />
         <CallToAction />
         <Team />
       </main>
