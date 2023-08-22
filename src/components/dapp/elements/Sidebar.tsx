@@ -1,21 +1,41 @@
-import { Popover, Transition } from '@headlessui/react';
-import { Link, useLocation } from 'react-router-dom';
+import { Popover, Transition } from '@headlessui/react'
+import { Link, useLocation } from 'react-router-dom'
 import clsx from 'clsx'
-import { Fragment } from 'react';
+import { Fragment } from 'react'
 import { HiHome, HiCurrencyDollar } from 'react-icons/hi'
 import { FaPiggyBank } from 'react-icons/fa'
 import { RiGovernmentFill } from 'react-icons/ri'
 
 const navigation = [
     { name: 'Dashboard', icon: HiHome, href: '', count: undefined },
-    { name: 'Buy $DGNX', icon: HiCurrencyDollar, href: 'buy', count: undefined },
-    { name: 'Liquidity Backing', icon: FaPiggyBank, href: 'liquidity-backing', count: undefined },
-    { name: 'Governance', icon: RiGovernmentFill, href: 'governance', count: undefined },
+    {
+        name: 'Buy $DGNX',
+        icon: HiCurrencyDollar,
+        href: 'buy',
+        count: undefined,
+    },
+    {
+        name: 'Liquidity Backing',
+        icon: FaPiggyBank,
+        href: 'liquidity-backing',
+        count: undefined,
+    },
+    {
+        name: 'Governance',
+        icon: RiGovernmentFill,
+        href: 'governance',
+        count: undefined,
+    },
 ]
 
 function MobileNavLink({ href, children, ...props }) {
     return (
-        <Popover.Button as={Link} to={href} className="block w-full p-2" {...props}>
+        <Popover.Button
+            as={Link}
+            to={href}
+            className="block w-full p-2"
+            {...props}
+        >
             {children}
         </Popover.Button>
     )
@@ -83,7 +103,12 @@ function MobileSidebar() {
                         className="absolute inset-x-0 top-full mt-4 flex origin-top flex-col rounded-2xl bg-white p-4 text-lg tracking-tight text-slate-900 shadow-xl ring-1 ring-slate-900/5"
                     >
                         {navigation.map((item) => (
-                            <MobileNavLink key={item.name} href={`/dapp/${item.href}`}>{item.name}</MobileNavLink>
+                            <MobileNavLink
+                                key={item.name}
+                                href={`/dapp/${item.href}`}
+                            >
+                                {item.name}
+                            </MobileNavLink>
                         ))}
                     </Popover.Panel>
                 </Transition.Child>
@@ -96,51 +121,51 @@ export default function Sidebar(props: { mobile?: boolean }) {
     const location = useLocation()
 
     if (props.mobile) {
-        return <MobileSidebar />;
+        return <MobileSidebar />
     }
-    
+
     return (
         <div className="flex flex-grow flex-col overflow-y-auto ">
             <div className="flex flex-grow flex-col">
-                <nav className="flex-1 space-y-1 px-2 w-64 fixed" aria-label="Sidebar">
+                <nav
+                    className="fixed flex w-64 flex-col gap-2 space-y-1 px-2"
+                    aria-label="Sidebar"
+                >
                     {navigation.map((item) => {
-                        const current = (item.href && location.pathname.includes(item.href))
-                            || (`/dapp` === location.pathname && item.href === '')
-                            || (`/dapp/` === location.pathname && item.href === '')
+                        const current =
+                            (item.href &&
+                                location.pathname.includes(item.href)) ||
+                            (`/dapp` === location.pathname &&
+                                item.href === '') ||
+                            (`/dapp/` === location.pathname && item.href === '')
 
                         return (
                             <Link
                                 key={item.name}
                                 to={`/dapp/${item.href}`}
                                 className={clsx(
-                                    current ? 'bg-orange-100 text-gray-900' : 'text-gray-600 hover:bg-orange-100 hover:text-gray-900',
-                                    current ? 'dark:bg-orange-900 dark:text-slate-100' : 'dark:text-slate-400 dark:hover:bg-orange-900 dark:hover:text-slate-100',
-                                    'group flex items-center px-2 py-2 text-sm font-medium rounded-md'
+                                    current
+                                        ? 'border-2 border-degenOrange bg-light-100 text-dark'
+                                        : 'border-2 border-transparent text-light-800 hover:border-degenOrange hover:bg-light-100 hover:text-dark',
+                                    current
+                                        ? 'border-2 dark:border-activeblue dark:bg-darkblue dark:text-light-100'
+                                        : 'border-2 border-transparent dark:text-light-100 dark:hover:border-activeblue dark:hover:bg-darkblue',
+                                    'text-md group flex items-center rounded-xl px-2 py-2 font-bold transition-colors'
                                 )}
                             >
                                 <item.icon
                                     className={clsx(
-                                        current ? 'text-orange-500' : 'text-gray-400 group-hover:text-orange-500',
-                                        'mr-3 flex-shrink-0 h-6 w-6'
+                                        current
+                                            ? 'text-dark dark:text-light-100'
+                                            : 'text-light-800 transition-colors group-hover:text-dark dark:text-light-100 dark:group-hover:text-light-100',
+                                        'mr-3 h-6 w-6 flex-shrink-0'
                                     )}
                                     aria-hidden="true"
                                 />
                                 <span className="flex-1">{item.name}</span>
-                                {item.count ? (
-                                    <span
-                                        className={clsx(
-                                            current ? 'bg-white' : 'bg-gray-100 group-hover:bg-gray-200',
-                                            current ? 'dark:bg-gray-700' : 'dark:bg-gray-700 dark:group-hover:bg-gray-700',
-                                            'ml-3 inline-block py-0.5 px-3 text-xs font-medium rounded-full'
-                                        )}
-                                    >
-                                        {item.count}
-                                    </span>
-                                ) : null}
                             </Link>
                         )
-                }
-                )}
+                    })}
                 </nav>
             </div>
         </div>

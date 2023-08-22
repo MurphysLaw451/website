@@ -1,0 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+
+.theme-light:root {
+  --tv-color-platform-background: #f2f3f9;
+  --tv-color-pane-background: #f2f3f9;
+  --tv-color-pane-background-secondary: #f2f3f9;
+}
+
+html.theme-light .chart-page .chart-container-border {
+  background-color: #f2f3f9 !important;
+}

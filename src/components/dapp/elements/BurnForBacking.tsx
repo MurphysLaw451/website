@@ -278,7 +278,7 @@ export const BurnForBacking = (props: {
                             <input
                                 ref={slippageInputRef}
                                 type="text"
-                                className="dark:border-dark-800 m-0 w-6 border p-0 text-xs dark:bg-slate-900 dark:text-slate-200"
+                                className="dark:border-dark-800 m-0 w-6 border p-0 text-xs dark:bg-dark dark:text-light-200"
                             />
                             %
                             <AiOutlineCheckCircle
@@ -297,7 +297,7 @@ export const BurnForBacking = (props: {
                     </p>
                 )}
                 <input
-                    className="dark:border-dark-800 my-2 w-full border py-2 text-2xl leading-3 [appearance:textfield] dark:bg-slate-900 dark:text-slate-200 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                    className="my-2 w-full rounded-xl border-2 border-degenOrange bg-light-100 py-2 text-2xl leading-3 text-light-800 ring-0 focus:border-degenOrange focus:shadow-none focus:outline-none focus:ring-0 dark:border-activeblue dark:bg-dark dark:text-light-200"
                     type="number"
                     placeholder="0"
                     disabled={txRunning}
@@ -335,14 +335,14 @@ export const BurnForBacking = (props: {
                     <>
                         {allowance.isGreaterThanOrEqualTo(amountToBurn) ? (
                             <button
-                                className="my-3 flex w-full justify-center rounded-lg bg-orange-500 p-2 px-3 py-1 text-2xl text-white hover:bg-orange-400 dark:bg-orange-600 dark:hover:bg-orange-700"
+                                className="my-3 flex w-full justify-center rounded-xl border-2 border-degenOrange bg-light-100 p-2 px-3 py-2 text-xl text-light-800 transition-colors hover:bg-degenOrange hover:text-light-100 dark:border-activeblue dark:bg-dark dark:hover:bg-activeblue"
                                 onClick={() => execBurn()}
                             >
                                 {txRunning ? <Spinner className="" /> : 'Burn'}
                             </button>
                         ) : (
                             <button
-                                className="my-3 flex w-full justify-center rounded-lg bg-orange-500 p-2 px-3 py-1 text-2xl text-white hover:bg-orange-400 dark:bg-orange-600 dark:hover:bg-orange-700"
+                                className="my-3 flex w-full justify-center rounded-xl border-2 border-degenOrange bg-light-100 p-2 px-3 py-2 text-xl text-light-800 transition-colors hover:bg-degenOrange hover:text-light-100 dark:border-activeblue dark:bg-dark dark:hover:bg-activeblue"
                                 onClick={() => execApprove()}
                             >
                                 {txRunning ? (

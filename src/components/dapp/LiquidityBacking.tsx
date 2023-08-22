@@ -17,6 +17,8 @@ import { BNtoNumber } from '../../helpers/number'
 import { BurnForBacking } from './elements/BurnForBacking'
 import { Chart } from './elements/Chart'
 import Image from 'next/image'
+import { H1 } from '../H1'
+import { H2 } from '../H2'
 
 const chainId = +process.env.NEXT_PUBLIC_CHAIN_ID
 const provider = new ethers.providers.JsonRpcProvider(
@@ -134,16 +136,16 @@ export const LiquidityBacking = (props: RouteObject) => {
     return (
         <div>
             <div className="mb-8 flex flex-col items-center lg:flex-row">
-                <h1 className="flex-grow text-4xl">Liquidity Backing</h1>
+                <H1>Liquidity Backing</H1>
             </div>
             <div className="mb-8 flex flex-col items-center lg:flex-row">
-                <span className="mr-4 text-2xl">Show backing values in</span>
+                <H2 className="mb-0">Show backing values in</H2>
                 <div className="mt-8 mb-2 flex flex-row lg:mt-0 lg:mb-0">
                     {stats?.wantTokenData &&
                         stats.wantTokenData.map((token) => (
                             <span
                                 key={token.address}
-                                className="mx-3 inline-block cursor-pointer rounded-full opacity-70 ring-orange-600 ring-offset-white hover:opacity-100 data-[selected=true]:opacity-100 data-[selected=true]:ring data-[selected=true]:ring-offset-4 dark:ring-white dark:ring-offset-gray-900"
+                                className="mx-3 inline-block cursor-pointer rounded-full opacity-70 ring-orange-600 ring-offset-white hover:opacity-100 data-[selected=true]:opacity-100 data-[selected=true]:ring data-[selected=true]:ring-offset-4 dark:ring-light-200 dark:ring-offset-dark"
                                 data-selected={
                                     activeWantToken.address === token.address
                                 }
@@ -172,11 +174,9 @@ export const LiquidityBacking = (props: RouteObject) => {
                 </div>
             </div>
             <div className="mb-8 grid grid-cols-1 gap-8 lg:grid-cols-3">
-                <div className="rounded-xl bg-gray-100 p-6 dark:bg-slate-800">
+                <div className="rounded-xl border-2 border-degenOrange bg-light-100 p-6 font-bold text-light-800 dark:border-activeblue dark:bg-darkblue">
                     <div className="flex">
-                        <h3 className="mb-3 flex-grow text-xl">
-                            Total backing
-                        </h3>
+                        <H2>Total backing</H2>
                     </div>
                     {!loading && activeWantToken && (
                         <div className="text-right text-2xl ">
@@ -194,9 +194,9 @@ export const LiquidityBacking = (props: RouteObject) => {
                         </div>
                     )}
                 </div>
-                <div className="rounded-xl bg-gray-100 p-6 dark:bg-slate-800">
+                <div className="rounded-xl border-2 border-degenOrange bg-light-100 p-6 font-bold text-light-800 dark:border-activeblue dark:bg-darkblue">
                     <div className="flex">
-                        <h3 className="mb-3 flex-grow text-xl">Your backing</h3>
+                        <H2>Your backing</H2>
                     </div>
                     {isConnected && baseTokenBalance ? (
                         <WalletBacking
@@ -214,8 +214,8 @@ export const LiquidityBacking = (props: RouteObject) => {
                     )}
                 </div>
 
-                <div className="rounded-xl bg-gray-100 p-6 dark:bg-slate-800">
-                    <h3 className="mb-3 text-xl">Backing breakdown</h3>
+                <div className="rounded-xl border-2 border-degenOrange bg-light-100 p-6 font-bold text-light-800 dark:border-activeblue dark:bg-darkblue">
+                    <H2>Backing breakdown</H2>
                     <div className="flex flex-col gap-2">
                         {stats?.vaultData ? (
                             stats?.vaultData.map((vaultItem) => {
@@ -224,7 +224,7 @@ export const LiquidityBacking = (props: RouteObject) => {
                                         key={vaultItem.tokenAddress}
                                         className="flex"
                                     >
-                                        <div className="mr-2 flex-grow-0 self-center shrink-0">
+                                        <div className="mr-2 shrink-0 flex-grow-0 self-center">
                                             <Image
                                                 className="w-5"
                                                 src={`/tokens/${chainId}/${vaultItem.tokenAddress}.png`}
@@ -252,12 +252,12 @@ export const LiquidityBacking = (props: RouteObject) => {
                     </div>
                 </div>
 
-                <div className="h-[30em] rounded-xl bg-gray-100 p-6 dark:bg-slate-800 lg:col-span-2">
+                <div className="h-[30em] rounded-xl border-2 border-degenOrange bg-light-100 p-6 font-bold text-light-800 dark:border-activeblue dark:bg-darkblue lg:col-span-2">
                     <Chart wantTokenName={activeWantToken?.info?.name} />
                 </div>
 
-                <div className="rounded-xl bg-gray-100 p-6 dark:bg-slate-800">
-                    <h1 className="my-4 text-2xl">Burn DGNX for backing</h1>
+                <div className="rounded-xl border-2 border-degenOrange bg-light-100 p-6 font-bold text-light-800 dark:border-activeblue dark:bg-darkblue">
+                    <H2>Burn DGNX for backing</H2>
                     <p className="mb-3">How much DGNX do you want to burn?</p>
                     <div className="flex justify-center">
                         <div className="flex-grow">

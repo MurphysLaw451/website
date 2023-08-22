@@ -55,7 +55,7 @@ export default function Dapp() {
             <WagmiConfig client={client}>
                 <ConnectKitProvider mode={theme as 'light' | 'dark'}>
                     <DappHeader />
-                    <div className="my-16 flex lg:ml-3">
+                    <div className="my-32 flex sm:my-20 lg:ml-3">
                         <div className="mr-4 hidden w-64 max-w-4xl lg:block">
                             <Sidebar />
                         </div>
