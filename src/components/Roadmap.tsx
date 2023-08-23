@@ -56,10 +56,10 @@ export function Roadmap() {
                                 The road <span className="text-degenOrange">ahead</span> is bright
                             </H1>
                         </div>
+                        <p className="mt-6 px-10 max-w-2xl text-md text-left md:text-center text-light-600 mx-8 md:mx-0">
+                            Remembering our past achievements and forging a path into the future!
+                        </p>
                     </div>
-                    <p className="text-left mt-6 px-10 max-w-2xl text-md text-light-600 mx-8 md:mx-0">
-                        Remembering our past achievements and forging a path into the future!
-                    </p>
                     <div className="md:col-span-2 rounded-lg text-left mt-5 border-2 border-activeblue bg-darkerblue p-5 lg:px-16 lg:py-12">
                         <div className="relative overflow-hidden grid grid-cols-1 sm:grid-cols-12 gap-2  font-bold">
                             <RoadmapItem
