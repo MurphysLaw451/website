@@ -282,7 +282,7 @@ export const BurnForBacking = (props: {
                             />
                             %
                             <AiOutlineCheckCircle
-                                className="ml-1 inline cursor-pointer text-sm"
+                                className="ml-1 inline cursor-pointer "
                                 onClick={() => {
                                     setSlippage(
                                         parseFloat(
@@ -380,7 +380,7 @@ export const BurnForBacking = (props: {
                 expectedWantTokenAmount.isGreaterThan(0) && (
                     <>
                         <div />
-                        <div className="inline-block text-sm">
+                        <div className="inline-block ">
                             {allowance.isGreaterThanOrEqualTo(amountToBurn)
                                 ? 'Includes token tax, fees, etc'
                                 : 'Estimated output. Approve to get exact values'}

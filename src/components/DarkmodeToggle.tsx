@@ -42,7 +42,7 @@ export const DarkmodeToggle = () => {
             id="theme-toggle"
             type="button"
             onClick={updateLightmode}
-            className="rounded-full p-2.5 text-sm text-light-800 transition-colors hover:bg-degenOrange hover:text-light-100  dark:text-light-200 dark:hover:bg-activeblue"
+            className="rounded-full p-2.5  text-light-800 transition-colors hover:bg-degenOrange hover:text-light-100  dark:text-light-200 dark:hover:bg-activeblue"
         >
             <svg
                 id="theme-toggle-dark-icon"

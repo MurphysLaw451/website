@@ -73,7 +73,7 @@ export function Footer() {
                             <SiLinktree className="h-6 w-6 text-gray-500" />
                         </Link>
                     </div>
-                    <p className="mt-6 text-sm text-slate-500 sm:mt-0">
+                    <p className="mt-6  text-slate-500 sm:mt-0">
                         {translations.footer.copyright.en} 🥦{' '}
                         {new Date().getFullYear()}{' '}
                         {translations.footer.reservedRights.en}

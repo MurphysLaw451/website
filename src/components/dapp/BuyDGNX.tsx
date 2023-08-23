@@ -21,7 +21,7 @@ export const BuyDGNX = (props: RouteObject) => {
         <>
             <div className="lifi-container">
                 <H1>Buy $DGNX</H1>
-                <p className="mb-3 text-sm font-bold text-light-800 dark:text-light-600">
+                <p className="mb-3  font-bold text-light-800 dark:text-light-600">
                     Note: the{' '}
                     <a
                         href="https://docs.dgnx.finance/whitepaper/tokenomics/tax"

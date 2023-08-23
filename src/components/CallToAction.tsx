@@ -19,7 +19,7 @@ export function CallToAction() {
                     <p className="text-light-600 font-bold mb-5">
                         Explore, connect, and learn with us today!
                     </p>
-                    <p className="text-white text-sm mb-5">
+                    <p className="text-white  mb-5">
                         Navigating our ecosystem is a breeze with us!  Our team is active daily in our vibrant Telegram community group, ready to guide you on your exciting journey. Don't miss out on the wealth of information and support available.
                     </p>
                     <div className="flex flex-col gap-3 sm:flex-row">

@@ -42,8 +42,8 @@ export function Projects() {
                 <H1 className="">
                     <span className="text-techGreen">Explore</span> our ecosystem
                 </H1>
-                <p className="text-light-600">Our present and future products and services for both projects and users</p>
             </div>
+            <p className="text-light-600 mx-8 md:mx-0 text-left">Our present and future products and services for both projects and users</p>
 
             <div className="h-auto mt-5">
                 <Carousel

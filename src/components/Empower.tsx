@@ -9,7 +9,7 @@ const Block = (props: { title: String; text: string }) => {
     return (
         <div>
             <H2 className="text-techGreen dark:text-techGreen">{props.title}</H2>
-            <p className="text-white text-sm font-bold">{props.text}</p>
+            <p className="text-white  font-bold">{props.text}</p>
         </div>
     )
 }
@@ -25,7 +25,7 @@ export function Empower() {
                     <span className="text-white">as a holder</span>
                 </H1>
             </div>
-            <p className="mt-6 max-w-2xl text-md text-left text-light-600">
+            <p className="mt-6 max-w-2xl text-md text-left text-light-600 mx-8 md:mx-0">
                 As a holder of DGNX, you can embrace the world of DeFi and rest easy!
             </p>
             <div className="rounded-lg grid grid-cols-1 gap-5 text-left md:grid-cols-2 mt-5 border-2 border-activeblue bg-darkerblue p-5 lg:px-16 lg:py-12">
