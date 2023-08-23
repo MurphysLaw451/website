@@ -118,9 +118,9 @@ function MobileNavigation() {
 
 export function Header() {
     return (
-        <header className="py-5">
+        <header className="py-2 sm:py-5">
             <Container>
-                <nav className="relative z-50 flex justify-between flex-col sm:flex-row items-center gap-y-3">
+                <nav className="relative z-50 flex justify-between items-center gap-y-3">
                     <div className="flex items-center lg:gap-x-12">
                         <Link href="#" aria-label="Home">
                             <Image
@@ -151,7 +151,7 @@ export function Header() {
                         </div>
                     </div>
                     <div className="flex items-center gap-x-5 md:gap-x-3 xl:gap-x-3 flex-col sm:flex-row">
-                        <div className="flex gap-x-5 md:gap-x-3 xl:gap-x-3">
+                        <div className="hidden sm:flex gap-x-5 md:gap-x-3 xl:gap-x-3">
                             <Link
                                 href="https://t.me/DegenXportal"
                                 className="group text-light-600 hover:border-degenOrange border-b-2 border-transparent pb-2"
@@ -182,9 +182,10 @@ export function Header() {
                             </Link>
                         </div>
                         <DarkmodeToggle />
-                        <div className="flex gap-1 items-center">
+                        <div className="flex gap-1 items-center flex-row-reverse sm:flex-row">
                             <Button className="flex gap-1 lg:ml-3" href="/dapp" color="orange">
-                                <span>{translations.header.launchApp.en}</span>
+                                <span className="hidden sm:inline">Launch app</span>
+                                <span className="inline sm:hidden">App</span>
                                 <BsArrowUpRight />
                             </Button>
                             <div className="-mr-1 lg:hidden">

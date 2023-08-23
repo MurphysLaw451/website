@@ -16,15 +16,15 @@ export function Hero() {
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'center right'
         }}>
-            <Container className="pt-20 pb-16 text-center lg:pt-20 relative z-1">
-                <div className="text-center md:text-left">
-                    <H1 className="text-4xl sm:text-5xl">
+            <Container className="md:pt-20 pt-5 pb-16 text-center lg:pt-20 relative z-1">
+                <div className="text-left md:text-left">
+                    <H1 className="text-4xl md:text-5xl leading-10 md:leading-normal">
                         <span className="text-techGreen block">SIMPLICITY</span>
                         <span className="text-white block md:inline md:ml-24 md:mr-3">MEETS</span>
                         <span className="text-degenOrange block md:inline">INNOVATION</span>
                     </H1>
                 </div>
-                <p className="mt-6 max-w-2xl text-left text-light-600">
+                <p className="mt-3 md:mt-6 max-w-2xl text-left text-light-600">
                     Welcome to DEGENX, the ultimate multichain DeFi ecosystem! Stake DGNX, influence governance, and enjoy revenue-sharing rewards. Rest easy with Liquidity Backing, while exploring innovative DeFi products across multiple blockchains.
                 </p>
                 <div className="flex mt-5">
