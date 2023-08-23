@@ -21,6 +21,15 @@ export function Hero() {
                     backgroundPosition: 'center right'
                 }}
             />
+            <div
+                className="block md:hidden absolute opacity-40 right-0 left-0 top-0 -bottom-28"
+                style={{
+                    backgroundImage: `url(${dgnxSide.src})`,
+                    backgroundRepeat: 'no-repeat',
+                    backgroundSize: 'contain',
+                    backgroundPosition: 'right bottom'
+                }}
+            />
             <Container className="md:pt-20 pt-5 pb-16 text-center lg:pt-20 relative z-1">
                 <div className="text-left md:text-left">
                     <H1 className="text-4xl md:text-5xl leading-10 md:leading-normal">
