@@ -114,7 +114,8 @@ export function Roadmap() {
                                     { text: 'Rebrand formally announed' },
                                     { text: 'Rebrand public release', highlight: true },
                                     { text: 'Broccoliswap enters beta testing' },
-                                    { text: 'DGNX Buy/ell tax reduced to 5%', highlight: true },
+                                    { text: 'DGNX Buy/sell tax reduced to 5%', highlight: true },
+                                    { text: 'Rebranded website launched', highlight: true },
                                 ]}
                             />
                             
