@@ -19,11 +19,12 @@ const Slide = (props: {
     return (
         <div className="sm:px-20 h-full">
             <div className="border-2 rounded-xl border-activeblue bg-darkerblue flex flex-col h-full items-center justify-start p-5 pb-12">
-                <div className="flex gap-1 items-center mb-5">
+                <div className="items-center mb-5 h-16 w-full flex justify-center">
                     <Image
                         alt={`DegenX ${props.name} logo`}
                         src={props.logo}
-                        height={32}
+                        height={64}
+                        // fill
                     />
                 </div>
                 {props.text}
