@@ -20,7 +20,7 @@ export const BuyDGNX = (props: RouteObject) => {
     return (
         <>
             <div className="lifi-container">
-                <h1 className="mt-4 mb-5 sm:mb-8 font-bold text-3xl font-title flex gap-1 tracking-wide">
+                <h1 className="mt-4 mb-5 sm:mb-8 font-bold text-3xl font-title flex gap-1 tracking-wide flex-col sm:flex-row">
                     <span className="text-techGreen">BUY</span>
                     <span className="text-degenOrange">$DGNX</span>
                 </h1>

@@ -258,7 +258,7 @@ export const Dashboard = (props: RouteObject) => {
 
     return (
         <div>
-            <h1 className="mt-4 mb-5 sm:mb-8 font-bold text-3xl font-title flex gap-1 tracking-wide">
+            <h1 className="mt-4 mb-5 sm:mb-8 font-bold text-3xl font-title flex gap-1 tracking-wide flex-col sm:flex-row">
                 <span className="text-techGreen">DEGENX</span>
                 <span className="text-degenOrange">DASHBOARD</span>
             </h1>
