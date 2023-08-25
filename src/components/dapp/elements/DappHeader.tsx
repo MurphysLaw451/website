@@ -71,7 +71,7 @@ const ConnectedButton = () => {
 
 export function DappHeader() {
     return (
-        <header className="fixed z-10 w-full bg-gradient-to-tr from-transparent via-transparent to-light-800 py-3 dark:to-dark">
+        <header className="absolute lg:fixed z-10 w-full bg-gradient-to-tr from-transparent via-transparent to-light-800 py-3 dark:to-dark">
             <DappContainer>
                 <nav className="relative z-50 flex flex-col items-center justify-between gap-3 sm:flex-row">
                     <div className="flex flex-row-reverse items-center sm:flex-row md:gap-x-12">
