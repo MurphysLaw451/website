@@ -43,8 +43,10 @@ export function Projects() {
             </div>
             <p className="text-light-600 mx-8 md:mx-0 text-left">Our present and future products and services for both projects and users</p>
 
-            <div className="h-auto mt-5">
+            <div className="flex h-auto mt-5">
                 <Carousel
+                    slide
+                    slideInterval={1000000}
                     leftControl={<div className="hidden sm:block bg-darkerblue cursor-pointer border-2 border-activeblue rounded-full p-3 hover:bg-dark">
                         <PiCaretLeftLight />
                     </div>}

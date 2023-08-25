@@ -139,7 +139,7 @@ export const LiquidityBacking = (props: RouteObject) => {
                 <H1>Liquidity Backing</H1>
             </div>
             <div className="mb-8 flex flex-col items-center lg:flex-row">
-                <H2 className="mb-0">Show backing values in</H2>
+                <h2 className="text-2xl font-bold text-light-100">Show backing values in</h2>
                 <div className="mt-8 mb-2 flex flex-row lg:mt-0 lg:mb-0">
                     {stats?.wantTokenData &&
                         stats.wantTokenData.map((token) => (

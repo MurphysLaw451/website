@@ -51,7 +51,7 @@ export function Hero() {
                 </div>
                 <div className="mt-10 flex justify-center gap-x-6">
                     <Button className="flex gap-1 lg:ml-3" href="/dapp" color="orange">
-                        <span>{translations.header.launchApp.en}</span>
+                        <span>Launch app</span>
                         <BsArrowUpRight />
                     </Button>
                     <Button

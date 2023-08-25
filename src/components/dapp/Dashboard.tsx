@@ -261,9 +261,9 @@ export const Dashboard = (props: RouteObject) => {
             <H1 className="mb-4">Dashboard</H1>
             <div className="mb-8 grid grid-cols-1 gap-8 xl:grid-cols-3">
                 <div className="col-span-2 rounded-xl border-2 border-degenOrange bg-light-100 p-5 font-bold text-light-800 dark:border-activeblue dark:bg-darkblue dark:text-light-600">
-                    <H2>Decentralised Exchanges</H2>
+                    <H2>Decentralized Exchanges</H2>
                     {dexData ? (
-                        <div className="flex flex-col gap-3 sm:flex-row">
+                        <div className="flex flex-col gap-8 sm:flex-row">
                             <div className="flex-grow">
                                 <div className="text-dark dark:text-light-100">
                                     TraderJoe

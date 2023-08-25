@@ -4,7 +4,11 @@ const plugin = require('tailwindcss/plugin')
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: 'class',
-  content: ['./src/**/*.{ts,tsx}', './node_modules/flowbite-react/**/*.{js,jsx,ts,tsx}'],
+  content: [
+    './src/**/*.{ts,tsx}',
+    './node_modules/flowbite-react/**/*.{js,jsx,ts,tsx}',
+    './node_modules/flowbite/**/*.{js,ts}'
+  ],
   plugins: [
     require('flowbite/plugin'),
     plugin(function ({ addBase }) {
