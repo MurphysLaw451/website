@@ -25,7 +25,7 @@ export function Discover() {
                     target="_blank"
                     className="group"
                 >
-                    <FaTwitter className="h-6 w-6 text-light-600 hover:text-light-200" />
+                    <div className="h-6 text-center text-light-600 hover:text-light-200 text-2xl -mt-1">𝕏</div>
                 </Link>
                 <Link
                     href="https://discord.gg/BMaVtEVkgC"

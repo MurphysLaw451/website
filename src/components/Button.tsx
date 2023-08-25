@@ -22,7 +22,8 @@ export function Button({
     variant = 'solid',
     color = 'slate',
     className = '',
-    href,
+    href = '',
+    onClick = () => {},
     ...props
 }) {
     className = clsx(
@@ -34,6 +35,6 @@ export function Button({
     return href ? (
         <Link href={href} className={className} {...props} />
     ) : (
-        <button className={className} {...props} />
+        <button onClick={onClick} className={className} {...props} />
     )
 }

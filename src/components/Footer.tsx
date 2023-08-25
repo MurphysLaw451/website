@@ -35,42 +35,42 @@ export function Footer() {
                             target="_blank"
                             className="group"
                         >
-                            <FaTelegramPlane className="h-6 w-6 text-gray-500" />
+                            <FaTelegramPlane className="h-6 w-6 text-light-600 hover:text-light-200" />
                         </Link>
                         <Link
                             href="https://twitter.com/degenecosystem"
                             target="_blank"
                             className="group"
                         >
-                            <FaTwitter className="h-6 w-6 text-gray-500" />
+                            <div className="h-6 text-center text-light-600 hover:text-light-200 text-2xl -mt-1">𝕏</div>
                         </Link>
                         <Link
                             href="https://discord.gg/BMaVtEVkgC"
                             target="_blank"
                             className="group"
                         >
-                            <FaDiscord className="h-6 w-6 text-gray-500" />
+                            <FaDiscord className="h-6 w-6 text-light-600 hover:text-light-200" />
                         </Link>
                         <Link
                             href="https://instagram.com/degenecosystem"
                             target="_blank"
                             className="group"
                         >
-                            <FaInstagram className="h-6 w-6 text-gray-500" />
+                            <FaInstagram className="h-6 w-6 text-light-600 hover:text-light-200" />
                         </Link>
                         <Link
                             href="https://www.tiktok.com/@degen_traders"
                             target="_blank"
                             className="group"
                         >
-                            <FaTiktok className="h-6 w-6 text-gray-500" />
+                            <FaTiktok className="h-6 w-6 text-light-600 hover:text-light-200" />
                         </Link>
                         <Link
                             href="https://linktr.ee/DEGENX"
                             target="_blank"
                             className="group"
                         >
-                            <SiLinktree className="h-6 w-6 text-gray-500" />
+                            <SiLinktree className="h-6 w-6 text-light-600 hover:text-light-200" />
                         </Link>
                     </div>
                     <p className="mt-6  text-slate-500 sm:mt-0">

@@ -113,10 +113,10 @@ const WalletInfo = (props: any) => {
             {walletData ? (
                 <div className="grid grid-cols-3">
                     <div />
-                    <div className="text-dark dark:text-light-100">
+                    <div className="text-dark dark:text-light-100 font-bold">
                         Quantity
                     </div>
-                    <div className="text-dark dark:text-light-100">
+                    <div className="text-dark dark:text-light-100 font-bold">
                         USD value
                     </div>
                     <div>DGNX</div>
@@ -258,14 +258,17 @@ export const Dashboard = (props: RouteObject) => {
 
     return (
         <div>
-            <H1 className="mb-4">Dashboard</H1>
+            <h1 className="mt-4 mb-5 sm:mb-8 font-bold text-3xl font-title flex gap-1 tracking-wide">
+                <span className="text-techGreen">DEGENX</span>
+                <span className="text-degenOrange">DASHBOARD</span>
+            </h1>
             <div className="mb-8 grid grid-cols-1 gap-8 xl:grid-cols-3">
-                <div className="col-span-2 rounded-xl border-2 border-degenOrange bg-light-100 p-5 font-bold text-light-800 dark:border-activeblue dark:bg-darkblue dark:text-light-600">
+                <div className="col-span-2 rounded-xl border-2 p-5 border-activeblue bg-darkerblue text-light-200">
                     <H2>Decentralized Exchanges</H2>
                     {dexData ? (
                         <div className="flex flex-col gap-8 sm:flex-row">
                             <div className="flex-grow">
-                                <div className="text-dark dark:text-light-100">
+                                <div className="text-light-100 font-bold">
                                     TraderJoe
                                 </div>
                                 <div className="flex">
@@ -309,7 +312,7 @@ export const Dashboard = (props: RouteObject) => {
                                 </div>
                             </div>
                             <div className="flex-grow">
-                                <div className="text-dark dark:text-light-100">
+                                <div className="text-dark dark:text-light-100 font-bold">
                                     Pangolin
                                 </div>
                                 <div className="flex">
@@ -355,7 +358,7 @@ export const Dashboard = (props: RouteObject) => {
                         '...'
                     )}
                 </div>
-                <div className="col-span-2 rounded-xl border-2 border-degenOrange bg-light-100 p-5 font-bold text-light-800 dark:border-activeblue dark:bg-darkblue dark:text-light-600 xl:col-span-1">
+                <div className="col-span-2 rounded-xl border-2 border-degenOrange bg-light-100 p-5 text-light-800 dark:border-activeblue dark:bg-darkerblue dark:text-light-200 xl:col-span-1">
                     <H2>Ø Averages</H2>
                     {dexData ? (
                         <div className="flex">
@@ -443,7 +446,7 @@ export const Dashboard = (props: RouteObject) => {
                 </div>
             </div>
 
-            <div className="l text-light-200g:col-span-3 mb-8 h-[600px] gap-8 rounded-xl border-2 border-degenOrange bg-light-100 p-5 font-bold dark:border-activeblue dark:bg-darkblue">
+            <div className="l text-light-200g:col-span-3 mb-8 h-[600px] gap-8 rounded-xl border-2 border-degenOrange bg-light-100 p-5 dark:border-activeblue dark:bg-darkerblue">
                 <div className="flex h-full flex-col">
                     <H2>Price & Backing</H2>
                     <div className="flex-grow">
@@ -453,7 +456,7 @@ export const Dashboard = (props: RouteObject) => {
             </div>
 
             <div className="mb-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
-                <div className="rounded-xl border-2 border-degenOrange bg-light-100 p-5 font-bold text-light-800 dark:border-activeblue dark:bg-darkblue dark:text-light-600">
+                <div className="rounded-xl border-2 border-degenOrange bg-light-100 p-5 text-light-800 dark:border-activeblue dark:bg-darkerblue dark:text-light-200">
                     <H2>Supply</H2>
                     {/* <div className="flex">
                         <div className="flex-grow">Minted supply</div>
@@ -505,7 +508,7 @@ export const Dashboard = (props: RouteObject) => {
                         </div>
                     </div>
                 </div>
-                <div className="rounded-xl border-2 border-degenOrange bg-light-100 p-5 font-bold text-light-800 dark:border-activeblue dark:bg-darkblue dark:text-light-600">
+                <div className="rounded-xl border-2 border-degenOrange bg-light-100 p-5 text-light-800 dark:border-activeblue dark:bg-darkerblue dark:text-light-200">
                     <H2>Volume 24h</H2>
                     {dexData ? (
                         <div className="flex">
@@ -575,22 +578,22 @@ export const Dashboard = (props: RouteObject) => {
             </div>
 
             <div className="mb-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
-                <div className="rounded-xl border-2 border-degenOrange bg-light-100 p-5 font-bold text-light-800 dark:border-activeblue dark:bg-darkblue dark:text-light-600">
+                <div className="rounded-xl border-2 border-degenOrange bg-light-100 p-5 text-light-800 dark:border-activeblue dark:bg-darkerblue dark:text-light-200">
                     <H2>Price change</H2>
                     {dexData ? (
                         <table className="min-w-full">
                             <tbody className="">
                                 <tr>
                                     <td className=""></td>
-                                    <td className="px-6 text-right font-bold text-dark dark:text-light-100 lg:px-1 xl:px-2 2xl:px-6">
+                                    <td className="px-6 text-right text-dark dark:text-light-100 lg:px-1 xl:px-2 2xl:px-6 font-bold">
                                         TraderJoe
                                     </td>
-                                    <td className="px-6 text-right font-bold text-dark dark:text-light-100 lg:px-1 xl:px-2 2xl:px-6">
+                                    <td className="px-6 text-right text-dark dark:text-light-100 lg:px-1 xl:px-2 2xl:px-6 font-bold">
                                         Pangolin
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td className="px-6 text-right font-bold lg:px-1 xl:px-2 2xl:px-6">
+                                    <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">
                                         5m
                                     </td>
                                     <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">
@@ -609,7 +612,7 @@ export const Dashboard = (props: RouteObject) => {
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td className="px-6 text-right font-bold lg:px-1 xl:px-2 2xl:px-6">
+                                    <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">
                                         1h
                                     </td>
                                     <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">
@@ -628,7 +631,7 @@ export const Dashboard = (props: RouteObject) => {
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td className="px-6 text-right font-bold lg:px-1 xl:px-2 2xl:px-6">
+                                    <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">
                                         6h
                                     </td>
                                     <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">
@@ -647,7 +650,7 @@ export const Dashboard = (props: RouteObject) => {
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td className="px-6 text-right font-bold lg:px-1 xl:px-2 2xl:px-6">
+                                    <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">
                                         24h
                                     </td>
                                     <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">
@@ -670,22 +673,22 @@ export const Dashboard = (props: RouteObject) => {
                         </table>
                     ) : null}
                 </div>
-                <div className="rounded-xl border-2 border-degenOrange bg-light-100 p-5 font-bold text-light-800 dark:border-activeblue dark:bg-darkblue dark:text-light-600">
+                <div className="rounded-xl border-2 border-degenOrange bg-light-100 p-5 text-light-800 dark:border-activeblue dark:bg-darkerblue dark:text-light-200">
                     <H2>Transactions (buys / sells)</H2>
                     {dexData ? (
                         <table className="min-w-full">
                             <tbody className="">
                                 <tr>
                                     <td className=""></td>
-                                    <td className="px-6 text-right font-bold text-dark dark:text-light-100 lg:px-1 xl:px-2 2xl:px-6">
+                                    <td className="px-6 text-right text-dark dark:text-light-100 lg:px-1 xl:px-2 2xl:px-6 font-bold">
                                         TraderJoe
                                     </td>
-                                    <td className="px-6 text-right font-bold text-dark dark:text-light-100 lg:px-1 xl:px-2 2xl:px-6">
+                                    <td className="px-6 text-right text-dark dark:text-light-100 lg:px-1 xl:px-2 2xl:px-6 font-bold">
                                         Pangolin
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td className="px-6 text-right font-bold lg:px-1 xl:px-2 2xl:px-6">
+                                    <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">
                                         5m
                                     </td>
                                     <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">
@@ -700,7 +703,7 @@ export const Dashboard = (props: RouteObject) => {
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td className="px-6 text-right font-bold lg:px-1 xl:px-2 2xl:px-6">
+                                    <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">
                                         1h
                                     </td>
                                     <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">
@@ -715,7 +718,7 @@ export const Dashboard = (props: RouteObject) => {
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td className="px-6 text-right font-bold lg:px-1 xl:px-2 2xl:px-6">
+                                    <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">
                                         6h
                                     </td>
                                     <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">
@@ -730,7 +733,7 @@ export const Dashboard = (props: RouteObject) => {
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td className="px-6 text-right font-bold lg:px-1 xl:px-2 2xl:px-6">
+                                    <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">
                                         24h
                                     </td>
                                     <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">
@@ -751,13 +754,13 @@ export const Dashboard = (props: RouteObject) => {
             </div>
 
             <div className="mb-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
-                <div className="rounded-xl border-2 border-degenOrange bg-light-100 p-5 font-bold text-light-800 dark:border-activeblue dark:bg-darkblue dark:text-light-600">
+                <div className="rounded-xl border-2 border-degenOrange bg-light-100 p-5 text-light-800 dark:border-activeblue dark:bg-darkerblue dark:text-light-200">
                     <WalletInfo
                         name="Marketing"
                         address="0x16eF18E42A7d72E52E9B213D7eABA269B90A4643"
                     />
                 </div>
-                <div className="rounded-xl border-2 border-degenOrange bg-light-100 p-5 font-bold text-light-800 dark:border-activeblue dark:bg-darkblue dark:text-light-600">
+                <div className="rounded-xl border-2 border-degenOrange bg-light-100 p-5 text-light-800 dark:border-activeblue dark:bg-darkerblue dark:text-light-200">
                     <WalletInfo
                         name="Platform"
                         address="0xcA01A9d36F47561F03226B6b697B14B9274b1B10"

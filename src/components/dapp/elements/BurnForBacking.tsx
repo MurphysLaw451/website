@@ -14,6 +14,7 @@ import { BNtoNumber } from '../../../helpers/number'
 import { Spinner } from './Spinner'
 
 import { toast } from 'react-toastify'
+import { Button } from '../../Button'
 
 const calculateReturnAmount = async (
     signer: ethers.Signer,
@@ -332,17 +333,19 @@ export const BurnForBacking = (props: {
                 </p>
 
                 {amountToBurn.isGreaterThan(0) && (
-                    <>
+                    <div className="flex items-center">
                         {allowance.isGreaterThanOrEqualTo(amountToBurn) ? (
-                            <button
-                                className="my-3 flex w-full justify-center rounded-xl border-2 border-degenOrange bg-light-100 p-2 px-3 py-2 text-xl text-light-800 transition-colors hover:bg-degenOrange hover:text-light-100 dark:border-activeblue dark:bg-dark dark:hover:bg-activeblue"
+                            <Button
+                                className="w-full mt-3"
+                                color="orange"
                                 onClick={() => execBurn()}
                             >
                                 {txRunning ? <Spinner className="" /> : 'Burn'}
-                            </button>
+                            </Button>
                         ) : (
-                            <button
-                                className="my-3 flex w-full justify-center rounded-xl border-2 border-degenOrange bg-light-100 p-2 px-3 py-2 text-xl text-light-800 transition-colors hover:bg-degenOrange hover:text-light-100 dark:border-activeblue dark:bg-dark dark:hover:bg-activeblue"
+                            <Button
+                                className="w-full mt-3"
+                                color="orange"
                                 onClick={() => execApprove()}
                             >
                                 {txRunning ? (
@@ -350,9 +353,9 @@ export const BurnForBacking = (props: {
                                 ) : (
                                     'Approve'
                                 )}
-                            </button>
+                            </Button>
                         )}
-                    </>
+                    </div>
                 )}
             </div>
             <div />

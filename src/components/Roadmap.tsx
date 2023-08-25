@@ -23,7 +23,7 @@ const RoadmapItem = (props: {
             </div>
             <div className="hidden sm:col-span-3 w-full sm:flex items-center mx-3 sm:mx-12 text-2xl relative">
                 <div className={clsx("border mx-[0.7rem] border-white h-[150%] z-0 absolute", props.first && 'top-1/2')} />
-                <BsSquareFill className="text-techGreen rotate-45 z-1 mb-5 relative" />
+                <BsSquareFill className="text-techGreen rotate-45 z-1 mb-5" />
             </div>
             <div className="col-span-1 sm:col-span-7">
                 {props.items.map((item, i) => {
@@ -111,7 +111,7 @@ export function Roadmap() {
                                 quarter="Q3"
                                 year="2023"
                                 items={[
-                                    { text: 'Rebrand formally announed' },
+                                    { text: 'Rebrand formally announced' },
                                     { text: 'Rebrand public release', highlight: true },
                                     { text: 'Broccoliswap enters beta testing' },
                                     { text: 'DGNX Buy/sell tax reduced to 5%', highlight: true },
@@ -125,7 +125,7 @@ export function Roadmap() {
                             </div>
                             <div className="hidden sm:col-span-3 sm:flex w-full items-center mx-3 sm:mx-12 text-2xl relative">
                                 <div className="border mx-[0.7rem] border-white h-[100%] z-0 absolute bottom-1/2" />
-                                    <BsSquareFill className="text-techGreen rotate-45 z-1 mb-5 relative" />
+                                <BsSquareFill className="text-techGreen rotate-45 z-1 mb-5" />
                             </div>
                             <div className="col-span-1 sm:col-span-7">
                                 <div className="text-light-600">BroccoliSwap public release</div>

@@ -20,8 +20,11 @@ export const BuyDGNX = (props: RouteObject) => {
     return (
         <>
             <div className="lifi-container">
-                <H1>Buy $DGNX</H1>
-                <p className="mb-3  font-bold text-light-800 dark:text-light-600">
+                <h1 className="mt-4 mb-5 sm:mb-8 font-bold text-3xl font-title flex gap-1 tracking-wide">
+                    <span className="text-techGreen">BUY</span>
+                    <span className="text-degenOrange">$DGNX</span>
+                </h1>
+                <p className="mb-3  text-light-800 dark:text-light-600">
                     Note: the{' '}
                     <a
                         href="https://docs.dgnx.finance/whitepaper/tokenomics/tax"
@@ -34,7 +37,7 @@ export const BuyDGNX = (props: RouteObject) => {
                     is not included below!
                 </p>
                 <div className="flex gap-6">
-                    <div className="min-w-[392px] rounded-xl border-2 border-degenOrange bg-light-100 p-3 dark:border-activeblue dark:bg-darkblue">
+                    <div className="min-w-[392px] rounded-xl border-2 border-degenOrange bg-light-100 p-3 dark:border-activeblue dark:bg-darkerblue">
                         <LiFiWidgetDynamic
                             config={{
                                 fee: 0,
@@ -65,15 +68,15 @@ export const BuyDGNX = (props: RouteObject) => {
                             }}
                         />
                     </div>
-                    <div className="hidden flex-grow rounded-xl border-2 border-degenOrange bg-light-100 p-3 dark:border-activeblue dark:bg-darkblue md:block">
+                    <div className="hidden flex-grow rounded-xl border-2 border-degenOrange bg-light-100 p-3 dark:border-activeblue dark:bg-darkerblue md:block">
                         <Chart wantTokenName="USDC.e" />
                     </div>
                 </div>
             </div>
-            <div className="my-12 rounded-xl border-2 border-degenOrange bg-light-100 p-5 font-bold text-light-600 dark:border-activeblue dark:bg-darkblue">
+            <div className="my-12 rounded-xl border-2 border-degenOrange bg-light-100 p-5 text-light-600 dark:border-activeblue dark:bg-darkerblue">
                 <H2>FAQ</H2>
                 <p className="mt-6">
-                    <div className="text-dark dark:text-light-100">
+                    <div className="text-dark dark:text-light-100 font-bold">
                         It hangs on the bridge transaction. What should I do?
                     </div>
                     <br />
@@ -99,7 +102,7 @@ export const BuyDGNX = (props: RouteObject) => {
                     input.
                 </p>
                 <p className="mt-6">
-                    <div className="text-dark dark:text-light-100">
+                    <div className="text-dark dark:text-light-100 font-bold">
                         It cannot find a route. What should I do?
                     </div>
                     <br />
@@ -131,7 +134,7 @@ export const BuyDGNX = (props: RouteObject) => {
                     routing taken into account.
                 </p>
                 <p className="mt-6">
-                    <div className="text-dark dark:text-light-100">
+                    <div className="text-dark dark:text-light-100 font-bold">
                         I need other help
                     </div>
                     <br />

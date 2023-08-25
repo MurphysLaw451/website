@@ -20,6 +20,8 @@ import Image from 'next/image'
 import { H1 } from '../H1'
 import { H2 } from '../H2'
 
+import imageLiqBack from '../../images/projects/liqback.svg';
+
 const chainId = +process.env.NEXT_PUBLIC_CHAIN_ID
 const provider = new ethers.providers.JsonRpcProvider(
     process.env.NEXT_PUBLIC_RPC,
@@ -135,8 +137,15 @@ export const LiquidityBacking = (props: RouteObject) => {
 
     return (
         <div>
-            <div className="mb-8 flex flex-col items-center lg:flex-row">
-                <H1>Liquidity Backing</H1>
+            <div className="sm:mb-8 flex flex-col items-center lg:flex-row">
+                <div className="items-center mb-5 h-16 w-full flex justify-center sm:justify-start">
+                    <Image
+                        alt={`DegenX Liquidity Backing logo`}
+                        src={imageLiqBack}
+                        height={64}
+                        // fill
+                    />
+                </div>
             </div>
             <div className="mb-8 flex flex-col items-center lg:flex-row">
                 <h2 className="text-2xl font-bold text-light-100">Show backing values in</h2>
@@ -174,18 +183,18 @@ export const LiquidityBacking = (props: RouteObject) => {
                 </div>
             </div>
             <div className="mb-8 grid grid-cols-1 gap-8 lg:grid-cols-3">
-                <div className="rounded-xl border-2 border-degenOrange bg-light-100 p-6 font-bold text-light-800 dark:border-activeblue dark:bg-darkblue">
+                <div className="rounded-xl border-2 border-degenOrange bg-light-100 p-6 text-light-100 dark:border-activeblue dark:bg-darkerblue">
                     <div className="flex">
                         <H2>Total backing</H2>
                     </div>
                     {!loading && activeWantToken && (
-                        <div className="text-right text-2xl ">
+                        <div className="text-right text-2xl text-white">
                             {totalBacking?.toFixed(3) || 0}{' '}
                             {activeWantToken.info.name}
                         </div>
                     )}
                     {!loading && activeWantToken && (
-                        <div className="flex">
+                        <div className="flex text-white">
                             <div className="flex-grow"></div>
                             <div>
                                 {backingPerDGNX?.toFixed(8) || 0}{' '}
@@ -194,7 +203,7 @@ export const LiquidityBacking = (props: RouteObject) => {
                         </div>
                     )}
                 </div>
-                <div className="rounded-xl border-2 border-degenOrange bg-light-100 p-6 font-bold text-light-800 dark:border-activeblue dark:bg-darkblue">
+                <div className="rounded-xl border-2 border-degenOrange bg-light-100 p-6 text-light-100 dark:border-activeblue dark:bg-darkerblue">
                     <div className="flex">
                         <H2>Your backing</H2>
                     </div>
@@ -214,7 +223,7 @@ export const LiquidityBacking = (props: RouteObject) => {
                     )}
                 </div>
 
-                <div className="rounded-xl border-2 border-degenOrange bg-light-100 p-6 font-bold text-light-800 dark:border-activeblue dark:bg-darkblue">
+                <div className="rounded-xl border-2 border-degenOrange bg-light-100 p-6 text-light-100 dark:border-activeblue dark:bg-darkerblue">
                     <H2>Backing breakdown</H2>
                     <div className="flex flex-col gap-2">
                         {stats?.vaultData ? (
@@ -252,11 +261,11 @@ export const LiquidityBacking = (props: RouteObject) => {
                     </div>
                 </div>
 
-                <div className="h-[30em] rounded-xl border-2 border-degenOrange bg-light-100 p-6 font-bold text-light-800 dark:border-activeblue dark:bg-darkblue lg:col-span-2">
+                <div className="h-[30em] rounded-xl border-2 border-degenOrange bg-light-100 p-6 text-light-100 dark:border-activeblue dark:bg-darkerblue lg:col-span-2">
                     <Chart wantTokenName={activeWantToken?.info?.name} />
                 </div>
 
-                <div className="rounded-xl border-2 border-degenOrange bg-light-100 p-6 font-bold text-light-800 dark:border-activeblue dark:bg-darkblue">
+                <div className="rounded-xl border-2 border-degenOrange bg-light-100 p-6 text-light-100 dark:border-activeblue dark:bg-darkerblue">
                     <H2>Burn DGNX for backing</H2>
                     <p className="mb-3">How much DGNX do you want to burn?</p>
                     <div className="flex justify-center">
