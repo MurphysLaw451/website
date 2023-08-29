@@ -14,9 +14,9 @@ import { SiLinktree } from 'react-icons/si'
 export function CallToAction() {
     return (
         <Container className="pt-10 pb-10" id="join">
-            <div className="rounded-lg mt-5 border-2 border-activeblue bg-darkerblue p-5 lg:px-16 lg:py-12 grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-8">
+            <div className="rounded-lg mt-5 border-2 border-activeblue bg-darkerblue px-8 py-6 lg:px-16 lg:py-12 grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-8">
                 <div className="md:col-span-2">
-                    <p className="text-light-600 font-bold mb-5">
+                    <p className="text-light-600 font-semibold mb-5">
                         Explore, connect, and learn with us today!
                     </p>
                     <p className="text-white  mb-5">
@@ -32,7 +32,7 @@ export function CallToAction() {
                     </div>
                 </div>
                 <div className="order-first md:order-last">
-                    <H1 className="leading-tight">Join us and grow <span className="text-degenOrange">together</span></H1>
+                    <H1 className="leading-10">Join us and grow <span className="text-degenOrange">together</span></H1>
                 </div>
             </div>
         </Container>

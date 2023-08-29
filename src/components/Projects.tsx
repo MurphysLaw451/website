@@ -37,11 +37,11 @@ export function Projects() {
     return (
         <Container className="pt-10 pb-10 text-center" id="ecosystem">
             <div className="text-center">
-                <H1 className="">
+                <H1 className="leading-10">
                     <span className="text-techGreen">Explore</span> our ecosystem
                 </H1>
             </div>
-            <p className="text-light-600 mx-8 md:mx-0 text-left">Our present and future products and services for both projects and users</p>
+            <p className="text-light-600 font-semibold mx-8 md:mx-0 text-left md:text-center">Our present and future products and services for both projects and users</p>
 
             <div className="flex h-auto mt-5">
                 <Carousel

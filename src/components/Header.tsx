@@ -183,9 +183,8 @@ export function Header() {
                         </div>
                         <DarkmodeToggle />
                         <div className="flex gap-1 items-center flex-row-reverse sm:flex-row">
-                            <Button className="flex gap-1 lg:ml-3" href="/dapp" color="orange">
-                                <span className="hidden sm:inline">Launch app</span>
-                                <span className="inline sm:hidden">App</span>
+                            <Button className="hidden sm:flex gap-1 lg:ml-3" href="/dapp" color="orange">
+                                <span>Launch app</span>
                                 <BsArrowUpRight />
                             </Button>
                             <div className="-mr-1 lg:hidden">

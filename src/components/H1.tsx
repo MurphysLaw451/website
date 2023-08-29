@@ -5,7 +5,7 @@ export const H1 = (props: { children: any; className?: string }) => {
         <h1
             className={clsx(
                 props.className,
-                'mb-3 text-4xl font-bold text-dark dark:text-light-100'
+                'mb-3 text-4xl font-semibold text-dark dark:text-light-100'
             )}
         >
             {props.children}
