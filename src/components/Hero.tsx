@@ -22,7 +22,7 @@ export function Hero() {
                 }}
             />
             <div
-                className="block md:hidden absolute opacity-40 right-0 left-0 top-0 -bottom-28"
+                className="block md:hidden absolute opacity-40 right-0 left-0 top-0 -bottom-20"
                 style={{
                     backgroundImage: `url(${dgnxSide.src})`,
                     backgroundRepeat: 'no-repeat',
