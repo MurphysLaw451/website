@@ -28,7 +28,7 @@ const RoadmapItem = (props: {
             <div className="col-span-1 sm:col-span-7">
                 {props.items.map((item, i) => {
                     return (
-                        <div key={i} className={item.highlight ? 'text-white' : 'text-light-600'}>{item.text}</div>
+                        <div key={i} className={item.highlight ? 'text-white' : 'text-white'}>{item.text}</div>
                     )
                 })}
             </div>
