@@ -8,7 +8,7 @@ import { PiCaretLeftLight, PiCaretRightLight } from 'react-icons/pi'
 
 import imageLiqBack from '../images/projects/liqback.svg';
 import imageBrocSwap from '../images/projects/brocswap.svg';
-import imageDAO from '../images/projects/dao.svg';
+import imageDAO from '../images/projects/dao-small.svg';
 import imageBridge from '../images/projects/bridge.svg';
 
 const Slide = (props: {
