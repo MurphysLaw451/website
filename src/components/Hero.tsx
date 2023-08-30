@@ -21,16 +21,7 @@ export function Hero() {
                     backgroundPosition: 'center right'
                 }}
             />
-            <div
-                className="block md:hidden absolute opacity-40 right-0 left-0 top-0 -bottom-20"
-                style={{
-                    backgroundImage: `url(${dgnxSide.src})`,
-                    backgroundRepeat: 'no-repeat',
-                    backgroundSize: 'contain',
-                    backgroundPosition: 'right bottom'
-                }}
-            />
-            <Container className="md:pt-20 pt-5 pb-16 text-center lg:pt-20 relative z-1">
+            <Container className="md:pt-20 pt-5 md:pb-16 text-center lg:pt-20 relative z-1">
                 <div className="text-left md:text-left mx-8 md:mx-0">
                     <H1 className="text-4xl md:text-5xl leading-10 md:leading-normal font-semibold">
                         <span className="text-techGreen block">SIMPLICITY</span>
@@ -64,6 +55,11 @@ export function Hero() {
                     </Button>
                 </div>
             </Container>
+            <div
+                className="block w-full md:hidden opacity-40 -my-10"
+            >
+                <Image src={dgnxSide} alt="DGNX" />
+            </div>
         </div>
     )
 }
