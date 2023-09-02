@@ -32,7 +32,7 @@ export function Hero() {
                 <p className="mt-3 font-semibold md:mt-6 max-w-2xl text-left text-light-600 mx-8 md:mx-0">
                     Welcome to DEGENX, the ultimate multichain DeFi ecosystem! Stake DGNX, influence governance, and enjoy revenue-sharing rewards. Rest easy with Liquidity Backing, while exploring innovative DeFi products across multiple blockchains.
                 </p>
-                <div className="flex mt-5 mx-8 md:mx-0">
+                <div className="flex mt-5 mx-4 md:mx-0">
                     <div className="border-l-2 border-t-2 border-b-2 w-3 border-techGreen" />
                     <ul className="text-white font-bold text-left list-disc ml-4 py-2">
                         <li>Powered by DGNX on Avalanche</li>
@@ -56,7 +56,7 @@ export function Hero() {
                 </div>
             </Container>
             <div
-                className="block w-full md:hidden opacity-40 -my-10"
+                className="block w-full md:hidden opacity-40"
             >
                 <Image src={dgnxSide} alt="DGNX" />
             </div>

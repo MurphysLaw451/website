@@ -90,20 +90,20 @@ function MobileNavigation() {
                         as="div"
                         className="absolute inset-x-0 top-full mt-4 flex origin-top flex-col rounded-2xl bg-white p-4 text-lg tracking-tight text-slate-900 shadow-xl ring-1 ring-slate-900/5"
                     >
-                        <MobileNavLink href="#projects">
-                            {translations.header.projects.en}
+                        <MobileNavLink href="#holder">
+                            $DGNX
                         </MobileNavLink>
-                        <MobileNavLink href="#tokenomics">
-                            {translations.header.tokenomics.en}
-                        </MobileNavLink>
-                        <MobileNavLink href="#backing">
-                            {translations.header.backing.en}
-                        </MobileNavLink>
-                        <MobileNavLink href="#team">
-                            {translations.header.team.en}
+                        <MobileNavLink href="#ecosystem">
+                            Ecosystem
                         </MobileNavLink>
                         <MobileNavLink href="#roadmap">
-                            {translations.header.roadmap.en}
+                            Roadmap
+                        </MobileNavLink>
+                        <MobileNavLink href="#join">
+                            Social
+                        </MobileNavLink>
+                        <MobileNavLink href="#team">
+                            Team
                         </MobileNavLink>
                         <hr className="m-2 border-slate-300/40" />
                         <MobileNavLink href="/dapp/buy">

@@ -99,7 +99,7 @@ export function Roadmap() {
                                 items={[
                                     { text: 'Degen Jump Telegram game launch' },
                                     { text: 'Updates to various Telegram bots' },
-                                    { text: 'DGNX Buy/ell tax reduced to 8%', highlight: true },
+                                    { text: 'DGNX Buy / Sell tax reduced to 8%', highlight: true },
                                     { text: 'Liquidity Backing audit completed' },
                                     { text: 'Liquidity Backing public release', highlight: true },
                                     { text: 'Commence work on DEGENX rebrand' },
@@ -114,7 +114,7 @@ export function Roadmap() {
                                     { text: 'Rebrand formally announced' },
                                     { text: 'Rebrand public release', highlight: true },
                                     { text: 'Broccoliswap enters beta testing' },
-                                    { text: 'DGNX Buy/sell tax reduced to 5%', highlight: true },
+                                    { text: 'DGNX Buy / Sell tax reduced to 5%', highlight: true },
                                     { text: 'Rebranded website launched', highlight: true },
                                 ]}
                             />

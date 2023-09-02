@@ -19,7 +19,7 @@ export function Empower() {
         <Container className="pt-10 pb-10 text-center" id="holder">
             <div className="text-center md:text-left mx-8 md:mx-0">
                 <H1 className="leading-[100%] text-white">
-                    Feel
+                    Be
                     <span className="text-degenOrange px-2 block my-0 sm:inline">empowered</span>
                     as a holder
                 </H1>

@@ -47,12 +47,22 @@ export function Projects() {
                 <Carousel
                     slide
                     slideInterval={1000000}
-                    leftControl={<div className="hidden sm:block bg-darkerblue cursor-pointer border-2 border-activeblue rounded-full p-3 hover:bg-dark">
-                        <PiCaretLeftLight />
-                    </div>}
-                    rightControl={<div className="hidden sm:block bg-darkerblue cursor-pointer border-2 border-activeblue rounded-full p-3 hover:bg-dark">
-                        <PiCaretRightLight />
-                    </div>}
+                    leftControl={<>
+                        <div className="hidden sm:block bg-darkerblue cursor-pointer border-2 border-activeblue rounded-full p-3 hover:bg-dark">
+                            <PiCaretLeftLight />
+                        </div>
+                        <div className="block absolute bottom-3 left-3 sm:hidden bg-darkerblue cursor-pointer border-2 border-activeblue rounded-full p-2 hover:bg-dark">
+                            <PiCaretLeftLight />
+                        </div>
+                    </>}
+                    rightControl={<>
+                        <div className="hidden sm:block bg-darkerblue cursor-pointer border-2 border-activeblue rounded-full p-3 hover:bg-dark">
+                            <PiCaretRightLight />
+                        </div>
+                        <div className="block absolute bottom-3 right-3 sm:hidden bg-darkerblue cursor-pointer border-2 border-activeblue rounded-full p-2 hover:bg-dark">
+                            <PiCaretRightLight />
+                        </div>
+                    </>}
                     indicators
                     theme={{
                         indicators: {
