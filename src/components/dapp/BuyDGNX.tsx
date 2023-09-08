@@ -27,7 +27,7 @@ export const BuyDGNX = (props: RouteObject) => {
                 <p className="mb-3  text-light-800 dark:text-light-600">
                     Note: the{' '}
                     <a
-                        href="https://docs.dgnx.finance/whitepaper/tokenomics/tax"
+                        href="https://docs.dgnx.finance/ecosystem/tokenomics#taxes--fees"
                         target="_blank"
                         rel="noreferrer"
                         className="text-orange-500 underline"
