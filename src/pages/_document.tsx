@@ -42,9 +42,9 @@ export default function Document(props) {
           function gtag(){
             dataLayer.push(arguments);
           }
-          gtag('js', new Date());
+          gtag("js", new Date());
 
-          gtag('config', 'G-SHQ22SS768');`}
+          gtag("config", "G-SHQ22SS768");`}
                 </script>
             </Head>
             <body className="flex h-full flex-col bg-light-200 bg-fixed dark:bg-gradient-radial dark:from-darkblue dark:to-dark">

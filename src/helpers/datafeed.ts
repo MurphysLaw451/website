@@ -99,7 +99,6 @@ export const datafeed = () => ({
     onErrorCallback: Function
   ) => {
     console.log('[getBars]: Method call', symbolInfo, resolution, periodParams)
-    return
     fetch(
       `${process.env.NEXT_PUBLIC_BACKING_API_ENDPOINT}/getData/avalanche/${process.env.NEXT_PUBLIC_TOKEN_ADDRESS}/${periodParams.to}/${resolutionToTimeframe[resolution]}/${periodParams.countBack}`
     )
