@@ -13,7 +13,6 @@ import { numberFormatter } from '../../../helpers/price-formatter'
 import { BACKING_TYPE, CHART_PRICE_MODE } from '../../../types'
 
 const applyOverrides = (tv: any, bgColor: string) => {
-    console.log('a3')
     try {
         tv?.applyOverrides?.({
             // @ts-ignore
@@ -54,9 +53,8 @@ export const Chart = (props: { wantTokenName: string; className?: string }) => {
     useEffect(() => { setReady(true) }, []);
 
     useEffect(() => {
-        console.log('a1')
         // @ts-ignore
-        if (!props?.wantTokenName || !tvLoaded) {
+        if (!props?.wantTokenName || !tvLoaded || !ready) {
             return
         }
 
@@ -64,7 +62,6 @@ export const Chart = (props: { wantTokenName: string; className?: string }) => {
         if (backingType === BACKING_TYPE.ONE) {
             backingName = 'Backing per 1 DGNX'
         }
-        console.log('a2')
 
         const backingChartName = `${backingName} in ${props.wantTokenName}`
 
@@ -272,7 +269,7 @@ export const Chart = (props: { wantTokenName: string; className?: string }) => {
         setTimeout(() => {
             applyOverrides(tv, bgColor)
         }, 7000)
-    }, [props.wantTokenName, backingType, priceMode, theme, tvLoaded, containerId])
+    }, [ready, props.wantTokenName, backingType, priceMode, theme, tvLoaded, containerId])
 
     if (!ready) {
         return null;
