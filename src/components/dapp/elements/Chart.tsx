@@ -32,7 +32,6 @@ const callWhenTVLoaded = async (callback: Function) => {
 }
 
 export const Chart = (props: { wantTokenName: string; className?: string }) => {
-    const containerId = Math.random().toString()
     const [backingType, setBackingType] = useState<BACKING_TYPE>(
         BACKING_TYPE.TOTAL
     )
@@ -42,6 +41,7 @@ export const Chart = (props: { wantTokenName: string; className?: string }) => {
     const [tvLoaded, setTvLoaded] = useState(false)
     const [loadTvCalled, setLoadTvCalled] = useState(false)
     const [ready, setReady] = useState(false)
+    const [containerId] = useState(Math.random().toString());
 
     if (!tvLoaded && !loadTvCalled) {
         setLoadTvCalled(true)
