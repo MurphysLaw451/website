@@ -11,7 +11,7 @@ const navigation = [
     {
         name: 'Buy $DGNX',
         icon: HiCurrencyDollar,
-        href: 'buy',
+        href: 'https://broccoliswap.com/?inputToken=AVAX&inputChain=AVAX&outputToken=DGNX&outputChain=AVAX&amount=10',
         count: undefined,
     },
     {
@@ -105,7 +105,8 @@ function MobileSidebar() {
                         {navigation.map((item) => (
                             <MobileNavLink
                                 key={item.name}
-                                href={`/dapp/${item.href}`}
+                                target={item.href.startsWith('http') ? '_blank' : '_self'}
+                                href={item.href.startsWith('http') ? item.href : `/dapp/${item.href}`}
                             >
                                 {item.name}
                             </MobileNavLink>
@@ -142,7 +143,8 @@ export default function Sidebar(props: { mobile?: boolean }) {
                         return (
                             <Link
                                 key={item.name}
-                                to={`/dapp/${item.href}`}
+                                to={item.href.startsWith('http') ? item.href : `/dapp/${item.href}`}
+                                target={item.href.startsWith('http') ? '_blank' : '_self'}
                                 className={clsx(
                                     current
                                         ? 'border-2 border-degenOrange bg-light-100 text-dark'
