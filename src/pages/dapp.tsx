@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { WagmiConfig, configureChains, createClient } from 'wagmi'
 import { publicProvider } from 'wagmi/providers/public'
-import { BuyDGNX } from '../components/dapp/BuyDGNX'
 import { Dashboard } from '../components/dapp/Dashboard'
 import { Governance } from '../components/dapp/Governance'
 import { LiquidityBacking } from '../components/dapp/LiquidityBacking'
@@ -62,10 +61,6 @@ export default function Dapp() {
                         <main className="mx-auto w-11/12 lg:w-8/12">
                             <Routes>
                                 <Route element={<Dashboard />} path="/dapp" />
-                                <Route
-                                    element={<BuyDGNX />}
-                                    path="/dapp/buy/*"
-                                />
                                 <Route
                                     element={<Governance />}
                                     path="/dapp/governance"
