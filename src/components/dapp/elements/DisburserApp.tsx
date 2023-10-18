@@ -9,8 +9,6 @@ import { Button } from '../../Button';
 
 const DISBURSER_ADDRESS = '0x8a0E3264Da08bf999AfF5a50AabF5d2dc89fab79';
 
-const re="0x2b76c4931f7ab8a1b4b45e4440b5852ef15abf10"
-
 const countdownStr = (s: number) => {
     const d = Math.floor(s / (3600 * 24));
     s  -= d * 3600 * 24;
