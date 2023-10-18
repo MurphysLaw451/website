@@ -83,21 +83,21 @@ const Dapp = () => {
         address: DISBURSER_ADDRESS,
         abi,
         functionName: 'amountLeft',
-        args: [],
+        args: [address],
     })
 
     const { data: paidOut, isLoading: paidOutLoading } = useContractRead({
         address: DISBURSER_ADDRESS,
         abi,
         functionName: 'paidOutAmounts',
-        args: [],
+        args: [address],
     })
 
     const { data: timeUntilNextClaimBN } = useContractRead({
         address: DISBURSER_ADDRESS,
         abi,
         functionName: 'timeLeftUntilNextClaim',
-        args: [],
+        args: [address],
     })
 
     const timeUntilNextClaim = ((timeUntilNextClaimBN) as BigNumber).toNumber();
