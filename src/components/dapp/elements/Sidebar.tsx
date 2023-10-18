@@ -5,6 +5,7 @@ import { Fragment } from 'react'
 import { HiHome, HiCurrencyDollar } from 'react-icons/hi'
 import { FaPiggyBank } from 'react-icons/fa'
 import { RiGovernmentFill } from 'react-icons/ri'
+import { GiPayMoney } from 'react-icons/gi'
 
 const navigation = [
     { name: 'Dashboard', icon: HiHome, href: '', count: undefined },
@@ -24,6 +25,12 @@ const navigation = [
         name: 'Governance',
         icon: RiGovernmentFill,
         href: 'governance',
+        count: undefined,
+    },
+    {
+        name: 'Disburser',
+        icon: GiPayMoney,
+        href: 'disburser',
         count: undefined,
     },
 ]
