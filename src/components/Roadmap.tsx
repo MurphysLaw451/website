@@ -119,6 +119,13 @@ export function Roadmap() {
                                     { text: 'BroccoliSwap public release', highlight: true },
                                 ]}
                             />
+                            <RoadmapItem
+                                quarter="Q4"
+                                year="2023"
+                                items={[
+                                    { text: 'Add Arbitrum to BroccoliSwap' },
+                                ]}
+                            />
                             
                             <div className="col-span-1 sm:col-span-2">
                                 <h3 className="text-white leading-none font-bold text-xl">Coming</h3>
