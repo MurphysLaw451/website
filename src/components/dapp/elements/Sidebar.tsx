@@ -5,6 +5,7 @@ import { Fragment } from 'react'
 import { HiHome, HiCurrencyDollar } from 'react-icons/hi'
 import { FaPiggyBank } from 'react-icons/fa'
 import { RiGovernmentFill } from 'react-icons/ri'
+import { MdOutlineMonitorHeart } from 'react-icons/md'
 
 const navigation = [
     { name: 'Dashboard', icon: HiHome, href: '', count: undefined },
