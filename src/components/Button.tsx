@@ -10,7 +10,8 @@ const baseStyles = {
 const variantStyles = {
     solid: {
         blue: 'bg-light-100 text-dark hover:bg-degenOrange border-degenOrange  dark:bg-darkblue dark:text-light-100 dark:hover:bg-activeblue transition-colors border-2 dark:border-activeblue',
-        orange: 'bg-degenOrange border-2 border-degenOrange rounded-full text-black font-medium hover:bg-dark transition-colors hover:text-light-200'
+        orange: 'bg-degenOrange border-2 border-degenOrange rounded-full text-black font-medium hover:bg-dark transition-colors hover:text-light-200',
+        orangeDisabled: 'bg-degenOrange cursor-not-allowed border-2 border-degenOrange rounded-full text-black font-medium transition-color'
     },
     outline: {
         orange: 'bg-transparent border-2 border-degenOrange rounded-full text-light-100 font-medium hover:bg-dark transition-colors',
