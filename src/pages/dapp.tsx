@@ -12,6 +12,7 @@ import { DappHeader } from '../components/dapp/elements/DappHeader'
 import Sidebar from '../components/dapp/elements/Sidebar'
 
 import { ConnectKitProvider, getDefaultConfig } from 'connectkit'
+import { Disburser } from '../components/dapp/Disburser'
 
 const { chains, provider } = configureChains(
     [avalanche, avalancheFuji],
@@ -68,6 +69,10 @@ export default function Dapp() {
                                 <Route
                                     element={<LiquidityBacking />}
                                     path="/dapp/liquidity-backing"
+                                />
+                                <Route
+                                    element={<Disburser />}
+                                    path="/dapp/disburser"
                                 />
                             </Routes>
                         </main>
