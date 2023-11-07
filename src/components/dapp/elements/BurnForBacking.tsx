@@ -365,11 +365,11 @@ export const BurnForBacking = (props: {
                     Tx successful!{' '}
                     <a
                         className="text-orange-600"
-                        href={`https://snowtrace.io/tx/${hash}`}
+                        href={`https://avascan.info/blockchain/c/tx/${hash}`}
                         target="_blank"
                         rel="noreferrer"
                     >
-                        Check transaction on Snowtrace
+                        Check transaction on Avascan
                     </a>
                 </div>
             )}

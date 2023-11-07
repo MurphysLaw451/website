@@ -32,7 +32,7 @@ const chainsInfo = {
     symbol: 'avax',
     logo: 'avalanche.svg',
     rubicName: 'avalanche',
-    explorer: 'https://snowtrace.io/',
+    explorer: 'https://avascan.info/',
     bitqueryChainName: 'avalanche',
   },
 }

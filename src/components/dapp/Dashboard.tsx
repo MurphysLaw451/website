@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { useTheme } from 'next-themes'
+import { ethers } from 'ethers'
 import { useEffect, useRef, useState } from 'react'
 import { HiOutlineExternalLink } from 'react-icons/hi'
 import { RouteObject } from 'react-router-dom'
@@ -7,6 +7,18 @@ import { Chart } from './elements/Chart'
 import BigNumber from 'bignumber.js'
 import { H1 } from '../H1'
 import { H2 } from '../H2'
+
+import tokenAbi from '../../abi/erc20.json';
+
+const DGNX_TOKEN_ADDRESS = '0x51e48670098173025c477d9aa3f0eff7bf9f7812';
+const chainId = +process.env.NEXT_PUBLIC_CHAIN_ID
+const provider = new ethers.providers.JsonRpcProvider(
+    process.env.NEXT_PUBLIC_RPC,
+    {
+        name: process.env.NEXT_PUBLIC_NAME,
+        chainId,
+    }
+)
 
 const numberFormatter2 = new Intl.NumberFormat('en-US', {
     minimumFractionDigits: 2,
@@ -104,7 +116,7 @@ const WalletInfo = (props: any) => {
                 {props.name}{' '}
                 <a
                     rel="noreferrer"
-                    href={`https://snowtrace.io/address/${props.address}`}
+                    href={`https://avascan.info/blockchain/c/address/${props.address}`}
                     target="_blank"
                 >
                     <HiOutlineExternalLink className="inline text-light-600" />
@@ -167,18 +179,9 @@ const WalletInfo = (props: any) => {
 }
 
 const getDgnxAmount = async (address: string) => {
-    const dataRaw = await fetch(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/snowtrace?module=account&action=tokenbalance&contractaddress=0x51e48670098173025c477d9aa3f0eff7bf9f7812&address=${address}`
-    )
-    const data = await dataRaw.json()
-
-    if (data.message !== 'OK') {
-        // timeout likely, wait a sec and try again
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-        return getDgnxAmount(address)
-    }
-
-    return data.result / 10 ** 18
+    const contract = new ethers.Contract(DGNX_TOKEN_ADDRESS, tokenAbi, provider);
+    const balance = (await contract.balanceOf(address)).toString();
+    return new BigNumber(balance).div(10 ** 18).toNumber();
 }
 
 const PriceChange = (props: { item: number }) => {
