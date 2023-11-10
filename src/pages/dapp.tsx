@@ -13,6 +13,7 @@ import Sidebar from '../components/dapp/elements/Sidebar'
 
 import { ConnectKitProvider, getDefaultConfig } from 'connectkit'
 import { Disburser } from '../components/dapp/Disburser'
+import { ATM } from '../components/dapp/ATM'
 
 const { chains, provider } = configureChains(
     [avalanche, avalancheFuji],
@@ -73,6 +74,10 @@ export default function Dapp() {
                                 <Route
                                     element={<Disburser />}
                                     path="/dapp/disburser"
+                                />
+                                <Route
+                                    element={<ATM />}
+                                    path="/dapp/atm"
                                 />
                             </Routes>
                         </main>
