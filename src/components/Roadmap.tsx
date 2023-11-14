@@ -116,6 +116,14 @@ export function Roadmap() {
                                     { text: 'Broccoliswap enters beta testing' },
                                     { text: 'DGNX Buy / Sell tax reduced to 5%', highlight: true },
                                     { text: 'Rebranded website launched', highlight: true },
+                                    { text: 'BroccoliSwap public release', highlight: true },
+                                ]}
+                            />
+                            <RoadmapItem
+                                quarter="Q4"
+                                year="2023"
+                                items={[
+                                    { text: 'Add Arbitrum to BroccoliSwap' },
                                 ]}
                             />
                             
@@ -128,10 +136,11 @@ export function Roadmap() {
                                 <BsSquareFill className="text-techGreen rotate-45 z-1 mb-5" />
                             </div>
                             <div className="col-span-1 sm:col-span-7">
-                                <div className="text-light-600">BroccoliSwap public release</div>
                                 <div className="text-light-600">LinkBridge audit</div>
                                 <div className="text-light-600">LinkBridge launch to ETH</div>
                                 <div className="text-light-600">LinkBridge launch to BSC</div>
+                                <div className="text-light-600">Broccoliswap [REDACTED]</div>
+                                <div className="text-light-600">Broccoliswap token sniffer</div>
                             </div>
                         </div>
                     </div>

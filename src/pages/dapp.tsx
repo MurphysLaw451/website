@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { WagmiConfig, configureChains, createClient } from 'wagmi'
 import { publicProvider } from 'wagmi/providers/public'
-import { BuyDGNX } from '../components/dapp/BuyDGNX'
 import { Dashboard } from '../components/dapp/Dashboard'
 import { Governance } from '../components/dapp/Governance'
 import { LiquidityBacking } from '../components/dapp/LiquidityBacking'
@@ -13,6 +12,7 @@ import { DappHeader } from '../components/dapp/elements/DappHeader'
 import Sidebar from '../components/dapp/elements/Sidebar'
 
 import { ConnectKitProvider, getDefaultConfig } from 'connectkit'
+import { Disburser } from '../components/dapp/Disburser'
 
 const { chains, provider } = configureChains(
     [avalanche, avalancheFuji],
@@ -63,16 +63,16 @@ export default function Dapp() {
                             <Routes>
                                 <Route element={<Dashboard />} path="/dapp" />
                                 <Route
-                                    element={<BuyDGNX />}
-                                    path="/dapp/buy/*"
-                                />
-                                <Route
                                     element={<Governance />}
                                     path="/dapp/governance"
                                 />
                                 <Route
                                     element={<LiquidityBacking />}
                                     path="/dapp/liquidity-backing"
+                                />
+                                <Route
+                                    element={<Disburser />}
+                                    path="/dapp/disburser"
                                 />
                             </Routes>
                         </main>

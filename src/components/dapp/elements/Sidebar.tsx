@@ -6,13 +6,14 @@ import { HiHome, HiCurrencyDollar } from 'react-icons/hi'
 import { FaPiggyBank } from 'react-icons/fa'
 import { RiGovernmentFill } from 'react-icons/ri'
 import { MdOutlineMonitorHeart } from 'react-icons/md'
+import { GiPayMoney } from 'react-icons/gi'
 
 const navigation = [
     { name: 'Dashboard', icon: HiHome, href: '', count: undefined },
     {
         name: 'Buy $DGNX',
         icon: HiCurrencyDollar,
-        href: 'buy',
+        href: 'https://broccoliswap.com/?inputToken=AVAX&inputChain=AVAX&outputToken=DGNX&outputChain=AVAX&amount=10',
         count: undefined,
     },
     {
@@ -25,6 +26,12 @@ const navigation = [
         name: 'Governance',
         icon: RiGovernmentFill,
         href: 'governance',
+        count: undefined,
+    },
+    {
+        name: 'Disburser',
+        icon: GiPayMoney,
+        href: 'disburser',
         count: undefined,
     },
 ]
@@ -106,7 +113,8 @@ function MobileSidebar() {
                         {navigation.map((item) => (
                             <MobileNavLink
                                 key={item.name}
-                                href={`/dapp/${item.href}`}
+                                target={item.href.startsWith('http') ? '_blank' : '_self'}
+                                href={item.href.startsWith('http') ? item.href : `/dapp/${item.href}`}
                             >
                                 {item.name}
                             </MobileNavLink>
@@ -143,7 +151,8 @@ export default function Sidebar(props: { mobile?: boolean }) {
                         return (
                             <Link
                                 key={item.name}
-                                to={`/dapp/${item.href}`}
+                                to={item.href.startsWith('http') ? item.href : `/dapp/${item.href}`}
+                                target={item.href.startsWith('http') ? '_blank' : '_self'}
                                 className={clsx(
                                     current
                                         ? 'border-2 border-degenOrange bg-light-100 text-dark'

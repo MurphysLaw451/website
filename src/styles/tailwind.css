@@ -6,10 +6,6 @@
   min-height: 100%;
 }
 
-.lifi-container > .MuiBox-root {
-  justify-content: left;
-}
-
 .MuiScopedCssBaseline-root, .MuiInputBase-root {
   background-color: transparent !important;
 }

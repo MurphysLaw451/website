@@ -106,7 +106,7 @@ function MobileNavigation() {
                             Team
                         </MobileNavLink>
                         <hr className="m-2 border-slate-300/40" />
-                        <MobileNavLink href="/dapp/buy">
+                        <MobileNavLink href="https://broccoliswap.com/?inputToken=AVAX&inputChain=AVAX&outputToken=DGNX&outputChain=AVAX&amount=10" target="_blank">
                             {translations.header.buy.en}
                         </MobileNavLink>
                     </Popover.Panel>
@@ -145,7 +145,7 @@ export function Header() {
                             <NavLink href="#team">
                                 Team
                             </NavLink>
-                            <NavLink href="/dapp/buy">
+                            <NavLink href="https://broccoliswap.com/?inputToken=AVAX&inputChain=AVAX&outputToken=DGNX&outputChain=AVAX&amount=10" target="_blank">
                                 Buy
                             </NavLink>
                         </div>

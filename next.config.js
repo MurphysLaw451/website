@@ -1,5 +1,3 @@
-const withTM = require('next-transpile-modules')(['@lifi/widget'])
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   async rewrites() {
@@ -20,4 +18,4 @@ const nextConfig = {
   },
 }
 
-module.exports = withTM(nextConfig)
+module.exports = nextConfig
