@@ -2,7 +2,8 @@ import BigNumber from 'bignumber.js'
 import { ethers } from 'ethers'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { AiOutlineCheckCircle } from 'react-icons/ai'
-import { useAccount, useSigner } from 'wagmi'
+import { toast } from 'react-toastify'
+import { WalletClient, useAccount, useWalletClient } from 'wagmi'
 import { debounce } from '../../../helpers/debounce'
 import {
     approveBaseToken,
@@ -11,14 +12,11 @@ import {
     getExpectedWantTokensByBurningBaseTokens,
 } from '../../../helpers/liquidityBacking'
 import { BNtoNumber } from '../../../helpers/number'
+import { Button } from '../../Button'
 import { Spinner } from './Spinner'
 
-import { toast } from 'react-toastify'
-import { Button } from '../../Button'
-
 const calculateReturnAmount = async (
-    signer: ethers.Signer,
-    provider: ethers.providers.Provider,
+    walletClient: WalletClient,
     wantTokenAddress: string,
     allowance: BigNumber,
     amountToBurn: BigNumber,
@@ -34,7 +32,7 @@ const calculateReturnAmount = async (
     if (!amountToBurn.gt(baseTokenAmount)) {
         if (allowance.isGreaterThanOrEqualTo(amountToBurn)) {
             expectedOutput = (await burnForBacking(
-                signer,
+                walletClient,
                 wantTokenAddress,
                 ethers.BigNumber.from(amountToBurn.toFixed()),
                 ethers.BigNumber.from(0),
@@ -42,7 +40,6 @@ const calculateReturnAmount = async (
             )) as ethers.BigNumber
         } else {
             expectedOutput = await getExpectedWantTokensByBurningBaseTokens(
-                provider,
                 wantTokenAddress,
                 ethers.BigNumber.from(amountToBurn.toFixed())
             )
@@ -55,8 +52,7 @@ const calculateReturnAmount = async (
 
 const calculateReturnDebounced = debounce(
     async (
-        signer: ethers.Signer,
-        provider: ethers.providers.Provider,
+        walletClient: WalletClient,
         wantTokenAddress: string,
         allowance: BigNumber,
         amountToBurn: BigNumber,
@@ -69,8 +65,7 @@ const calculateReturnDebounced = debounce(
         }
 
         calculateReturnAmount(
-            signer,
-            provider,
+            walletClient,
             wantTokenAddress,
             allowance,
             amountToBurn,
@@ -108,13 +103,10 @@ export const BurnForBacking = (props: {
     )
     const { address, isConnected } = useAccount()
     const [hash, setTxHash] = useState('')
-    const { data: signer } = useSigner()
+    const { data: walletClient } = useWalletClient()
     const updateAllowance = async () => {
-        return getControllerAllowance(props.provider, address).then(
-            (allowance) => {
-                setAllowance(BigNumber(allowance.toString()))
-            }
-        )
+        const allowance = await getControllerAllowance(address)
+        setAllowance(BigNumber(allowance.toString()))
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -126,8 +118,7 @@ export const BurnForBacking = (props: {
     useEffect(() => {
         setCalculatingWantTokenAmount(true)
         debouncedCalculateReturnAmount(
-            signer,
-            props.provider,
+            walletClient,
             props.activeWantToken?.address,
             allowance,
             amountToBurn,
@@ -136,8 +127,7 @@ export const BurnForBacking = (props: {
             setCalculatingWantTokenAmount
         )
     }, [
-        signer,
-        props.provider,
+        walletClient,
         props.activeWantToken,
         props.baseTokenAmount,
         amountToBurn,
@@ -149,7 +139,6 @@ export const BurnForBacking = (props: {
         if (!isConnected || !address) {
             return
         }
-
         updateAllowance()
     }, [isConnected, address, props.provider])
 
@@ -167,7 +156,7 @@ export const BurnForBacking = (props: {
             autoClose: false,
         })
         const hash = (await burnForBacking(
-            signer,
+            walletClient,
             props.activeWantToken.address,
             ethers.BigNumber.from(amountToBurn.toFixed()),
             ethers.BigNumber.from(
@@ -198,9 +187,9 @@ export const BurnForBacking = (props: {
             autoClose: false,
         })
         const isApproved = await approveBaseToken(
-            signer,
             ethers.BigNumber.from(amountToBurn.toFixed())
         )
+
         toast.dismiss(toastId)
         if (isApproved) {
             toast.success('Approval successfully', { autoClose: 3000 })
@@ -211,8 +200,7 @@ export const BurnForBacking = (props: {
         }
         await updateAllowance()
         await calculateReturnAmount(
-            signer,
-            props.provider,
+            walletClient,
             props.activeWantToken.address,
             allowance,
             amountToBurn,
@@ -336,7 +324,7 @@ export const BurnForBacking = (props: {
                     <div className="flex items-center">
                         {allowance.isGreaterThanOrEqualTo(amountToBurn) ? (
                             <Button
-                                className="w-full mt-3"
+                                className="mt-3 w-full"
                                 color="orange"
                                 onClick={() => execBurn()}
                             >
@@ -344,7 +332,7 @@ export const BurnForBacking = (props: {
                             </Button>
                         ) : (
                             <Button
-                                className="w-full mt-3"
+                                className="mt-3 w-full"
                                 color="orange"
                                 onClick={() => execApprove()}
                             >

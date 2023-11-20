@@ -1,11 +1,17 @@
-import { RouteObject } from 'react-router-dom'
-import { useAccount, useContractRead, useContractWrite, useClient } from 'wagmi'
-import abi from '../../../abi/disburser.json'
-import { Spinner } from './Spinner'
 import BigNumber from 'bignumber.js'
+import { useEffect, useState } from 'react'
+import { RouteObject } from 'react-router-dom'
 import { useCountdownTimer } from 'use-countdown-timer'
-import { useEffect } from 'react'
-import { Button } from '../../Button'
+import {
+    useAccount,
+    useContractRead,
+    useContractWrite,
+    usePrepareContractWrite,
+    useWalletClient,
+} from 'wagmi'
+import abi from './../../../abi/disburser.json'
+import { Button } from './../../Button'
+import { Spinner } from './Spinner'
 
 const DISBURSER_ADDRESS = '0x8a0E3264Da08bf999AfF5a50AabF5d2dc89fab79'
 
@@ -24,9 +30,9 @@ const countdownStr = (s: number) => {
     return tmp.join(' ')
 }
 
-const Countdown = (props: { seconds: number }) => {
+const Countdown = (props: { seconds: bigint }) => {
     const { countdown, start, isRunning } = useCountdownTimer({
-        timer: 1000 * props.seconds,
+        timer: parseInt((1000n * props.seconds).toString()),
     })
 
     useEffect(() => {
@@ -39,17 +45,18 @@ const Countdown = (props: { seconds: number }) => {
 }
 
 const ClaimButton = (props: { amount: string | number }) => {
+    const { config } = usePrepareContractWrite({
+        address: DISBURSER_ADDRESS,
+        abi,
+        functionName: 'claim',
+    })
+
     const {
         data,
         isLoading: claimLoading,
         isSuccess: claimSuccess,
         write: claim,
-    } = useContractWrite({
-        address: DISBURSER_ADDRESS,
-        abi,
-        functionName: 'claim',
-        mode: 'recklesslyUnprepared',
-    })
+    } = useContractWrite(config)
 
     if (claimLoading) {
         return (
@@ -76,7 +83,8 @@ const ClaimButton = (props: { amount: string | number }) => {
 
 const Dapp = () => {
     const { address } = useAccount()
-    const { data: walletClient } = useClient()
+    const { data: walletClient } = useWalletClient()
+
     const { data: amountLeft, isLoading: amountLeftLoading } = useContractRead({
         address: DISBURSER_ADDRESS,
         abi,
@@ -106,9 +114,7 @@ const Dapp = () => {
             address: DISBURSER_ADDRESS,
             abi,
             functionName: 'claimEstimate',
-            overrides: {
-                from: walletClient.account,
-            },
+            account: walletClient?.account,
         })
 
     const claimableAmount = claimEstimateLoading
@@ -117,9 +123,10 @@ const Dapp = () => {
               parseInt((claimEstimate as any).claimable as string) /
               Math.pow(10, 18)
           ).toFixed(4)}`
+
     const timeUntilNextClaim = timeUntilNextClaimBNLoading
-        ? 0
-        : (timeUntilNextClaimBN as BigNumber).toNumber()
+        ? 0n
+        : (timeUntilNextClaimBN as bigint)
     const amountLeftStr = amountLeftLoading
         ? '...'
         : `${(parseInt(amountLeft as string) / Math.pow(10, 18)).toFixed(4)}`

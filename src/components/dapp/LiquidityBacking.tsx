@@ -3,9 +3,10 @@ import { useEffect, useState } from 'react'
 import { RouteObject } from 'react-router-dom'
 
 import BigNumber from 'bignumber.js'
+import Image from 'next/image'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.min.css'
-import { useAccount } from 'wagmi'
+import { useAccount, useWalletClient } from 'wagmi'
 import {
     getBackingForAddress,
     getBackingPerDGNX,
@@ -14,13 +15,11 @@ import {
     getTotalValue,
 } from '../../helpers/liquidityBacking'
 import { BNtoNumber } from '../../helpers/number'
+import { H2 } from '../H2'
 import { BurnForBacking } from './elements/BurnForBacking'
 import { Chart } from './elements/Chart'
-import Image from 'next/image'
-import { H1 } from '../H1'
-import { H2 } from '../H2'
 
-import imageLiqBack from '../../images/projects/liqback.svg';
+import imageLiqBack from '../../images/projects/liqback.svg'
 
 const chainId = +process.env.NEXT_PUBLIC_CHAIN_ID
 const provider = new ethers.providers.JsonRpcProvider(
@@ -75,20 +74,25 @@ export const LiquidityBacking = (props: RouteObject) => {
     const [addressBacking, setAddressBacking] = useState<number>()
 
     const { address, isConnected } = useAccount()
+    const { data: walletClient } = useWalletClient()
 
     useEffect(() => {
-        getStats(provider).then((data) => {
-            setStats(data)
+        if (walletClient) {
+            getStats(walletClient).then((data) => {
+                setStats(data)
 
-            // Try to set USDC.e as default wantToken, if that isn't in the list, just take the first one
-            const wantTokenIndex = data.wantTokenData.findIndex((token) =>
-                tokenIsUSDC(token.address)
-            )
-            setActiveWantToken(
-                data.wantTokenData[wantTokenIndex === -1 ? 0 : wantTokenIndex]
-            )
-        })
-    }, [])
+                // Try to set USDC.e as default wantToken, if that isn't in the list, just take the first one
+                const wantTokenIndex = data.wantTokenData.findIndex((token) =>
+                    tokenIsUSDC(token.address)
+                )
+                setActiveWantToken(
+                    data.wantTokenData[
+                        wantTokenIndex === -1 ? 0 : wantTokenIndex
+                    ]
+                )
+            })
+        }
+    }, [walletClient])
 
     useEffect(() => {
         if (!activeWantToken) {
@@ -101,16 +105,12 @@ export const LiquidityBacking = (props: RouteObject) => {
         setBaseTokenBalance(BigNumber(0))
         setAddressBacking(0)
         Promise.all([
-            getTotalValue(provider, activeWantToken.address).then((data) => {
+            getTotalValue(activeWantToken.address).then((data) => {
                 setTotalBacking(BNtoNumber(data, activeWantToken.decimals))
             }),
-            getBackingPerDGNX(provider, activeWantToken.address).then(
-                (data) => {
-                    setBackingPerDGNX(
-                        BNtoNumber(data, activeWantToken.decimals)
-                    )
-                }
-            ),
+            getBackingPerDGNX(activeWantToken.address).then((data) => {
+                setBackingPerDGNX(BNtoNumber(data, activeWantToken.decimals))
+            }),
         ]).then(() => setLoading(false))
     }, [activeWantToken])
 
@@ -120,14 +120,13 @@ export const LiquidityBacking = (props: RouteObject) => {
         }
 
         // Your backing
-        getBaseTokenBalance(provider, address)
+        getBaseTokenBalance(address)
             .then((baseTokens) => {
                 setBaseTokenBalance(BigNumber(baseTokens.balance.toString()))
-                setBaseTokenDecimals(baseTokens.decimals)
+                setBaseTokenDecimals(baseTokens.decimals as number)
                 return getBackingForAddress(
-                    provider,
                     activeWantToken.address,
-                    baseTokens.balance
+                    baseTokens.balance as any
                 )
             })
             .then((backing) => {
@@ -137,8 +136,8 @@ export const LiquidityBacking = (props: RouteObject) => {
 
     return (
         <div>
-            <div className="sm:mb-8 flex flex-col items-center lg:flex-row">
-                <div className="items-center mb-5 h-16 w-full flex justify-center sm:justify-start">
+            <div className="flex flex-col items-center sm:mb-8 lg:flex-row">
+                <div className="mb-5 flex h-16 w-full items-center justify-center sm:justify-start">
                     <Image
                         alt={`DegenX Liquidity Backing logo`}
                         src={imageLiqBack}
@@ -148,8 +147,10 @@ export const LiquidityBacking = (props: RouteObject) => {
                 </div>
             </div>
             <div className="mb-8 flex flex-col items-center lg:flex-row">
-                <h2 className="text-2xl font-bold text-light-100">Show backing values in</h2>
-                <div className="mt-8 mb-2 flex flex-row lg:mt-0 lg:mb-0">
+                <h2 className="text-2xl font-bold text-light-100">
+                    Show backing values in
+                </h2>
+                <div className="mb-2 mt-8 flex flex-row lg:mb-0 lg:mt-0">
                     {stats?.wantTokenData &&
                         stats.wantTokenData.map((token) => (
                             <span
@@ -159,7 +160,7 @@ export const LiquidityBacking = (props: RouteObject) => {
                                     activeWantToken.address === token.address
                                 }
                                 data-address={token.address}
-                                title={token.info.name}
+                                title={token.info[0]}
                                 onClick={(e) =>
                                     setActiveWantToken(
                                         stats.wantTokenData.find(
@@ -173,8 +174,8 @@ export const LiquidityBacking = (props: RouteObject) => {
                                 <Image
                                     className="inline-block w-12"
                                     src={`/wanttokens/${chainId}/${token.address}.png`}
-                                    alt={token.info.name}
-                                    title={token.info.name}
+                                    alt={token.info[0]}
+                                    title={token.info[0]}
                                     width={48}
                                     height={48}
                                 />
@@ -190,7 +191,7 @@ export const LiquidityBacking = (props: RouteObject) => {
                     {!loading && activeWantToken && (
                         <div className="text-right text-2xl text-white">
                             {totalBacking?.toFixed(3) || 0}{' '}
-                            {activeWantToken.info.name}
+                            {activeWantToken.info[0]}
                         </div>
                     )}
                     {!loading && activeWantToken && (
@@ -198,7 +199,7 @@ export const LiquidityBacking = (props: RouteObject) => {
                             <div className="flex-grow"></div>
                             <div>
                                 {backingPerDGNX?.toFixed(8) || 0}{' '}
-                                {activeWantToken.info.name} / DGNX
+                                {activeWantToken.info[0]} / DGNX
                             </div>
                         </div>
                     )}
@@ -214,7 +215,7 @@ export const LiquidityBacking = (props: RouteObject) => {
                                 baseTokenDecimals
                             )}
                             backingValue={addressBacking}
-                            wantTokenName={activeWantToken?.info?.name}
+                            wantTokenName={activeWantToken?.info![0]}
                         />
                     ) : (
                         <p className="text-center">
@@ -237,19 +238,22 @@ export const LiquidityBacking = (props: RouteObject) => {
                                             <Image
                                                 className="w-5"
                                                 src={`/tokens/${chainId}/${vaultItem.tokenAddress}.png`}
-                                                alt={vaultItem.name}
-                                                title={vaultItem.name}
+                                                alt={vaultItem.name as string}
+                                                title={vaultItem.name as string}
                                                 width={20}
                                                 height={20}
                                             />
                                         </div>
                                         <div className="flex-grow">
-                                            {vaultItem.name}
+                                            {vaultItem.name as string}
                                         </div>
                                         <div>
                                             {(
                                                 Number(vaultItem.balance) /
-                                                Number(10 ** vaultItem.decimals)
+                                                Number(
+                                                    10 **
+                                                        (vaultItem.decimals as number)
+                                                )
                                             ).toFixed(3)}
                                         </div>
                                     </div>

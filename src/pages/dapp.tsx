@@ -1,34 +1,34 @@
-import { avalanche, avalancheFuji } from '@wagmi/chains'
+import { avalanche, avalancheFuji, goerli, mainnet } from '@wagmi/chains'
+import { ConnectKitProvider, getDefaultConfig } from 'connectkit'
 import { useTheme } from 'next-themes'
 import Head from 'next/head'
 import { useEffect, useState } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import { WagmiConfig, configureChains, createClient } from 'wagmi'
+import { WagmiConfig, configureChains, createConfig } from 'wagmi'
 import { publicProvider } from 'wagmi/providers/public'
 import { Dashboard } from '../components/dapp/Dashboard'
+import { Disburser } from '../components/dapp/Disburser'
 import { Governance } from '../components/dapp/Governance'
 import { LiquidityBacking } from '../components/dapp/LiquidityBacking'
 import { DappHeader } from '../components/dapp/elements/DappHeader'
 import Sidebar from '../components/dapp/elements/Sidebar'
 
-import { ConnectKitProvider, getDefaultConfig } from 'connectkit'
-import { Disburser } from '../components/dapp/Disburser'
-
-const { chains, provider } = configureChains(
-    [avalanche, avalancheFuji],
+const { chains } = configureChains(
+    [avalanche, avalancheFuji, goerli, mainnet],
     [publicProvider()]
 )
 
-const client = createClient({
+const config = createConfig({
     ...getDefaultConfig({
+        appName: 'DegenX Ecosystem DAPP',
+
         chains,
         autoConnect: true,
+
         walletConnectProjectId:
             process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID!,
         infuraId: process.env.NEXT_PUBLIC_INFURA_ID!,
-        appName: 'DegenX Ecosystem DAPP',
     }),
-    provider,
 })
 
 export default function Dapp() {
@@ -52,7 +52,7 @@ export default function Dapp() {
                     content="DegenX is multichain ecosystem that offers a suite of decentralized applications (dApps) and services to provide solutions for projects and individuals in the DeFi space. $DGNX is a multichain token with liquidity backing."
                 />
             </Head>
-            <WagmiConfig client={client}>
+            <WagmiConfig config={config}>
                 <ConnectKitProvider mode={theme as 'light' | 'dark'}>
                     <DappHeader />
                     <div className="my-32 flex sm:my-20 lg:ml-3">

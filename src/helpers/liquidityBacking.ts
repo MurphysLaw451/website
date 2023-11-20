@@ -1,39 +1,51 @@
-import { BigNumber, ethers } from 'ethers'
-import { Erc20__factory } from '../../types'
-import { Controller } from '../../types/Controller'
-import { Controller__factory } from '../../types/factories/Controller__factory'
-import { Vault__factory } from '../../types/factories/Vault__factory'
-import { getTokenData } from './token'
+import { BigNumber } from 'ethers'
+import { Address, WalletClient } from 'wagmi'
+import {
+  readControllerContract,
+  readTokenContract,
+  readVaultContract,
+  simulateControllerContract,
+  writeControllerContract,
+  writeTokenContract,
+} from './contracts'
+import { debounce } from './debounce'
 
 const getWantTokenData = async (
-  provider: ethers.providers.Provider,
-  controller: Controller,
+  walletClient: WalletClient,
   index: number
-) => {
-  const address = await controller.allWantTokens(index)
+): Promise<{ info: any; address: Address; decimals: any }> => {
+  const address: Address = (await readControllerContract({
+    functionName: 'allWantTokens',
+    args: [index],
+    account: walletClient.account,
+  })) as Address
 
-  const [[_, decimals], info] = await Promise.all([
-    getTokenData(provider, address),
-    controller.wantTokens(address),
+  const [decimals, info] = await Promise.all([
+    await readTokenContract({
+      address,
+      functionName: 'decimals',
+    }),
+    await readControllerContract({
+      functionName: 'wantTokens',
+      args: [address],
+    }),
   ])
   return { info, address, decimals }
 }
 
 const getWantTokens = async (
-  provider: ethers.providers.Provider,
-  controller: Controller,
+  walletClient: WalletClient,
   wantTokenCount: number
 ) => {
   const indices = Array.from(Array(wantTokenCount).keys())
   const wantTokenData = (
     await Promise.all(
       indices.map(async (index) => {
-        const data = await getWantTokenData(provider, controller, index)
+        const data = await getWantTokenData(walletClient, index)
         return data
       })
     )
-  ).filter((token) => token.info.enabled)
-
+  ).filter((token) => token.info[1])
   return wantTokenData
 }
 
@@ -45,24 +57,35 @@ const getWantTokens = async (
  * @param vaultIndex
  * @returns Array of { tokenAddress, balance } for every token in the vault
  */
-const getVaultData = async (
-  provider: ethers.providers.Provider,
-  controller: Controller,
-  vaultIndex: number
-) => {
+const getVaultData = async (walletClient: WalletClient, vaultIndex: number) => {
   // Get vault
-  const vaultAddress = await controller.allVaults(vaultIndex)
-  const vault = Vault__factory.connect(vaultAddress, provider)
+  const address = (await readControllerContract({
+    functionName: 'allVaults',
+    args: [vaultIndex],
+    account: walletClient.account,
+  })) as Address
 
-  // Get token info and amount of tokens in the vault
-  const amountOfTokensInVault: BigNumber = await vault.countAssets()
+  const amountOfTokensInVault = (await readVaultContract({
+    address,
+    functionName: 'countAssets',
+  })) as bigint
+
   const tokensIndices = Array.from(
-    Array(amountOfTokensInVault.toNumber()).keys()
+    Array(parseInt(amountOfTokensInVault.toString())).keys()
   )
+
   const tokenInfo = await Promise.all(
     tokensIndices.map(async (index) => {
-      const tokenAddress: string = await vault.allAssets(index)
-      const balance: BigNumber = await vault.balanceOf(tokenAddress)
+      const tokenAddress = (await readVaultContract({
+        address,
+        functionName: 'allAssets',
+        args: [index],
+      })) as string
+      const balance = (await readVaultContract({
+        address,
+        functionName: 'balanceOf',
+        args: [tokenAddress],
+      })) as bigint
       return { tokenAddress, balance }
     })
   )
@@ -80,15 +103,15 @@ const getVaultData = async (
  * @returns
  */
 const getVaultsData = async (
-  provider: ethers.providers.Provider,
-  controller: Controller,
+  walletClient: WalletClient,
   vaultCount: number
 ) => {
   const vaultsIndices = Array.from(Array(vaultCount).keys())
+
   const vaultData = (
     await Promise.all(
       vaultsIndices.map(async (index) => {
-        const data = await getVaultData(provider, controller, index)
+        const data = await getVaultData(walletClient, index)
         return data
       })
     )
@@ -99,15 +122,23 @@ const getVaultsData = async (
         acc[val.tokenAddress] = 0n
       }
 
-      acc[val.tokenAddress] += val.balance.toBigInt()
+      acc[val.tokenAddress] += val.balance
       return acc
     }, {} as Record<string, bigint>)
 
   // Now add the vault name for all tokens
   const vaultDataIncNames = await Promise.all(
     Object.entries(vaultData).map(async (tokenInfo) => {
-      const [name, decimals] = await getTokenData(provider, tokenInfo[0])
-
+      const [name, decimals] = await Promise.all([
+        await readTokenContract({
+          address: tokenInfo[0] as Address,
+          functionName: 'name',
+        }),
+        await readTokenContract({
+          address: tokenInfo[0] as Address,
+          functionName: 'decimals',
+        }),
+      ])
       return {
         tokenAddress: tokenInfo[0],
         balance: tokenInfo[1],
@@ -116,7 +147,6 @@ const getVaultsData = async (
       }
     })
   )
-
   return vaultDataIncNames
 }
 
@@ -125,157 +155,122 @@ const getVaultsData = async (
  *
  * @param provider
  */
-export const getStats = async (provider: ethers.providers.Provider) => {
-  const controller = Controller__factory.connect(
-    process.env.NEXT_PUBLIC_CONTROLLER_ADDRESS,
-    provider
-  )
-  const counts = await controller.counts()
-
-  const supply = await controller.totalSupplyBaseToken()
+export const getStats = async (walletClient: WalletClient) => {
+  const [countVaults, , , , countWantTokens] = (await readControllerContract({
+    functionName: 'counts',
+  })) as any
 
   const [vaultData, wantTokenData] = await Promise.all([
-    getVaultsData(provider, controller, Number(counts.countVaults)),
-    getWantTokens(provider, controller, Number(counts.countWantTokens)),
+    getVaultsData(walletClient, Number(countVaults)),
+    getWantTokens(walletClient, Number(countWantTokens)),
   ])
-
   return { vaultData, wantTokenData }
 }
 
-export const getTotalValue = async (
-  provider: ethers.providers.Provider,
-  wantToken: string
-) => {
-  const controller = Controller__factory.connect(
-    process.env.NEXT_PUBLIC_CONTROLLER_ADDRESS,
-    provider
-  )
-  return controller.getTotalValue(wantToken)
-}
+export const getTotalValue = async (wantToken: string) =>
+  (await readControllerContract({
+    functionName: 'getTotalValue',
+    args: [wantToken],
+  })) as any
 
-export const getBackingPerDGNX = async (
-  provider: ethers.providers.Provider,
-  wantToken: string
-) => {
-  const controller = Controller__factory.connect(
-    process.env.NEXT_PUBLIC_CONTROLLER_ADDRESS,
-    provider
-  )
-  return controller.getValueOfTokensForOneBaseToken(wantToken)
-}
+export const getBackingPerDGNX = async (wantToken: string) =>
+  (await readControllerContract({
+    functionName: 'getValueOfTokensForOneBaseToken',
+    args: [wantToken],
+  })) as any
 
 export const getBackingForAddress = async (
-  provider: ethers.providers.Provider,
   wantToken: string,
   amount: BigNumber
-) => {
-  const controller = Controller__factory.connect(
-    process.env.NEXT_PUBLIC_CONTROLLER_ADDRESS,
-    provider
-  )
-  return controller.getValueOfTokensForBaseToken(wantToken, amount)
-}
+) =>
+  (await readControllerContract({
+    functionName: 'getValueOfTokensForBaseToken',
+    args: [wantToken, amount],
+  })) as any
 
-export const getBaseTokenBalance = async (
-  provider: ethers.providers.Provider,
-  address: string
-) => {
-  const controller = Controller__factory.connect(
-    process.env.NEXT_PUBLIC_CONTROLLER_ADDRESS,
-    provider
-  )
-  const tokenAddress = await controller.baseToken()
-  const token = Erc20__factory.connect(tokenAddress, provider)
+export const getBaseTokenBalance = async (address: string) => {
+  const tokenAddress = (await readControllerContract({
+    functionName: 'baseToken',
+  })) as Address
 
   const [balance, decimals] = await Promise.all([
-    token.balanceOf(address),
-    token.decimals(),
+    await readTokenContract({
+      address: tokenAddress,
+      functionName: 'balanceOf',
+      args: [address],
+    }),
+    await readTokenContract({
+      address: tokenAddress,
+      functionName: 'decimals',
+    }),
   ])
-
   return { balance, decimals }
 }
 
 export const getExpectedWantTokensByBurningBaseTokens = async (
-  provider: ethers.providers.Provider,
   wantToken: string,
   amount: BigNumber
-) => {
-  const controller = Controller__factory.connect(
-    process.env.NEXT_PUBLIC_CONTROLLER_ADDRESS,
-    provider
-  )
-  const expectedOutput = await controller.getValueOfTokensForBaseToken(
-    wantToken,
-    amount
-  )
-  return expectedOutput
-}
+) =>
+  (await readControllerContract({
+    functionName: 'getValueOfTokensForBaseToken',
+    args: [wantToken, amount],
+  })) as any
 
-export const approveBaseToken = async (
-  signer: ethers.Signer,
-  amountToApprove: BigNumber
-) => {
+export const approveBaseToken = async (amountToApprove: BigNumber) => {
   try {
-    const controller = Controller__factory.connect(
-      process.env.NEXT_PUBLIC_CONTROLLER_ADDRESS,
-      signer
-    )
-    const tokenAddress = await controller.baseToken()
-    const token = Erc20__factory.connect(tokenAddress, signer)
-    const result = await token.approve(
-      process.env.NEXT_PUBLIC_CONTROLLER_ADDRESS!,
-      amountToApprove
-    )
-    await result.wait()
-    // Wait another sec just to be sure
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    const tokenAddress = (await readControllerContract({
+      functionName: 'baseToken',
+    })) as Address
+
+    await writeTokenContract({
+      address: tokenAddress,
+      functionName: 'approve',
+      args: [process.env.NEXT_PUBLIC_CONTROLLER_ADDRESS!, amountToApprove],
+    })
   } catch (e) {
     console.log('error', e)
     return false
   }
-
-  return true
+  return new Promise((resolve) =>
+    debounce(() => {
+      resolve(true)
+    }, 5000)
+  )
 }
 
-export const getControllerAllowance = async (
-  provider: ethers.providers.Provider,
-  address: string
-) => {
-  const controller = Controller__factory.connect(
-    process.env.NEXT_PUBLIC_CONTROLLER_ADDRESS,
-    provider
-  )
-  const tokenAddress = await controller.baseToken()
-  const token = Erc20__factory.connect(tokenAddress, provider)
-  return token.allowance(address, process.env.NEXT_PUBLIC_CONTROLLER_ADDRESS!)
+export const getControllerAllowance = async (address: string) => {
+  const tokenAddress = (await readControllerContract({
+    functionName: 'baseToken',
+  })) as Address
+
+  return await readTokenContract({
+    address: tokenAddress,
+    functionName: 'allowance',
+    args: [address, process.env.NEXT_PUBLIC_CONTROLLER_ADDRESS!],
+  })
 }
 
 export const burnForBacking = async (
-  signer: ethers.Signer,
+  walletClient: WalletClient,
   wantToken: string,
   amountToBurn: BigNumber,
   minimumOutputAmount: BigNumber,
   makeStaticCall?: boolean
 ) => {
   try {
-    const controller = Controller__factory.connect(
-      process.env.NEXT_PUBLIC_CONTROLLER_ADDRESS,
-      signer
-    )
     if (makeStaticCall) {
-      const result = await controller.callStatic.payout(
-        wantToken,
-        amountToBurn,
-        minimumOutputAmount
-      )
-      return result
+      const result = await simulateControllerContract({
+        functionName: 'payout',
+        args: [wantToken, amountToBurn, minimumOutputAmount],
+        account: walletClient.account,
+      })
+      return result.result
     } else {
-      const result = await controller.payout(
-        wantToken,
-        amountToBurn,
-        minimumOutputAmount
-      )
-      await result.wait()
+      const result = await writeControllerContract({
+        functionName: 'payout',
+        args: [wantToken, amountToBurn, minimumOutputAmount],
+        account: walletClient.account,
+      })
       return result.hash
     }
   } catch (e) {
