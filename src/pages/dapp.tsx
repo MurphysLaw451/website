@@ -1,4 +1,4 @@
-import { avalanche, avalancheFuji } from '@wagmi/chains'
+import { avalanche, avalancheFuji, mainnet, goerli } from '@wagmi/chains'
 import { useTheme } from 'next-themes'
 import Head from 'next/head'
 import { useEffect, useState } from 'react'
@@ -16,7 +16,7 @@ import { Disburser } from '../components/dapp/Disburser'
 import { ATM } from '../components/dapp/ATM'
 
 const { chains, provider } = configureChains(
-    [avalanche, avalancheFuji],
+    [avalanche, avalancheFuji, mainnet, goerli],
     [publicProvider()]
 )
 
