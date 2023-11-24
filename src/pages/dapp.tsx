@@ -10,6 +10,7 @@ import { Dashboard } from '../components/dapp/Dashboard'
 import { Disburser } from '../components/dapp/Disburser'
 import { Governance } from '../components/dapp/Governance'
 import { LiquidityBacking } from '../components/dapp/LiquidityBacking'
+import { Monitoring } from '../components/dapp/Monitoring'
 import { DappHeader } from '../components/dapp/elements/DappHeader'
 import Sidebar from '../components/dapp/elements/Sidebar'
 
@@ -73,6 +74,10 @@ export default function Dapp() {
                                 <Route
                                     element={<Disburser />}
                                     path="/dapp/disburser"
+                                />
+                                <Route
+                                    element={<Monitoring />}
+                                    path="/dapp/monitoring"
                                 />
                             </Routes>
                         </main>

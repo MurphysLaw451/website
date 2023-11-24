@@ -1,0 +1,200 @@
+[
+  {
+    "inputs": [],
+    "name": "AddressUtils__NotContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "AddressZero",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "chainId",
+        "type": "uint256"
+      }
+    ],
+    "name": "ChainExisting",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "chainId",
+        "type": "uint256"
+      }
+    ],
+    "name": "ChainNotExisting",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "id",
+        "type": "bytes32"
+      }
+    ],
+    "name": "FeeNotExisting",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NoChainsConfigured",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "QueueEmpty",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "RefundFailed",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "relayer",
+        "type": "address"
+      }
+    ],
+    "name": "RelayerExists",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "SafeERC20__OperationFailed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ThresholdNotMet",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ZeroFees",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ZeroValueNotAllowed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "deployFeesWithCeler",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getFeeConfigIds",
+    "outputs": [
+      {
+        "internalType": "bytes32[]",
+        "name": "_feeConfigIds",
+        "type": "bytes32[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_id",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getFeeConfig",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "fee",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "receiver",
+            "type": "address"
+          },
+          {
+            "internalType": "enum FeeType",
+            "name": "ftype",
+            "type": "uint8"
+          },
+          {
+            "internalType": "enum FeeCurrency",
+            "name": "currency",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct FeeConfig",
+        "name": "_feeConfig",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getFeeDistributorTotalBounties",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "_totalBounties",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getFeeDistributorReceivers",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "uint64",
+            "name": "points",
+            "type": "uint64"
+          },
+          {
+            "internalType": "address",
+            "name": "receiver",
+            "type": "address"
+          },
+          {
+            "internalType": "address[]",
+            "name": "swap",
+            "type": "address[]"
+          }
+        ],
+        "internalType": "struct FeeDistributorFacet.Share[]",
+        "name": "_shares",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
