@@ -238,6 +238,12 @@ export const ATMApp = (props: RouteObject) => {
     const chainId = useChainId();
     const { switchNetwork } = useSwitchNetwork();
 
+    if (stats.loading === 'yes') {
+        return null;
+    }
+
+    console.log(stats)
+
     if (!isConnected) {
         return <div className="font-bold">Please connect wallet</div>
     }

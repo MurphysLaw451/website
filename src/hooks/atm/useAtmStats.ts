@@ -23,15 +23,24 @@ export type DgnxAtmStats = {
     lockPeriodEnds: BigNumber;
     rewardPenaltyBps: BigNumber;
     totalRewardBps: BigNumber;
+    loading: 'no';
+};
+
+type DgnxAtmStatsLoading = {
+    loading: 'yes';
 }
 
-export const useAtmStats = (): DgnxAtmStats => {
+export const useAtmStats = (): DgnxAtmStats | DgnxAtmStatsLoading => {
     const { data } = useContractRead({
         address: ATM_ADDRESS,
         abi,
         functionName: 'getStats',
         args: [],
     });
+
+    if (!data) {
+        return { loading: 'yes' };
+    }
 
     return {
         collecting: data[0],
@@ -52,6 +61,7 @@ export const useAtmStats = (): DgnxAtmStats => {
         lockPeriodEnds: new BigNumber(data[15].toString()),
         rewardPenaltyBps: new BigNumber(data[16].toString()),
         totalRewardBps: new BigNumber(data[17].toString()),
+        loading: 'no',
     }
 
     // return data;
