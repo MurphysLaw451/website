@@ -33,6 +33,12 @@ const navigation = [
         href: 'disburser',
         count: undefined,
     },
+    {
+        name: 'Degen ATM',
+        icon: GiPayMoney,
+        href: 'atm',
+        count: undefined,
+    },
 ]
 
 function MobileNavLink({ href, children, ...props }) {
