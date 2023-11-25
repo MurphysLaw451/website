@@ -28,9 +28,8 @@ export const useAtmStatsForQualifier = (
         abi,
         functionName: 'getStatsForQualifier',
         args: [address],
+        watch: true,
     })
-
-    console.log('WEEP', { address, data })
 
     if (!data) {
         return { loading: 'yes' }

@@ -1,11 +1,11 @@
 import { Popover, Transition } from '@headlessui/react'
-import { Link, useLocation } from 'react-router-dom'
 import clsx from 'clsx'
 import { Fragment } from 'react'
-import { HiHome, HiCurrencyDollar } from 'react-icons/hi'
 import { FaPiggyBank } from 'react-icons/fa'
-import { RiGovernmentFill } from 'react-icons/ri'
 import { GiPayMoney } from 'react-icons/gi'
+import { HiCurrencyDollar, HiHome } from 'react-icons/hi'
+import { RiGovernmentFill } from 'react-icons/ri'
+import { Link, useLocation } from 'react-router-dom'
 
 const navigation = [
     { name: 'Dashboard', icon: HiHome, href: '', count: undefined },
@@ -31,12 +31,6 @@ const navigation = [
         name: 'Disburser',
         icon: GiPayMoney,
         href: 'disburser',
-        count: undefined,
-    },
-    {
-        name: 'Degen ATM',
-        icon: GiPayMoney,
-        href: 'atm',
         count: undefined,
     },
 ]
@@ -118,8 +112,16 @@ function MobileSidebar() {
                         {navigation.map((item) => (
                             <MobileNavLink
                                 key={item.name}
-                                target={item.href.startsWith('http') ? '_blank' : '_self'}
-                                href={item.href.startsWith('http') ? item.href : `/dapp/${item.href}`}
+                                target={
+                                    item.href.startsWith('http')
+                                        ? '_blank'
+                                        : '_self'
+                                }
+                                href={
+                                    item.href.startsWith('http')
+                                        ? item.href
+                                        : `/dapp/${item.href}`
+                                }
                             >
                                 {item.name}
                             </MobileNavLink>
@@ -156,8 +158,16 @@ export default function Sidebar(props: { mobile?: boolean }) {
                         return (
                             <Link
                                 key={item.name}
-                                to={item.href.startsWith('http') ? item.href : `/dapp/${item.href}`}
-                                target={item.href.startsWith('http') ? '_blank' : '_self'}
+                                to={
+                                    item.href.startsWith('http')
+                                        ? item.href
+                                        : `/dapp/${item.href}`
+                                }
+                                target={
+                                    item.href.startsWith('http')
+                                        ? '_blank'
+                                        : '_self'
+                                }
                                 className={clsx(
                                     current
                                         ? 'border-2 border-degenOrange bg-light-100 text-dark'
@@ -173,7 +183,7 @@ export default function Sidebar(props: { mobile?: boolean }) {
                                         current
                                             ? 'text-dark dark:text-light-100'
                                             : 'text-light-800 transition-colors group-hover:text-dark dark:text-light-100 dark:group-hover:text-light-100',
-                                        'mr-3 h-6 w-6 flex-shrink-0'
+                                        'mr-3 h-6 w-6 flex-shrink-0 stroke-white '
                                     )}
                                     aria-hidden="true"
                                 />

@@ -13,10 +13,10 @@ import {
     DngxAtmStatsForQualifier,
     useAtmStatsForQualifier,
 } from '../../../hooks/atm/useAtmStatsForQualifier'
+import { AtmStatsLoading } from '../../../types'
 import { Button } from '../../Button'
 import { H2 } from '../../H2'
 import { Spinner } from './Spinner'
-import { AtmStatsLoading } from '../../../types'
 
 const AtmLockRewardPreview = (props: {
     claimAmountWithLock: number
@@ -237,9 +237,7 @@ const AtmClaimForm = (props: {
                 client
                     .getProvider()
                     .getBlock(blkno)
-                    .then((blkinfo) =>
-                        setBlockTimeStamp(blkinfo.timestamp + 86400 * 190)
-                    )
+                    .then((blkinfo) => setBlockTimeStamp(blkinfo.timestamp))
             )
     }, [client])
 
@@ -278,6 +276,7 @@ const AtmClaimForm = (props: {
         isSuccess: claimSuccess,
         hash: claimHash,
     } = useAtmClaim()
+
     const {
         write: lockJoinWrite,
         isLoading: lockJoinLoading,
@@ -422,7 +421,7 @@ const AtmClaimForm = (props: {
                         <div className="z-1 absolute -right-6 top-[calc(100%+4.4rem)] h-[2px] w-[8.8rem] bg-activeblue" />
                     </div>
                     <div className="h-24" />
-                    <div className="mt-5 grid grid-cols-2 gap-5">
+                    <div className="mt-5 grid grid-cols-2 gap-16">
                         <div className="flex flex-col items-center gap-3 rounded-xl border-2 border-activeblue bg-darkblue p-5 font-bold text-success">
                             {!lockJoinLoading && !lockJoinSuccess && (
                                 <>
@@ -445,10 +444,7 @@ const AtmClaimForm = (props: {
                                             {toPrecision(
                                                 props.statsForQualifier.estimatedTotalClaimAmount
                                                     .div(10 ** 18)
-                                                    .toNumber() +
-                                                    props.statsForQualifier.estimatedTotalRewardAmount
-                                                        .div(10 ** 18)
-                                                        .toNumber(),
+                                                    .toNumber(),
                                                 4
                                             )}{' '}
                                             DGNX
@@ -487,7 +483,10 @@ const AtmClaimForm = (props: {
                                     {toPrecision(
                                         props.statsForQualifier.estimatedTotalClaimAmount
                                             .div(10 ** 18)
-                                            .toNumber(),
+                                            .toNumber() -
+                                            props.statsForQualifier.estimatedTotalRewardAmount
+                                                .div(10 ** 18)
+                                                .toNumber(),
                                         4
                                     )}{' '}
                                     DGNX
