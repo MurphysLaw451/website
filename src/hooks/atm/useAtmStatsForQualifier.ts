@@ -18,6 +18,7 @@ export type DngxAtmStatsForQualifier = {
     currentRewardAmountNet: BigNumber
     estimatedTotalRewardAmount: BigNumber
     estimatedTotalClaimAmount: BigNumber
+    loading: 'no'
 }
 
 export const useAtmStatsForQualifier = (

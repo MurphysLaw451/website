@@ -9,5 +9,5 @@ export enum CHART_PRICE_MODE {
 }
 
 export type AtmStatsLoading = {
-    loading: 'yes' | 'no'
+    loading: 'yes'
 }

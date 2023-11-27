@@ -135,7 +135,7 @@ const AtmDepositForm = (props: {
                         .eq(0) && (
                         <>
                             <p className="mt-4 font-bold text-success">
-                                Your deposit limit is reached. You can't deposit
+                                Your deposit limit is reached. You can&apos;t deposit
                                 more ETH. Please wait until the claiming phase
                                 starts. This will be announced through Telegram
                             </p>
@@ -224,10 +224,30 @@ const AtmCollection = (props: { stats: DgnxAtmStats }) => {
 
 const AtmClaimForm = (props: {
     stats: DgnxAtmStats
-    statsForQualifier: DngxAtmStatsForQualifier | AtmStatsLoading
+    statsForQualifier: DngxAtmStatsForQualifier
 }) => {
     const [blockTimeStamp, setBlockTimeStamp] = useState(0)
     const client = useClient()
+
+    const {
+        write: claimWrite,
+        isLoading: claimLoading,
+        isSuccess: claimSuccess,
+        hash: claimHash,
+    } = useAtmClaim()
+
+    const {
+        write: lockJoinWrite,
+        isLoading: lockJoinLoading,
+        isSuccess: lockJoinSuccess,
+        hash: lockJoinHash,
+    } = useAtmLockJoin()
+    const {
+        write: lockLeaveWrite,
+        isLoading: lockLeaveLoading,
+        isSuccess: lockLeaveSuccess,
+        hash: lockLeaveHash,
+    } = useAtmLockLeave()
 
     useEffect(() => {
         client
@@ -270,26 +290,6 @@ const AtmClaimForm = (props: {
         )
     }
 
-    const {
-        write: claimWrite,
-        isLoading: claimLoading,
-        isSuccess: claimSuccess,
-        hash: claimHash,
-    } = useAtmClaim()
-
-    const {
-        write: lockJoinWrite,
-        isLoading: lockJoinLoading,
-        isSuccess: lockJoinSuccess,
-        hash: lockJoinHash,
-    } = useAtmLockJoin()
-    const {
-        write: lockLeaveWrite,
-        isLoading: lockLeaveLoading,
-        isSuccess: lockLeaveSuccess,
-        hash: lockLeaveHash,
-    } = useAtmLockLeave()
-
     if (props.statsForQualifier.hasLocked) {
         return (
             <>
@@ -306,7 +306,7 @@ const AtmClaimForm = (props: {
                 </p>
                 <p className=" italic">
                     <span className="font-bold">Important:</span> You can claim
-                    your tokens at all time. Once you've claimed your tokens,
+                    your tokens at all time. Once you&apos;ve claimed your tokens,
                     your not eligible to join the locking program anymore. If
                     you claim your tokens during the lock period of 365 days,
                     your already collected rewards will be charged with a{' '}
@@ -545,7 +545,7 @@ export const ATMApp = (props: RouteObject) => {
     const chainId = useChainId()
     const { switchNetwork } = useSwitchNetwork()
 
-    if (stats.loading === 'yes') {
+    if (stats.loading === 'yes' || statsForQualifier.loading === 'yes') {
         return null
     }
 
@@ -588,10 +588,11 @@ export const ATMApp = (props: RouteObject) => {
                 <AtmLockRewardPreview
                     claimAmountWithLock={statsForQualifier.estimatedTotalClaimAmount.div(
                         10 ** 18
-                    )}
+                    ).toNumber()}
                     claimAmountWithoutLock={statsForQualifier.estimatedTotalClaimAmount
                         .minus(statsForQualifier.estimatedTotalRewardAmount)
-                        .div(10 ** 18)}
+                        .div(10 ** 18)
+                        .toNumber()}
                 />
             </>
         )
