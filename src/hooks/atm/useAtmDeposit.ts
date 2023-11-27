@@ -1,9 +1,13 @@
-import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
+import {
+    useContractWrite,
+    usePrepareContractWrite,
+    useWaitForTransaction,
+} from 'wagmi'
 
-import abi from '../../abi/degenAtm.json';
-import { ATM_ADDRESS } from "../../constants";
-import BigNumberJS from "bignumber.js";
-import { BigNumber } from "ethers";
+import abi from '../../abi/degenAtm.json'
+import { ATM_ADDRESS } from '../../constants'
+import BigNumberJS from 'bignumber.js'
+import { BigNumber } from 'ethers'
 
 export const useAtmDeposit = (valueInWEI: BigNumberJS) => {
     const { config } = usePrepareContractWrite({
@@ -11,8 +15,8 @@ export const useAtmDeposit = (valueInWEI: BigNumberJS) => {
         abi,
         functionName: 'deposit',
         overrides: {
-            value: BigNumber.from(valueInWEI.toString())
-        }
+            value: BigNumber.from(valueInWEI.toString()),
+        },
     })
 
     const { data, write } = useContractWrite(config)
@@ -21,5 +25,5 @@ export const useAtmDeposit = (valueInWEI: BigNumberJS) => {
         hash: data?.hash,
     })
 
-    return { write, isLoading, isSuccess, hash: data?.hash };
-};
+    return { write, isLoading, isSuccess, hash: data?.hash }
+}

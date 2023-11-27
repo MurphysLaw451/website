@@ -1,45 +1,42 @@
-import { useContractRead } from "wagmi";
+import { useContractRead } from 'wagmi'
 
-import abi from '../../abi/degenAtm.json';
-import { ATM_ADDRESS } from "../../constants";
-import BigNumber from "bignumber.js";
+import BigNumber from 'bignumber.js'
+import abi from '../../abi/degenAtm.json'
+import { ATM_ADDRESS } from '../../constants'
+import { AtmStatsLoading } from '../../types'
 
 export type DgnxAtmStats = {
-    collecting: boolean;
-    claiming: boolean;
-    lockPeriodActive: boolean;
-    token: string;
-    tokenBalance: BigNumber;
-    allocationLimit: BigNumber;
-    tokensPerOneNative: BigNumber;
-    totalDeposits: BigNumber;
-    totalLockedTokens: BigNumber;
-    totalClaimedTokens: BigNumber;
-    estimatedTotalLockedTokensRewards: BigNumber;
-    estimatedTotalLockedTokensPayouts: BigNumber;
-    estimatedTotalTokensPayout: BigNumber;
-    lockPeriodInSeconds: BigNumber;
-    lockPeriodStarts: BigNumber;
-    lockPeriodEnds: BigNumber;
-    rewardPenaltyBps: BigNumber;
-    totalRewardBps: BigNumber;
-    loading: 'no';
-};
-
-type DgnxAtmStatsLoading = {
-    loading: 'yes';
+    collecting: boolean
+    claiming: boolean
+    lockPeriodActive: boolean
+    token: string
+    tokenBalance: BigNumber
+    allocationLimit: BigNumber
+    tokensPerOneNative: BigNumber
+    totalDeposits: BigNumber
+    totalLockedTokens: BigNumber
+    totalClaimedTokens: BigNumber
+    estimatedTotalLockedTokensRewards: BigNumber
+    estimatedTotalLockedTokensPayouts: BigNumber
+    estimatedTotalTokensPayout: BigNumber
+    lockPeriodStarts: BigNumber
+    lockPeriodEnds: BigNumber
+    lockPeriodInSeconds: BigNumber
+    rewardPenaltyBps: BigNumber
+    totalRewardBps: BigNumber
+    loading: 'no'
 }
 
-export const useAtmStats = (): DgnxAtmStats | DgnxAtmStatsLoading => {
+export const useAtmStats = (): DgnxAtmStats | AtmStatsLoading => {
     const { data } = useContractRead({
         address: ATM_ADDRESS,
         abi,
         functionName: 'getStats',
         args: [],
-    });
+    })
 
     if (!data) {
-        return { loading: 'yes' };
+        return { loading: 'yes' }
     }
 
     return {
@@ -56,13 +53,13 @@ export const useAtmStats = (): DgnxAtmStats | DgnxAtmStatsLoading => {
         estimatedTotalLockedTokensRewards: new BigNumber(data[10].toString()),
         estimatedTotalLockedTokensPayouts: new BigNumber(data[11].toString()),
         estimatedTotalTokensPayout: new BigNumber(data[12].toString()),
-        lockPeriodInSeconds: new BigNumber(data[13].toString()),
-        lockPeriodStarts: new BigNumber(data[14].toString()),
-        lockPeriodEnds: new BigNumber(data[15].toString()),
+        lockPeriodStarts: new BigNumber(data[13].toString()),
+        lockPeriodEnds: new BigNumber(data[14].toString()),
+        lockPeriodInSeconds: new BigNumber(data[15].toString()),
         rewardPenaltyBps: new BigNumber(data[16].toString()),
         totalRewardBps: new BigNumber(data[17].toString()),
         loading: 'no',
     }
 
     // return data;
-};
+}
