@@ -33,6 +33,7 @@ export const useAtmStats = (): DgnxAtmStats | AtmStatsLoading => {
         abi,
         functionName: 'getStats',
         args: [],
+        watch: true,
     })
 
     if (!data) {
