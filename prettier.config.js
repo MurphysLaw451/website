@@ -9,5 +9,11 @@ module.exports = {
         tabWidth: 4,
       },
     },
+    {
+      files: '*.ts',
+      options: {
+        tabWidth: 4,
+      },
+    },
   ],
 }
