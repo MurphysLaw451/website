@@ -636,7 +636,7 @@ export const ATMApp = (props: RouteObject) => {
             <>
                 <div className="mb-8 font-bold">
                     The collection phase has finished. Please wait until the
-                    claiming starts. It'll be announced in the VC Telegram
+                    claiming starts. It&apos;ll be announced in the VC Telegram
                     group.
                 </div>
                 <div className="mb-8 font-bold">
