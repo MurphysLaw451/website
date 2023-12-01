@@ -135,41 +135,40 @@ const AtmDepositForm = (props: {
                                     />
                                 </>
                             )}
-                            {depositAmount > 0 &&
-                                depositAmount <= maximum &&
-                                !isLoading &&
-                                !hash && (
-                                    <>
-                                        <Button
-                                            className="mt-3 w-full"
-                                            color="orange"
-                                            onClick={() => {
-                                                console.log(
-                                                    BigNumber(
-                                                        tokensToBurnInputRef
-                                                            .current.value
-                                                    ).lt(minDeposit)
-                                                )
-                                                if (
-                                                    BigNumber(
-                                                        tokensToBurnInputRef
-                                                            .current.value
-                                                    ).lt(minDeposit)
-                                                ) {
-                                                    const ttt = toast.error(
-                                                        'Please change the amount to at least 0.000000000000000001',
-                                                        { autoClose: 5000 }
-                                                    )
-                                                    console.log({ ttt })
-                                                } else {
-                                                    write()
-                                                }
-                                            }}
-                                        >
-                                            Deposit
-                                        </Button>
-                                    </>
-                                )}
+                            <Button
+                                className="mt-3 w-full"
+                                color={
+                                    depositAmount == 0 ||
+                                    depositAmount > maximum
+                                        ? 'disabled'
+                                        : 'orange'
+                                }
+                                disabled={
+                                    depositAmount == 0 ||
+                                    depositAmount > maximum
+                                }
+                                onClick={() => {
+                                    console.log(
+                                        BigNumber(
+                                            tokensToBurnInputRef.current.value
+                                        ).lt(minDeposit)
+                                    )
+                                    if (
+                                        BigNumber(
+                                            tokensToBurnInputRef.current.value
+                                        ).lt(minDeposit)
+                                    ) {
+                                        toast.error(
+                                            'Please change the amount to at least 0.000000000000000001',
+                                            { autoClose: 5000 }
+                                        )
+                                    } else {
+                                        write()
+                                    }
+                                }}
+                            >
+                                Deposit
+                            </Button>
                         </>
                     )}
                     {props.stats.allocationLimit
