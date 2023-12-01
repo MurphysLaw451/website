@@ -29,12 +29,27 @@ const AtmLockRewardPreview = (props: {
     claimAmountWithoutLock: number
 }) => {
     return (
-        <div className="mt-5 grid grid-cols-2 font-bold">
-            <div>Receive amount with lock:</div>
-            <div>{toPrecision(props.claimAmountWithLock, 4)} DGNX</div>
-            <div>Receive amount without lock:</div>
-            <div>{toPrecision(props.claimAmountWithoutLock, 4)} DGNX</div>
-        </div>
+        <>
+            <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 ">
+                <div className="font-bold">
+                    Estimated DGNX amount with lock:
+                </div>
+                <div className="font-bold">
+                    {toPrecision(props.claimAmountWithLock, 4)}* DGNX
+                </div>
+                <div className="mt-8 font-bold sm:mt-0">
+                    Estimated DGNX amount without lock:
+                </div>
+                <div className="font-bold">
+                    {toPrecision(props.claimAmountWithoutLock, 4)}* DGNX
+                </div>
+            </div>
+            <div className=" mt-8 text-sm italic">
+                * Please note that the amounts will most likely change before
+                the claiming starts because these amounts are based on the
+                launch market price.
+            </div>
+        </>
     )
 }
 
@@ -621,11 +636,19 @@ export const ATMApp = (props: RouteObject) => {
             <>
                 <div className="mb-8 font-bold">
                     The collection phase has finished. Please wait until the
-                    claiming starts.
+                    claiming starts. It'll be announced in the VC Telegram
+                    group.
                 </div>
-                <div className="font-bold">
-                    Total amount collected:{' '}
+                <div className="mb-8 font-bold">
+                    Total amount collected: <br className="sm:hidden" />
                     {stats.totalDeposits.div(10 ** 18).toNumber()} ETH
+                </div>
+                <div className="text-xl font-bold">
+                    Your deposited amount: <br className="sm:hidden" />
+                    {statsForQualifier.totalDeposited
+                        .div(10 ** 18)
+                        .toNumber()}{' '}
+                    ETH
                 </div>
                 <AtmLockRewardPreview
                     claimAmountWithLock={statsForQualifier.estimatedTotalClaimAmount
