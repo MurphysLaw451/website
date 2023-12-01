@@ -2,7 +2,14 @@ import BigNumber from 'bignumber.js'
 import clsx from 'clsx'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { RouteObject } from 'react-router-dom'
-import { useAccount, useChainId, useClient, useSwitchNetwork } from 'wagmi'
+import { toast } from 'react-toastify'
+import {
+    useAccount,
+    useBalance,
+    useChainId,
+    useClient,
+    useSwitchNetwork,
+} from 'wagmi'
 import { toPrecision } from '../../../helpers/number'
 import { useAtmClaim } from '../../../hooks/atm/useAtmClaim'
 import { useAtmDeposit } from '../../../hooks/atm/useAtmDeposit'
@@ -13,7 +20,6 @@ import {
     DngxAtmStatsForQualifier,
     useAtmStatsForQualifier,
 } from '../../../hooks/atm/useAtmStatsForQualifier'
-import { AtmStatsLoading } from '../../../types'
 import { Button } from '../../Button'
 import { H2 } from '../../H2'
 import { Spinner } from './Spinner'
@@ -36,23 +42,32 @@ const AtmDepositForm = (props: {
     stats: DgnxAtmStats
     statsForQualifier: DngxAtmStatsForQualifier
 }) => {
+    const { address } = useAccount()
+    const { data: nativeBalance } = useBalance({ address })
     const [depositAmount, setDepositAmount] = useState(0)
     const tokensToBurnInputRef = useRef<HTMLInputElement>()
+    const minDeposit = new BigNumber(0.000000000000000001)
 
     const { write, isLoading, isSuccess, hash } = useAtmDeposit(
-        BigNumber(depositAmount).multipliedBy(10 ** 18)
+        BigNumber(
+            depositAmount < minDeposit.toNumber()
+                ? minDeposit.toString()
+                : depositAmount
+        ).multipliedBy(10 ** 18)
     )
 
     const maximum = useMemo(() => {
-        return (
-            props.stats.allocationLimit.div(10 ** 18).toNumber() -
-            props.statsForQualifier.totalDeposited.div(10 ** 18).toNumber()
-        )
-    }, [props.stats, props.statsForQualifier, isSuccess])
+        return BigNumber.min(
+            new BigNumber(nativeBalance.value.toString()).div(10 ** 18),
+            props.stats.allocationLimit
+                .div(10 ** 18)
+                .minus(props.statsForQualifier.totalDeposited.div(10 ** 18))
+        ).toNumber()
+    }, [props.stats, props.statsForQualifier, isSuccess, nativeBalance])
 
     return (
         <div>
-            {!isSuccess && !isLoading && (
+            {!isLoading && (
                 <>
                     {props.stats.allocationLimit
                         .minus(props.statsForQualifier.totalDeposited)
@@ -67,11 +82,17 @@ const AtmDepositForm = (props: {
                                 placeholder="0"
                                 disabled={isLoading}
                                 max={maximum}
+                                min={0.0001}
                                 step={0.1}
                                 onChange={(e) =>
                                     setDepositAmount(
                                         !!e.target.value
-                                            ? parseFloat(e.target.value)
+                                            ? parseFloat(e.target.value) <
+                                              minDeposit.toNumber()
+                                                ? parseFloat(
+                                                      minDeposit.toString()
+                                                  )
+                                                : parseFloat(e.target.value)
                                             : 0
                                     )
                                 }
@@ -122,7 +143,28 @@ const AtmDepositForm = (props: {
                                         <Button
                                             className="mt-3 w-full"
                                             color="orange"
-                                            onClick={() => write()}
+                                            onClick={() => {
+                                                console.log(
+                                                    BigNumber(
+                                                        tokensToBurnInputRef
+                                                            .current.value
+                                                    ).lt(minDeposit)
+                                                )
+                                                if (
+                                                    BigNumber(
+                                                        tokensToBurnInputRef
+                                                            .current.value
+                                                    ).lt(minDeposit)
+                                                ) {
+                                                    const ttt = toast.error(
+                                                        'Please change the amount to at least 0.000000000000000001',
+                                                        { autoClose: 5000 }
+                                                    )
+                                                    console.log({ ttt })
+                                                } else {
+                                                    write()
+                                                }
+                                            }}
                                         >
                                             Deposit
                                         </Button>
@@ -135,9 +177,10 @@ const AtmDepositForm = (props: {
                         .eq(0) && (
                         <>
                             <p className="mt-4 font-bold text-success">
-                                Your deposit limit is reached. You can&apos;t deposit
-                                more ETH. Please wait until the claiming phase
-                                starts. This will be announced through Telegram
+                                Your deposit limit is reached. You can&apos;t
+                                deposit more ETH. Please wait until the claiming
+                                phase starts. This will be announced through
+                                Telegram
                             </p>
                         </>
                     )}
@@ -306,12 +349,12 @@ const AtmClaimForm = (props: {
                 </p>
                 <p className=" italic">
                     <span className="font-bold">Important:</span> You can claim
-                    your tokens at all time. Once you&apos;ve claimed your tokens,
-                    your not eligible to join the locking program anymore. If
-                    you claim your tokens during the lock period of 365 days,
-                    your already collected rewards will be charged with a{' '}
-                    {props.stats.rewardPenaltyBps.toNumber() / 100}% loyalty
-                    penalty.
+                    your tokens at all time. Once you&apos;ve claimed your
+                    tokens, your not eligible to join the locking program
+                    anymore. If you claim your tokens during the lock period of
+                    365 days, your already collected rewards will be charged
+                    with a {props.stats.rewardPenaltyBps.toNumber() / 100}%
+                    loyalty penalty.
                 </p>
 
                 {props.stats.lockPeriodActive && (
@@ -586,9 +629,9 @@ export const ATMApp = (props: RouteObject) => {
                     {stats.totalDeposits.div(10 ** 18).toNumber()} ETH
                 </div>
                 <AtmLockRewardPreview
-                    claimAmountWithLock={statsForQualifier.estimatedTotalClaimAmount.div(
-                        10 ** 18
-                    ).toNumber()}
+                    claimAmountWithLock={statsForQualifier.estimatedTotalClaimAmount
+                        .div(10 ** 18)
+                        .toNumber()}
                     claimAmountWithoutLock={statsForQualifier.estimatedTotalClaimAmount
                         .minus(statsForQualifier.estimatedTotalRewardAmount)
                         .div(10 ** 18)
