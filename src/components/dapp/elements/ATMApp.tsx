@@ -45,9 +45,8 @@ const AtmLockRewardPreview = (props: {
                 </div>
             </div>
             <div className=" mt-8 text-sm italic">
-                * Please note that the amounts will most likely change before
-                the claiming starts because these amounts are based on the
-                launch market price.
+                * Please note that the DGNX amounts will adapt shortly before
+                the claiming starts accordingly to the launch market price.
             </div>
         </>
     )
