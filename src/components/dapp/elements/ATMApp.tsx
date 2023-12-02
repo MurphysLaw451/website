@@ -283,6 +283,7 @@ const AtmClaimForm = (props: {
     statsForQualifier: DngxAtmStatsForQualifier
 }) => {
     const [blockTimeStamp, setBlockTimeStamp] = useState(0)
+    const [actionInProgess, setActionInProgress] = useState(false)
     const client = useClient()
 
     const {
@@ -349,27 +350,30 @@ const AtmClaimForm = (props: {
     if (props.statsForQualifier.hasLocked) {
         return (
             <>
-                <p className="mb-4 font-bold">
+                <p className="my-4 font-bold">
                     You have locked{' '}
                     {props.statsForQualifier.lockedAmount
                         .div(10 ** 18)
                         .toNumber()}{' '}
                     DGNX.
                 </p>
-                <p className="mb-4 font-bold">
-                    During the lock period, you can view the status of your
-                    collected rewards right here.
+                <p className="my-4 font-bold">
+                    What will happen next:
+                    <br />
+                    1. The lock or claim will run approx. 3 days from start.
+                    <br />
+                    2. Lock period start will be announced in time in the VC
+                    Telegram group
                 </p>
-                <p className=" italic">
+                <p className="italic">
                     <span className="font-bold">Important:</span> You can claim
-                    your tokens at all time. Once you&apos;ve claimed your
-                    tokens, your not eligible to join the locking program
-                    anymore. If you claim your tokens during the lock period of
-                    365 days, your already collected rewards will be charged
-                    with a {props.stats.rewardPenaltyBps.toNumber() / 100}%
-                    loyalty penalty.
+                    your tokens at any time. Once you&apos;ve claimed your
+                    tokens, you&apos;re no longer eligible to rejoin the extra
+                    reward program. If you claim your tokens prior to the end of
+                    the 365 day period, any extra rewards will be charged with a{' '}
+                    {props.stats.rewardPenaltyBps.toNumber() / 100}% loyalty
+                    penalty.
                 </p>
-
                 {props.stats.lockPeriodActive && (
                     <>
                         <div className="my-1 mt-4 flex h-6 w-full rounded-full bg-gray-200 dark:bg-gray-700">
@@ -445,7 +449,24 @@ const AtmClaimForm = (props: {
         return (
             <>
                 <p className="font-bold">
-                    Claim your DNGX now, or lock them for an additional reward!
+                    Lock your{' '}
+                    {toPrecision(
+                        props.statsForQualifier.estimatedTotalClaimAmount
+                            .div(10 ** 18)
+                            .toNumber() -
+                            props.statsForQualifier.estimatedTotalRewardAmount
+                                .div(10 ** 18)
+                                .toNumber(),
+                        4
+                    )}{' '}
+                    DGNX in the next 3 days to receive{' '}
+                    {toPrecision(
+                        props.statsForQualifier.estimatedTotalClaimAmount
+                            .div(10 ** 18)
+                            .toNumber(),
+                        4
+                    )}{' '}
+                    DGNX over 365 days, or claim your DNGX right now!
                 </p>
                 <div className="mt-5 flex w-full flex-col items-center">
                     <div className="relative flex items-center rounded-xl border-2 border-activeblue bg-darkblue p-5 font-bold">
@@ -495,15 +516,18 @@ const AtmClaimForm = (props: {
                                     {props.stats.lockPeriodActive ? (
                                         'Lock option expired'
                                     ) : (
-                                        <span>
-                                            Receive{' '}
+                                        <span className="text-center">
+                                            Lock for{' '}
                                             {toPrecision(
                                                 props.statsForQualifier.estimatedTotalClaimAmount
                                                     .div(10 ** 18)
                                                     .toNumber(),
                                                 4
                                             )}{' '}
-                                            DGNX
+                                            DGNX <br />
+                                            <span className="font-bold">
+                                                over time
+                                            </span>
                                         </span>
                                     )}
                                 </>
@@ -531,6 +555,9 @@ const AtmClaimForm = (props: {
                                     <Button
                                         className="w-full"
                                         color="orange"
+                                        disabled={
+                                            lockJoinLoading || claimLoading
+                                        }
                                         onClick={() => claimWrite()}
                                     >
                                         Claim
