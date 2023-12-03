@@ -9,6 +9,8 @@ import {
     useWalletClient,
     useSwitchNetwork,
     useChainId,
+    usePublicClient,
+    Address,
 } from 'wagmi'
 import { debounce } from '../../../helpers/debounce'
 import {
@@ -112,6 +114,7 @@ export const BurnForBacking = (props: {
     const { switchNetwork } = useSwitchNetwork()
     const [hash, setTxHash] = useState('')
     const { data: walletClient } = useWalletClient()
+    const publicClient = usePublicClient()
     const updateAllowance = async () => {
         const allowance = await getControllerAllowance(address)
         setAllowance(BigNumber(allowance.toString()))
@@ -194,12 +197,23 @@ export const BurnForBacking = (props: {
         const toastId = toast.loading('Waiting for approval...', {
             autoClose: false,
         })
-        const isApproved = await approveBaseToken(
+        const approvalTxHash = await approveBaseToken(
             ethers.BigNumber.from(amountToBurn.toFixed())
         )
 
+        if (!approvalTxHash) {
+            toast.dismiss(toastId)
+            toast.error('Approval failed! Please try again', {
+                autoClose: 5000,
+            })
+        }
+
+        const txReceipt = await publicClient.waitForTransactionReceipt({
+            hash: approvalTxHash as Address,
+        })
+
         toast.dismiss(toastId)
-        if (isApproved) {
+        if (txReceipt.status == 'success') {
             toast.success('Approval successfully', { autoClose: 3000 })
         } else {
             toast.error('Approval failed! Please try again', {
