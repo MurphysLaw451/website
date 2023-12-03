@@ -1,5 +1,6 @@
 export enum Chain {
   ETH = 'ETH',
+  GOERLI = 'GOERLI',
   BSC = 'BSC',
   AVAX = 'AVAX',
 }
@@ -8,6 +9,16 @@ const chainsInfo = {
   [Chain.ETH]: {
     chain: Chain.ETH,
     id: 1,
+    name: 'Ethereum',
+    symbol: 'eth',
+    logo: 'eth.svg',
+    rubicName: 'ethereum',
+    explorer: 'https://etherscan.io/',
+    bitqueryChainName: 'ethereum',
+  },
+  [Chain.GOERLI]: {
+    chain: Chain.ETH,
+    id: 5,
     name: 'Ethereum',
     symbol: 'eth',
     logo: 'eth.svg',

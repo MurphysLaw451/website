@@ -3,7 +3,13 @@ import { ethers } from 'ethers'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { AiOutlineCheckCircle } from 'react-icons/ai'
 import { toast } from 'react-toastify'
-import { WalletClient, useAccount, useWalletClient } from 'wagmi'
+import {
+    WalletClient,
+    useAccount,
+    useWalletClient,
+    useSwitchNetwork,
+    useChainId,
+} from 'wagmi'
 import { debounce } from '../../../helpers/debounce'
 import {
     approveBaseToken,
@@ -102,6 +108,8 @@ export const BurnForBacking = (props: {
         BigNumber(0)
     )
     const { address, isConnected } = useAccount()
+    const chainId = useChainId()
+    const { switchNetwork } = useSwitchNetwork()
     const [hash, setTxHash] = useState('')
     const { data: walletClient } = useWalletClient()
     const updateAllowance = async () => {
@@ -320,7 +328,7 @@ export const BurnForBacking = (props: {
                     </span>
                 </p>
 
-                {amountToBurn.isGreaterThan(0) && (
+                {chainId === 43114 && amountToBurn.isGreaterThan(0) && (
                     <div className="flex items-center">
                         {allowance.isGreaterThanOrEqualTo(amountToBurn) ? (
                             <Button
@@ -343,6 +351,18 @@ export const BurnForBacking = (props: {
                                 )}
                             </Button>
                         )}
+                    </div>
+                )}
+
+                {chainId !== 43114 && amountToBurn.isGreaterThan(0) && (
+                    <div className="flex items-center">
+                        <Button
+                            className="mt-3 w-full"
+                            color="orange"
+                            onClick={() => switchNetwork(43114)}
+                        >
+                            Switch to Avax
+                        </Button>
                     </div>
                 )}
             </div>

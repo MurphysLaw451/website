@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { WagmiConfig, configureChains, createConfig } from 'wagmi'
 import { publicProvider } from 'wagmi/providers/public'
+import { ATM } from '../components/dapp/ATM'
 import { Dashboard } from '../components/dapp/Dashboard'
 import { Disburser } from '../components/dapp/Disburser'
 import { Governance } from '../components/dapp/Governance'
@@ -79,6 +80,7 @@ export default function Dapp() {
                                     element={<Monitoring />}
                                     path="/dapp/monitoring"
                                 />
+                                <Route element={<ATM />} path="/dapp/atm" />
                             </Routes>
                         </main>
                     </div>
