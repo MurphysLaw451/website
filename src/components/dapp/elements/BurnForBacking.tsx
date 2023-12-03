@@ -177,9 +177,15 @@ export const BurnForBacking = (props: {
                     .toFixed()
             )
         )) as string
+
         setTxHash(hash)
+
+        const txReceipt = await publicClient.waitForTransactionReceipt({
+            hash: hash as `0x${string}`,
+        })
+
         toast.dismiss(toastId)
-        if (!!hash) {
+        if (txReceipt.status == 'success') {
             setAmountToBurn(BigNumber(0))
             tokensToBurnInputRef.current.value = ''
             toast.success('Burn for backing successful', { autoClose: 3000 })
@@ -209,7 +215,7 @@ export const BurnForBacking = (props: {
         }
 
         const txReceipt = await publicClient.waitForTransactionReceipt({
-            hash: approvalTxHash as Address,
+            hash: approvalTxHash as `0x${string}`,
         })
 
         toast.dismiss(toastId)
