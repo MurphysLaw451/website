@@ -8,9 +8,9 @@ import BigNumber from 'bignumber.js'
 import { H1 } from '../H1'
 import { H2 } from '../H2'
 
-import tokenAbi from '../../abi/erc20.json';
+import tokenAbi from '../../abi/erc20.json'
 
-const DGNX_TOKEN_ADDRESS = '0x51e48670098173025c477d9aa3f0eff7bf9f7812';
+const DGNX_TOKEN_ADDRESS = '0x51e48670098173025c477d9aa3f0eff7bf9f7812'
 const chainId = +process.env.NEXT_PUBLIC_CHAIN_ID
 const provider = new ethers.providers.JsonRpcProvider(
     process.env.NEXT_PUBLIC_RPC,
@@ -125,10 +125,10 @@ const WalletInfo = (props: any) => {
             {walletData ? (
                 <div className="grid grid-cols-3">
                     <div />
-                    <div className="text-dark dark:text-light-100 font-bold">
+                    <div className="font-bold text-dark dark:text-light-100">
                         Quantity
                     </div>
-                    <div className="text-dark dark:text-light-100 font-bold">
+                    <div className="font-bold text-dark dark:text-light-100">
                         USD value
                     </div>
                     <div>DGNX</div>
@@ -179,9 +179,9 @@ const WalletInfo = (props: any) => {
 }
 
 const getDgnxAmount = async (address: string) => {
-    const contract = new ethers.Contract(DGNX_TOKEN_ADDRESS, tokenAbi, provider);
-    const balance = (await contract.balanceOf(address)).toString();
-    return new BigNumber(balance).div(10 ** 18).toNumber();
+    const contract = new ethers.Contract(DGNX_TOKEN_ADDRESS, tokenAbi, provider)
+    const balance = (await contract.balanceOf(address)).toString()
+    return new BigNumber(balance).div(10 ** 18).toNumber()
 }
 
 const PriceChange = (props: { item: number }) => {
@@ -261,17 +261,17 @@ export const Dashboard = (props: RouteObject) => {
 
     return (
         <div>
-            <h1 className="mt-4 mb-5 sm:mb-8 font-bold text-3xl font-title flex gap-1 tracking-wide flex-col sm:flex-row">
+            <h1 className="mb-5 mt-4 flex flex-col gap-1 font-title text-3xl font-bold tracking-wide sm:mb-8 sm:flex-row">
                 <span className="text-techGreen">DEGENX</span>
                 <span className="text-degenOrange">DASHBOARD</span>
             </h1>
             <div className="mb-8 grid grid-cols-1 gap-8 xl:grid-cols-3">
-                <div className="col-span-2 rounded-xl border-2 p-5 border-activeblue bg-darkerblue text-light-200">
+                <div className="col-span-2 rounded-xl border-2 border-activeblue bg-darkerblue p-5 text-light-200">
                     <H2>Decentralized Exchanges</H2>
                     {dexData ? (
                         <div className="flex flex-col gap-8 sm:flex-row">
                             <div className="flex-grow">
-                                <div className="text-light-100 font-bold">
+                                <div className="font-bold text-light-100">
                                     TraderJoe
                                 </div>
                                 <div className="flex">
@@ -315,7 +315,7 @@ export const Dashboard = (props: RouteObject) => {
                                 </div>
                             </div>
                             <div className="flex-grow">
-                                <div className="text-dark dark:text-light-100 font-bold">
+                                <div className="font-bold text-dark dark:text-light-100">
                                     Pangolin
                                 </div>
                                 <div className="flex">
@@ -588,10 +588,10 @@ export const Dashboard = (props: RouteObject) => {
                             <tbody className="">
                                 <tr>
                                     <td className=""></td>
-                                    <td className="px-6 text-right text-dark dark:text-light-100 lg:px-1 xl:px-2 2xl:px-6 font-bold">
+                                    <td className="px-6 text-right font-bold text-dark dark:text-light-100 lg:px-1 xl:px-2 2xl:px-6">
                                         TraderJoe
                                     </td>
-                                    <td className="px-6 text-right text-dark dark:text-light-100 lg:px-1 xl:px-2 2xl:px-6 font-bold">
+                                    <td className="px-6 text-right font-bold text-dark dark:text-light-100 lg:px-1 xl:px-2 2xl:px-6">
                                         Pangolin
                                     </td>
                                 </tr>
@@ -683,10 +683,10 @@ export const Dashboard = (props: RouteObject) => {
                             <tbody className="">
                                 <tr>
                                     <td className=""></td>
-                                    <td className="px-6 text-right text-dark dark:text-light-100 lg:px-1 xl:px-2 2xl:px-6 font-bold">
+                                    <td className="px-6 text-right font-bold text-dark dark:text-light-100 lg:px-1 xl:px-2 2xl:px-6">
                                         TraderJoe
                                     </td>
-                                    <td className="px-6 text-right text-dark dark:text-light-100 lg:px-1 xl:px-2 2xl:px-6 font-bold">
+                                    <td className="px-6 text-right font-bold text-dark dark:text-light-100 lg:px-1 xl:px-2 2xl:px-6">
                                         Pangolin
                                     </td>
                                 </tr>
