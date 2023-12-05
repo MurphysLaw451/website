@@ -328,13 +328,21 @@ const AtmClaimForm = (props: {
     const startTime = useMemo(() => {
         return new Date(
             props.stats.lockPeriodStarts.toNumber() * 1000
-        ).toLocaleDateString('en-US')
+        ).toLocaleDateString(navigator.language, {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+        })
     }, [props.stats])
 
     const endTime = useMemo(() => {
         return new Date(
             props.stats.lockPeriodEnds.toNumber() * 1000
-        ).toLocaleDateString('en-US')
+        ).toLocaleDateString(navigator.language, {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+        })
     }, [props.stats])
 
     if (props.statsForQualifier.hasClaimed) {
@@ -350,63 +358,69 @@ const AtmClaimForm = (props: {
     if (props.statsForQualifier.hasLocked) {
         return (
             <>
-                <p className="my-4 font-bold">
-                    You have locked{' '}
+                <h2 className="mt-10 text-xl font-bold">Locked</h2>
+                <p className="mt-2 font-bold">
                     {props.statsForQualifier.lockedAmount
                         .div(10 ** 18)
-                        .toNumber()}{' '}
-                    DGNX.
+                        .toNumber()
+                        .toLocaleString('en', {
+                            maximumFractionDigits: 3,
+                        })}{' '}
+                    DGNX
                 </p>
-                <p className="my-4 font-bold">
-                    What will happen next:
-                    <br />
-                    1. The lock or claim will run approx. 3 days from start.
-                    <br />
-                    2. Lock period start will be announced in time in the VC
-                    Telegram group
-                </p>
-                <p className="italic">
-                    <span className="font-bold">Important:</span> You can claim
-                    your tokens at any time. Once you&apos;ve claimed your
-                    tokens, you&apos;re no longer eligible to rejoin the extra
-                    reward program. If you claim your tokens prior to the end of
-                    the 365 day period, any extra rewards will be charged with a{' '}
-                    {props.stats.rewardPenaltyBps.toNumber() / 100}% loyalty
-                    penalty.
-                </p>
+                {!props.stats.lockPeriodActive && (
+                    <>
+                        <p className="mt10 font-bold">
+                            What will happen next:
+                            <br />
+                            1. The lock or claim will run approx. 3 days from
+                            start.
+                            <br />
+                            2. Lock period start will be announced in time in
+                            the VC Telegram group
+                        </p>
+                    </>
+                )}
                 {props.stats.lockPeriodActive && (
                     <>
-                        <div className="my-1 mt-4 flex h-6 w-full rounded-full bg-gray-200 dark:bg-gray-700">
+                        <h2 className="mt-10 text-xl font-bold">
+                            Collected Rewards
+                        </h2>
+                        <div className="relative flex flex-col overflow-clip">
                             <div
-                                className="flex h-6 items-center justify-center gap-3 rounded-full bg-degenOrange font-bold leading-none"
-                                style={{ width: `${lockTimeProgress * 100}%` }}
+                                className="mb-1 mt-2 whitespace-nowrap text-center"
+                                style={{
+                                    width: `${lockTimeProgress * 100 + 70}%`,
+                                }}
                             >
-                                {lockTimeProgress > 0.5 && (
-                                    <span className="text-black">
-                                        {props.statsForQualifier.currentRewardAmount
-                                            .div(10 ** 18)
-                                            .toNumber()}{' '}
-                                        DGNX /{' '}
-                                        {props.statsForQualifier.estimatedTotalRewardAmount
-                                            .div(10 ** 18)
-                                            .toNumber()}{' '}
-                                        DGNX
-                                    </span>
-                                )}
+                                {props.statsForQualifier.currentRewardAmount
+                                    .div(10 ** 18)
+                                    .toNumber()
+                                    .toLocaleString('en', {
+                                        maximumFractionDigits: 3,
+                                    })}{' '}
+                                DGNX
                             </div>
-                            {lockTimeProgress <= 0.5 && (
-                                <div className="ml-3 font-bold text-white">
-                                    {props.statsForQualifier.currentRewardAmount
-                                        .div(10 ** 18)
-                                        .toNumber()}{' '}
-                                    DGNX /{' '}
-                                    {props.statsForQualifier.estimatedTotalRewardAmount
-                                        .div(10 ** 18)
-                                        .toNumber()}{' '}
-                                    DGNX
-                                </div>
-                            )}
+                            <div className="absolute right-0 leading-[2.5rem]">
+                                {props.statsForQualifier.estimatedTotalRewardAmount
+                                    .div(10 ** 18)
+                                    .toNumber()
+                                    .toLocaleString('en', {
+                                        maximumFractionDigits: 3,
+                                    })}{' '}
+                                DGNX
+                            </div>
                         </div>
+
+                        <div className="mb-1 h-2.5 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
+                            <div
+                                className="h-2.5 rounded-r-full bg-degenOrange"
+                                style={{
+                                    width: `${lockTimeProgress * 100 + 70}%`,
+                                }}
+                            ></div>
+                        </div>
+
                         <div className="flex">
                             <div>{startTime}</div>
                             <div className="flex-grow" />
@@ -414,7 +428,7 @@ const AtmClaimForm = (props: {
                         </div>
                     </>
                 )}
-                <div className="mt-6 font-bold">
+                <div className="my-6 font-bold">
                     {!lockLeaveLoading && !lockLeaveSuccess && (
                         <>
                             <Button
@@ -443,6 +457,15 @@ const AtmClaimForm = (props: {
                         </>
                     )}
                 </div>
+                <p className="italic">
+                    <span className="font-bold">Important:</span> You can claim
+                    your tokens at any time. Once you&apos;ve claimed your
+                    tokens, you&apos;re no longer eligible to rejoin the extra
+                    reward program. If you claim your tokens prior to the end of
+                    the 365 day period, any extra rewards will be charged with a{' '}
+                    {props.stats.rewardPenaltyBps.toNumber() / 100}% loyalty
+                    penalty.
+                </p>
             </>
         )
     } else {
