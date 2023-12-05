@@ -67,4 +67,3 @@ const useTargetDiamondRead = (data: {
 }) => {
   return useDiamondRead(diamondHomeAbi, data)
 }
-

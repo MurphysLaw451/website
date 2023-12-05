@@ -230,5 +230,607 @@
     ],
     "stateMutability": "view",
     "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "AddressZero",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "AlreadyInitialized",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "DataMissing",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "id",
+        "type": "bytes32"
+      }
+    ],
+    "name": "FeeExists",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "id",
+        "type": "bytes32"
+      }
+    ],
+    "name": "FeeNotExisting",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "id",
+        "type": "bytes32"
+      }
+    ],
+    "name": "InvalidFee",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotAllowed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TransferFailed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ZeroFees",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ZeroValueNotAllowed",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "_feeConfigId",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "FeeAmountDeposited",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "id",
+        "type": "bytes32"
+      }
+    ],
+    "name": "FeeConfigAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "id",
+        "type": "bytes32"
+      }
+    ],
+    "name": "FeeConfigDeleted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "id",
+        "type": "bytes32"
+      }
+    ],
+    "name": "FeeConfigMarkedAsDeleted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "id",
+        "type": "bytes32"
+      }
+    ],
+    "name": "FeeConfigUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "totalFees",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "bountyReceiver",
+            "type": "address"
+          },
+          {
+            "components": [
+              {
+                "internalType": "bytes32",
+                "name": "id",
+                "type": "bytes32"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct FeeConfigSyncHomeFees[]",
+            "name": "fees",
+            "type": "tuple[]"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct FeeConfigSyncHomeDTO",
+        "name": "candidate",
+        "type": "tuple"
+      }
+    ],
+    "name": "FeesCollected",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "totalFees",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "bountyReceiver",
+            "type": "address"
+          },
+          {
+            "components": [
+              {
+                "internalType": "bytes32",
+                "name": "id",
+                "type": "bytes32"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct FeeConfigSyncHomeFees[]",
+            "name": "fees",
+            "type": "tuple[]"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct FeeConfigSyncHomeDTO",
+        "name": "candidate",
+        "type": "tuple"
+      }
+    ],
+    "name": "FeesPrepared",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "totalFees",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "bountyReceiver",
+            "type": "address"
+          },
+          {
+            "components": [
+              {
+                "internalType": "bytes32",
+                "name": "id",
+                "type": "bytes32"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct FeeConfigSyncHomeFees[]",
+            "name": "fees",
+            "type": "tuple[]"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct FeeConfigSyncHomeDTO",
+        "name": "candidate",
+        "type": "tuple"
+      }
+    ],
+    "name": "FeesRestored",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "bytes32",
+            "name": "id",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint256",
+            "name": "fee",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "target",
+            "type": "address"
+          },
+          {
+            "internalType": "enum FeeSyncAction",
+            "name": "action",
+            "type": "uint8"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct FeeConfigSyncDTO[]",
+        "name": "candidates",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "FeesSynced",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [],
+    "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "intermediateAsset",
+        "type": "address"
+      }
+    ],
+    "name": "UpdatedIntermediateAsset",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      }
+    ],
+    "name": "UpdatedOperator",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "collectFeesFromFeeStore",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_feeConfigId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "feeStoreDepositFeeAmount",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_id",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getCollectedFeesByConfigId",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "_collectedFees",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getCollectedFeesTotal",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "_collectedFeesTotal",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getFeeConfigIds",
+    "outputs": [
+      {
+        "internalType": "bytes32[]",
+        "name": "_feeConfigIds",
+        "type": "bytes32[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_id",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getFeeStoreConfig",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "bytes32",
+            "name": "id",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint256",
+            "name": "fee",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "target",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "deleted",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct FeeStoreConfig",
+        "name": "_feeStoreConfig",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getIntermediateAsset",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "_intermediateAsset",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getOperator",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "_operator",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_operator",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_intermediateAsset",
+        "type": "address"
+      }
+    ],
+    "name": "initFeeStoreFacet",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "totalFees",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "bountyReceiver",
+            "type": "address"
+          },
+          {
+            "components": [
+              {
+                "internalType": "bytes32",
+                "name": "id",
+                "type": "bytes32"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct FeeConfigSyncHomeFees[]",
+            "name": "fees",
+            "type": "tuple[]"
+          }
+        ],
+        "internalType": "struct FeeConfigSyncHomeDTO",
+        "name": "_dto",
+        "type": "tuple"
+      }
+    ],
+    "name": "restoreFeesFromSendFees",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_intermediateAsset",
+        "type": "address"
+      }
+    ],
+    "name": "setIntermediateAsset",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_operator",
+        "type": "address"
+      }
+    ],
+    "name": "setOperator",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "bytes32",
+            "name": "id",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint256",
+            "name": "fee",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "target",
+            "type": "address"
+          },
+          {
+            "internalType": "enum FeeSyncAction",
+            "name": "action",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct FeeConfigSyncDTO[]",
+        "name": "_feeConfigSyncDTO",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "syncFees",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
   }
 ]

@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 import { Address } from 'wagmi'
 import { FeeConfigState, FeeDistributionReceiver } from '../../types'
 import clsx from 'clsx'
+import Image from 'next/image'
+import { useFeeConfigs } from '../../hooks/multi-chain/useFeeConfigs'
 // import { queryHomeDiamond, queryTargetDiamond } from './../../helpers/contracts'
 // import { DeployFees } from './deploy-fees'
 
@@ -63,6 +65,9 @@ const FeeConfigStateDot = (props: { syncState: FeeConfigState }) => {
 }
 
 export const Monitoring = () => {
+    const data = useFeeConfigs()
+    console.log({ data })
+
     // const [feeConfigIds, setFeeConfigIds] =
     //     useState<Awaited<ReturnType<typeof getFeeConfigIds>>>()
     // const [feeConfigIdsStore, setFeeConfigIdsStore] =
@@ -123,16 +128,16 @@ export const Monitoring = () => {
     // }, [])
 
     return (
-        <div className="grid grid-cols-1 gap-24">
+        <div className="grid grid-cols-1 gap-8 md:gap-24">
             <h1 className="mb-5 mt-4 flex flex-col gap-1 font-title text-3xl font-bold tracking-wide sm:mb-8 sm:flex-row">
                 <span className="text-techGreen">DEGENX</span>
                 <span className="text-degenOrange">MONITORING</span>
             </h1>
-            <div className="grid grid-cols-5">
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-0">
                 <div className="text-center">
                     <h2 className="mb-5 text-2xl font-bold">Avalanche</h2>
                     <svg
-                        className="max-w-60 inline-block w-full fill-activeblue"
+                        className="max-w-48 inline-block w-48 fill-activeblue"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 256 253"
                         enable-background="new 0 0 256 253"
@@ -148,12 +153,16 @@ export const Monitoring = () => {
 	z M222.832,22H223V2H34v20L2,54h252L222.832,22z"
                         />
                     </svg>
+                    <div className="mt-4 text-center">
+                        <p className="font-bold">DGNX Supply</p>
+                        <p className="text-xl">12,345,678</p>
+                    </div>
                 </div>
-                <div className="col-span-3"></div>
+                <div></div>
                 <div className="text-center">
                     <h2 className="mb-5 text-2xl font-bold">Ethereum</h2>
                     <svg
-                        className="max-w-60 inline-block w-full fill-activeblue"
+                        className="max-w-48 inline-block w-48 fill-activeblue"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 256 253"
                         enable-background="new 0 0 256 253"
@@ -169,63 +178,92 @@ export const Monitoring = () => {
 	z M222.832,22H223V2H34v20L2,54h252L222.832,22z"
                         />
                     </svg>
+                    <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <div>
+                            <p className="font-bold">DGNX Supply</p>
+                            <p className="text-xl">1,234,567</p>
+                        </div>
+                        <div>
+                            <p className="font-bold">Fees Collected</p>
+                            <p className="text-xl">1,234,567</p>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div>
-                <div className="justify-center rounded-lg border-2 border-solid border-activeblue bg-darkerblue">
-                    <table className="w-full table-auto">
-                        <thead>
-                            <tr>
-                                <th className="p-4 text-left">ID</th>
-                                <th>Fee (bps)</th>
-                                <th>Receiver</th>
-                                <th>Avalanche</th>
-                                <th>Ethereum</th>
-                                <th>Ethereum Revenue</th>
-                            </tr>
-                        </thead>
-                        <tbody className="border-t border-t-activeblue">
-                            {/* {feeConfigs?.map((feeConfig) => ( */}
-                            <tr>
-                                <td className="p-4 text-left">
-                                    0x1234...bcdef
-                                </td>
-                                <td className="text-center">3000</td>
-                                <td className="text-center">0x1234...7890</td>
-                                <td className="text-center">
-                                    <FeeConfigStateDot
-                                        syncState={FeeConfigState.NEW}
-                                    />
-                                </td>
-                                <td className="text-center">
-                                    <FeeConfigStateDot
-                                        syncState={FeeConfigState.NEW}
-                                    />
-                                </td>
-                                <td className="text-center">blablybla</td>
-                            </tr>
-                            {/* ))} */}
-                        </tbody>
-                    </table>
+                <h2 className="mb-5 mt-4 flex flex-col gap-1 font-title text-xl font-bold tracking-wide sm:mb-8 sm:flex-row">
+                    <span className="text-techGreen">FEE</span>
+                    <span className="text-degenOrange">CONFIGURATIONS</span>
+                </h2>
+                <div className="xs:grid-cols-2 mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
+                    {[0, 1, 0, 1].map((feeConfig) => (
+                        <div className="rounded-lg border-2 border-solid border-activeblue bg-darkerblue">
+                            <p className="p-4">
+                                <span className="font-bold">Fee ID</span>
+                                <br />
+                                0x1234...bcdef
+                            </p>
+                            <p className="border-t border-dashed border-activeblue p-4">
+                                <span className="font-bold">% Fee (bps)</span>
+                                <br />
+                                3% (3000)
+                            </p>
+                            <p className="border-t border-dashed border-activeblue p-4">
+                                <span className="font-bold">Fee Receiver</span>
+                                <br />
+                                0x1234...7890
+                            </p>
+                            <p className="border-t border-dashed border-activeblue p-4">
+                                <span className="font-bold">
+                                    Deployment Status
+                                </span>
+                                <div className="mt-2 flex flex-col">
+                                    <div className="flex flex-row items-center">
+                                        Avalanche:{' '}
+                                        <FeeConfigStateDot
+                                            syncState={FeeConfigState.DEPLOYED}
+                                        />
+                                    </div>
+                                    <div className="flex flex-row items-center">
+                                        Ethereum:{' '}
+                                        <FeeConfigStateDot
+                                            syncState={FeeConfigState.DEPLOYED}
+                                        />
+                                    </div>
+                                </div>
+                            </p>
+                            <p className="border-t border-dashed border-activeblue p-4">
+                                <span className="font-bold">Revenue</span>
+                                <div className="mt-4 flex flex-col gap-4">
+                                    <div className="flex flex-row items-center">
+                                        Avalanche: 1,234.00
+                                    </div>
+                                    <div className="flex flex-row items-center">
+                                        Ethereum: 1,234.00
+                                    </div>
+                                </div>
+                            </p>
+                        </div>
+                    ))}
                 </div>
-                <div className="mt-4 flex flex-row items-center text-white text-opacity-50">
-                    <span className="mr-4">
-                        <FeeConfigStateDot syncState={FeeConfigState.NEW} />{' '}
-                        recently added fee <br />
-                    </span>
-                    <span className="mr-4">
-                        <FeeConfigStateDot syncState={FeeConfigState.UPDATED} />{' '}
-                        recently updated fee <br />
-                    </span>
-                    <span className="mr-4">
-                        <FeeConfigStateDot syncState={FeeConfigState.SYNC} />{' '}
-                        fee being synced to networks <br />
-                    </span>
+                <div className="my-10 flex flex-col flex-wrap items-start text-white text-opacity-50 lg:flex-row">
                     <span className="mr-4">
                         <FeeConfigStateDot
                             syncState={FeeConfigState.DEPLOYED}
                         />{' '}
-                        fee is deployed on network(s) <br />
+                        deployed on network(s) <br />
+                    </span>
+                    <span className="mr-4">
+                        <FeeConfigStateDot syncState={FeeConfigState.SYNC} />{' '}
+                        synced to network(s) <br />
+                    </span>
+                    <span className="mr-4">
+                        <FeeConfigStateDot syncState={FeeConfigState.UPDATED} />{' '}
+                        recently updated <br />
+                    </span>
+                    <span className="mr-4">
+                        <FeeConfigStateDot syncState={FeeConfigState.NEW} />{' '}
+                        recently added <br />
                     </span>
                 </div>
             </div>

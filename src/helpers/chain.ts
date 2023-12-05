@@ -3,6 +3,7 @@ export enum Chain {
   GOERLI = 'GOERLI',
   BSC = 'BSC',
   AVAX = 'AVAX',
+  FUJI = 'FUJI',
 }
 
 const chainsInfo = {
@@ -43,7 +44,17 @@ const chainsInfo = {
     symbol: 'avax',
     logo: 'avalanche.svg',
     rubicName: 'avalanche',
-    explorer: 'https://avascan.info/',
+    explorer: 'https://snowtrace.io/',
+    bitqueryChainName: 'avalanche',
+  },
+  [Chain.FUJI]: {
+    chain: Chain.FUJI,
+    id: 43113,
+    name: 'Avalanche Fuji',
+    symbol: 'avax',
+    logo: 'avalanche.svg',
+    rubicName: 'avalanche',
+    explorer: 'https://testnet.snowtrace.io/',
     bitqueryChainName: 'avalanche',
   },
 }

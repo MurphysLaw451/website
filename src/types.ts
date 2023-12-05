@@ -18,7 +18,7 @@ export enum CHART_PRICE_MODE {
     AVAX = 'AVAX',
 }
 
-export type AtmStatsLoading = {
+export type Loading = {
     loading: 'yes'
 }
 

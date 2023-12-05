@@ -116,7 +116,7 @@ const WalletInfo = (props: any) => {
                 {props.name}{' '}
                 <a
                     rel="noreferrer"
-                    href={`https://avascan.info/blockchain/c/address/${props.address}`}
+                    href={`https://snowtrace.io/address/${props.address}`}
                     target="_blank"
                 >
                     <HiOutlineExternalLink className="inline text-light-600" />
