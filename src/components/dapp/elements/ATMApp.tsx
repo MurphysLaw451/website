@@ -390,7 +390,7 @@ const AtmClaimForm = (props: {
                             <div
                                 className="mb-1 mt-2 whitespace-nowrap text-center"
                                 style={{
-                                    width: `${lockTimeProgress * 100 + 70}%`,
+                                    width: `${lockTimeProgress * 100}%`,
                                 }}
                             >
                                 {props.statsForQualifier.currentRewardAmount
@@ -416,7 +416,7 @@ const AtmClaimForm = (props: {
                             <div
                                 className="h-2.5 rounded-r-full bg-degenOrange"
                                 style={{
-                                    width: `${lockTimeProgress * 100 + 70}%`,
+                                    width: `${lockTimeProgress * 100}%`,
                                 }}
                             ></div>
                         </div>
