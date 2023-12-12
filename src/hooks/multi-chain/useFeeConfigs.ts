@@ -1,5 +1,6 @@
-import { erc20ABI, readContracts, useContractReads } from 'wagmi'
-import { FeeConfigState, Loading } from '../../types'
+import { avalanche, avalancheFuji, goerli, mainnet } from '@wagmi/chains'
+import { Abi } from 'viem'
+import { erc20ABI, useContractReads } from 'wagmi'
 import {
   CELER_OTV2_ADDRESS,
   DEAD_ADDRESS,
@@ -8,10 +9,9 @@ import {
   TOKEN_ADDRESS,
   ZERO_ADDRESS,
 } from '../../constants'
-import { avalanche, avalancheFuji, goerli, mainnet } from '@wagmi/chains'
+import { FeeConfigState, Loading } from '../../types'
 import diamondHomeAbi from './../../abi/abi-home.json'
 import diamondTargetAbi from './../../abi/abi-target.json'
-import { Abi, MulticallContracts } from 'viem'
 
 export type DgnxMultiChainFeeMonitoring = {
   avalanche: {
@@ -42,6 +42,8 @@ const avalancheChainId = MONITOR_MAINNET ? avalanche.id : avalancheFuji.id
 const ethereumChainId = MONITOR_MAINNET ? mainnet.id : goerli.id
 
 export const useFeeConfigs = (): any | Loading => {
+  let result: any
+
   // Initial data
   const { data: metaData, isLoading: isLoadingMetaData } = useContractReads({
     contracts: [
@@ -122,6 +124,12 @@ export const useFeeConfigs = (): any | Loading => {
         functionName: 'getFeeDistributorReceivers',
       },
       {
+        chainId: avalancheChainId,
+        address: DIAMONDS[avalancheChainId],
+        abi: diamondHomeAbi as Abi,
+        functionName: 'getFeeDistributorTotalPoints',
+      },
+      {
         chainId: ethereumChainId,
         address: DIAMONDS[ethereumChainId],
         abi: erc20ABI,
@@ -142,8 +150,13 @@ export const useFeeConfigs = (): any | Loading => {
     ],
   })
 
-  let contractsFeeConfigDetailsHome = []
-  let contractsFeeConfigDetailsTarget = []
+  let contractsFeeConfigsHome = []
+  let contractsFeeStoreConfigsTarget = []
+  let contractsFeeStoreCollectedFeesByConfig = []
+  let contractsFeeDistributorTargetAssetNames = []
+  let contractsFeeDistributorTargetAssetSymbols = []
+  let feeConfigIds = []
+  let feeConfigs = []
 
   if (!isLoadingMetaData) {
     const [
@@ -159,12 +172,14 @@ export const useFeeConfigs = (): any | Loading => {
       getFeeDistributorTotalBounties,
       getFeeDistributorLastBounty,
       getFeeDistributorReceivers,
+      getFeeDistributorTotalPoints,
       totalSupplyEthereum,
       collectedFeesTotalEthereum,
       feeConfigIdsEthereum,
     ] = Object.keys(metaData).map((k: string) => metaData[k]?.result)
 
-    console.log({
+    result = {
+      ...result,
       totalSupplyAvalanche,
       amountOnZero,
       amountOnDead,
@@ -177,12 +192,15 @@ export const useFeeConfigs = (): any | Loading => {
       getFeeDistributorTotalBounties,
       getFeeDistributorLastBounty,
       getFeeDistributorReceivers,
+      getFeeDistributorTotalPoints,
       totalSupplyEthereum,
       collectedFeesTotalEthereum,
       feeConfigIdsEthereum,
-    })
+      totalSupplyAvalancheNet:
+        totalSupplyAvalanche - amountOnZero - amountOnDead - amountOnVault,
+    }
 
-    contractsFeeConfigDetailsHome = feeConfigIdsHome?.map((feeConfigId) => ({
+    contractsFeeConfigsHome = feeConfigIdsHome?.map((feeConfigId: string) => ({
       chainId: avalancheChainId,
       address: DIAMONDS[avalancheChainId],
       abi: diamondHomeAbi as Abi,
@@ -190,59 +208,166 @@ export const useFeeConfigs = (): any | Loading => {
       args: [feeConfigId],
     }))
 
-    contractsFeeConfigDetailsTarget = feeConfigIdsHome?.map((feeConfigId) => ({
-      chainId: ethereumChainId,
-      address: DIAMONDS[ethereumChainId],
-      abi: diamondTargetAbi as Abi,
-      functionName: 'getCollectedFeesByConfigId',
-      args: [feeConfigId],
-    }))
+    contractsFeeStoreConfigsTarget = feeConfigIdsHome?.map(
+      (feeConfigId: string) => ({
+        chainId: ethereumChainId,
+        address: DIAMONDS[ethereumChainId],
+        abi: diamondTargetAbi as Abi,
+        functionName: 'getFeeStoreConfig',
+        args: [feeConfigId],
+      })
+    )
 
-    console.log({ contractsFeeConfigDetailsHome })
+    contractsFeeStoreCollectedFeesByConfig = feeConfigIdsHome?.map(
+      (feeConfigId: string) => ({
+        chainId: ethereumChainId,
+        address: DIAMONDS[ethereumChainId],
+        abi: diamondTargetAbi as Abi,
+        functionName: 'getCollectedFeesByConfigId',
+        args: [feeConfigId],
+      })
+    )
+
+    contractsFeeDistributorTargetAssetNames = getFeeDistributorReceivers?.map(
+      (distribution: any) => ({
+        chainId: avalancheChainId,
+        address:
+          distribution.swap.length >= 2
+            ? distribution.swap[distribution.swap.length - 1]
+            : TOKEN_ADDRESS,
+        abi: erc20ABI,
+        functionName: 'name',
+      })
+    )
+
+    contractsFeeDistributorTargetAssetSymbols = getFeeDistributorReceivers?.map(
+      (distribution: any) => ({
+        chainId: avalancheChainId,
+        address:
+          distribution.swap.length >= 2
+            ? distribution.swap[distribution.swap.length - 1]
+            : TOKEN_ADDRESS,
+        abi: erc20ABI,
+        functionName: 'symbol',
+      })
+    )
+
+    feeConfigIds = [...feeConfigIdsHome]
+  }
+
+  if (feeConfigIds.length > 0) {
+    feeConfigs = Object.keys(feeConfigIds).map((k: string) => ({
+      id: feeConfigIds[k] as string,
+    }))
   }
 
   // get all fee configs home chain
-  const {
-    data: feeConfigDetailsHome,
-    isLoading: isLoadingFeeConfigDetailsHome,
-  } = useContractReads({
-    contracts: contractsFeeConfigDetailsHome,
-  })
+  const { data: feeConfigsHomeData, isLoading: isLoadingFeeConfigDetailsHome } =
+    useContractReads({
+      contracts: contractsFeeConfigsHome,
+    })
 
-  if (!isLoadingFeeConfigDetailsHome) {
-    console.log({ feeConfigDetailsHome })
-
-    // ID is missing in output, so need to add into map
-    // const [] = Object.keys(feeConfigDetailsHome).map(
-    //   (k: string) => feeConfigDetailsHome[k]?.result
-    // )
+  if (!isLoadingFeeConfigDetailsHome && feeConfigIds.length > 0) {
+    feeConfigs = Object.keys(feeConfigsHomeData).map((k: string) => ({
+      ...feeConfigs[k],
+      ...feeConfigsHomeData[k]?.result,
+      id: feeConfigIds[k] as string,
+    }))
   }
 
   // get all fee configs target chain
 
   const {
-    data: feeConfigDetailsTarget,
+    data: feeStoreConfigsData,
     isLoading: isLoadingFeeConfigDetailsTarget,
   } = useContractReads({
-    contracts: contractsFeeConfigDetailsTarget,
+    contracts: contractsFeeStoreConfigsTarget,
   })
 
-  if (!isLoadingFeeConfigDetailsTarget) {
-    console.log({ feeConfigDetailsTarget })
-    // ID is missing in output, so need to add into map
-    // const [] = Object.keys(feeConfigDetailsTarget).map(
-    //   (k: string) => feeConfigDetailsTarget[k]?.result
-    // )
+  if (!isLoadingFeeConfigDetailsTarget && feeConfigIds.length > 0) {
+    feeConfigs = Object.keys(feeStoreConfigsData).map((k: string) => ({
+      ...feeConfigs[k],
+      ...feeStoreConfigsData[k]?.result,
+      id: feeConfigIds[k] as string,
+    }))
+  }
+
+  // collected fees on target chain
+  const { data: collectedFeesData, isLoading: isLoadingCollectedFeesData } =
+    useContractReads({
+      contracts: contractsFeeStoreCollectedFeesByConfig,
+    })
+
+  if (!isLoadingCollectedFeesData && feeConfigIds.length > 0) {
+    feeConfigs = Object.keys(collectedFeesData).map((k: string) => ({
+      ...feeConfigs[k],
+      amount: collectedFeesData[k]?.result as bigint,
+      id: feeConfigIds[k] as string,
+    }))
+  }
+
+  // gets names of distribution assets
+  const {
+    data: feeDistributorTargetAssetNames,
+    isLoading: isLoadingFeeDistributorTargetAssetNames,
+  } = useContractReads({
+    contracts: contractsFeeDistributorTargetAssetNames,
+  })
+
+  if (
+    !isLoadingFeeDistributorTargetAssetNames &&
+    result &&
+    result.getFeeDistributorReceivers
+  ) {
+    result = {
+      ...result,
+      getFeeDistributorReceivers: result.getFeeDistributorReceivers.map(
+        (item, k) => ({
+          ...item,
+          assetName: feeDistributorTargetAssetNames[k]?.result,
+        })
+      ),
+    }
+    feeDistributorTargetAssetNames
+  }
+
+  // gets symbols of distribution assets
+  const {
+    data: feeDistributorTargetAssetSymbols,
+    isLoading: isLoadingFeeDistributorTargetAssetSymbols,
+  } = useContractReads({
+    contracts: contractsFeeDistributorTargetAssetSymbols,
+  })
+
+  if (
+    !isLoadingFeeDistributorTargetAssetSymbols &&
+    result &&
+    result.getFeeDistributorReceivers
+  ) {
+    result = {
+      ...result,
+      getFeeDistributorReceivers: result.getFeeDistributorReceivers.map(
+        (item, k) => ({
+          ...item,
+          assetSymbol: feeDistributorTargetAssetSymbols[k]?.result,
+        })
+      ),
+    }
+    feeDistributorTargetAssetNames
+  }
+
+  result = {
+    ...result,
+    feeConfigs,
   }
 
   return isLoadingMetaData ||
     isLoadingFeeConfigDetailsHome ||
-    isLoadingFeeConfigDetailsTarget
+    isLoadingFeeConfigDetailsTarget ||
+    isLoadingCollectedFeesData
     ? { loading: 'yes' }
     : {
-        ...metaData,
-        ...feeConfigDetailsHome,
-        ...feeConfigDetailsTarget,
+        ...result,
         loading: 'no',
       }
 }
