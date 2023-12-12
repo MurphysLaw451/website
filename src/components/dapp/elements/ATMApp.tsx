@@ -2,7 +2,14 @@ import BigNumber from 'bignumber.js'
 import clsx from 'clsx'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { RouteObject } from 'react-router-dom'
-import { useAccount, useChainId, useClient, useSwitchNetwork } from 'wagmi'
+import { toast } from 'react-toastify'
+import {
+    useAccount,
+    useBalance,
+    useChainId,
+    useClient,
+    useSwitchNetwork,
+} from 'wagmi'
 import { toPrecision } from '../../../helpers/number'
 import { useAtmClaim } from '../../../hooks/atm/useAtmClaim'
 import { useAtmDeposit } from '../../../hooks/atm/useAtmDeposit'
@@ -13,7 +20,6 @@ import {
     DngxAtmStatsForQualifier,
     useAtmStatsForQualifier,
 } from '../../../hooks/atm/useAtmStatsForQualifier'
-import { AtmStatsLoading } from '../../../types'
 import { Button } from '../../Button'
 import { H2 } from '../../H2'
 import { Spinner } from './Spinner'
@@ -23,12 +29,26 @@ const AtmLockRewardPreview = (props: {
     claimAmountWithoutLock: number
 }) => {
     return (
-        <div className="mt-5 grid grid-cols-2 font-bold">
-            <div>Receive amount with lock:</div>
-            <div>{toPrecision(props.claimAmountWithLock, 4)} DGNX</div>
-            <div>Receive amount without lock:</div>
-            <div>{toPrecision(props.claimAmountWithoutLock, 4)} DGNX</div>
-        </div>
+        <>
+            <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 ">
+                <div className="font-bold">
+                    Estimated DGNX amount with lock:
+                </div>
+                <div className="font-bold">
+                    {toPrecision(props.claimAmountWithLock, 4)}* DGNX
+                </div>
+                <div className="mt-8 font-bold sm:mt-0">
+                    Estimated DGNX amount without lock:
+                </div>
+                <div className="font-bold">
+                    {toPrecision(props.claimAmountWithoutLock, 4)}* DGNX
+                </div>
+            </div>
+            <div className=" mt-8 text-sm italic">
+                * Please note that the DGNX amounts will adapt shortly before
+                the claiming starts accordingly to the launch market price.
+            </div>
+        </>
     )
 }
 
@@ -36,23 +56,32 @@ const AtmDepositForm = (props: {
     stats: DgnxAtmStats
     statsForQualifier: DngxAtmStatsForQualifier
 }) => {
+    const { address } = useAccount()
+    const { data: nativeBalance } = useBalance({ address })
     const [depositAmount, setDepositAmount] = useState(0)
     const tokensToBurnInputRef = useRef<HTMLInputElement>()
+    const minDeposit = new BigNumber(0.000000000000000001)
 
     const { write, isLoading, isSuccess, hash } = useAtmDeposit(
-        BigNumber(depositAmount).multipliedBy(10 ** 18)
+        BigNumber(
+            depositAmount < minDeposit.toNumber()
+                ? minDeposit.toString()
+                : depositAmount
+        ).multipliedBy(10 ** 18)
     )
 
     const maximum = useMemo(() => {
-        return (
-            props.stats.allocationLimit.div(10 ** 18).toNumber() -
-            props.statsForQualifier.totalDeposited.div(10 ** 18).toNumber()
-        )
-    }, [props.stats, props.statsForQualifier, isSuccess])
+        return BigNumber.min(
+            new BigNumber(nativeBalance.value.toString()).div(10 ** 18),
+            props.stats.allocationLimit
+                .div(10 ** 18)
+                .minus(props.statsForQualifier.totalDeposited.div(10 ** 18))
+        ).toNumber()
+    }, [props.stats, props.statsForQualifier, isSuccess, nativeBalance])
 
     return (
         <div>
-            {!isSuccess && !isLoading && (
+            {!isLoading && (
                 <>
                     {props.stats.allocationLimit
                         .minus(props.statsForQualifier.totalDeposited)
@@ -67,11 +96,17 @@ const AtmDepositForm = (props: {
                                 placeholder="0"
                                 disabled={isLoading}
                                 max={maximum}
+                                min={0.0001}
                                 step={0.1}
                                 onChange={(e) =>
                                     setDepositAmount(
                                         !!e.target.value
-                                            ? parseFloat(e.target.value)
+                                            ? parseFloat(e.target.value) <
+                                              minDeposit.toNumber()
+                                                ? parseFloat(
+                                                      minDeposit.toString()
+                                                  )
+                                                : parseFloat(e.target.value)
                                             : 0
                                     )
                                 }
@@ -114,20 +149,40 @@ const AtmDepositForm = (props: {
                                     />
                                 </>
                             )}
-                            {depositAmount > 0 &&
-                                depositAmount <= maximum &&
-                                !isLoading &&
-                                !hash && (
-                                    <>
-                                        <Button
-                                            className="mt-3 w-full"
-                                            color="orange"
-                                            onClick={() => write()}
-                                        >
-                                            Deposit
-                                        </Button>
-                                    </>
-                                )}
+                            <Button
+                                className="mt-3 w-full"
+                                color={
+                                    depositAmount == 0 ||
+                                    depositAmount > maximum
+                                        ? 'disabled'
+                                        : 'orange'
+                                }
+                                disabled={
+                                    depositAmount == 0 ||
+                                    depositAmount > maximum
+                                }
+                                onClick={() => {
+                                    console.log(
+                                        BigNumber(
+                                            tokensToBurnInputRef.current.value
+                                        ).lt(minDeposit)
+                                    )
+                                    if (
+                                        BigNumber(
+                                            tokensToBurnInputRef.current.value
+                                        ).lt(minDeposit)
+                                    ) {
+                                        toast.error(
+                                            'Please change the amount to at least 0.000000000000000001',
+                                            { autoClose: 5000 }
+                                        )
+                                    } else {
+                                        write()
+                                    }
+                                }}
+                            >
+                                Deposit
+                            </Button>
                         </>
                     )}
                     {props.stats.allocationLimit
@@ -135,9 +190,10 @@ const AtmDepositForm = (props: {
                         .eq(0) && (
                         <>
                             <p className="mt-4 font-bold text-success">
-                                Your deposit limit is reached. You can&apos;t deposit
-                                more ETH. Please wait until the claiming phase
-                                starts. This will be announced through Telegram
+                                Your deposit limit is reached. You can&apos;t
+                                deposit more ETH. Please wait until the claiming
+                                phase starts. This will be announced through
+                                Telegram
                             </p>
                         </>
                     )}
@@ -227,6 +283,7 @@ const AtmClaimForm = (props: {
     statsForQualifier: DngxAtmStatsForQualifier
 }) => {
     const [blockTimeStamp, setBlockTimeStamp] = useState(0)
+    const [actionInProgess, setActionInProgress] = useState(false)
     const client = useClient()
 
     const {
@@ -271,13 +328,21 @@ const AtmClaimForm = (props: {
     const startTime = useMemo(() => {
         return new Date(
             props.stats.lockPeriodStarts.toNumber() * 1000
-        ).toLocaleDateString('en-US')
+        ).toLocaleDateString(navigator.language, {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+        })
     }, [props.stats])
 
     const endTime = useMemo(() => {
         return new Date(
             props.stats.lockPeriodEnds.toNumber() * 1000
-        ).toLocaleDateString('en-US')
+        ).toLocaleDateString(navigator.language, {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+        })
     }, [props.stats])
 
     if (props.statsForQualifier.hasClaimed) {
@@ -293,60 +358,69 @@ const AtmClaimForm = (props: {
     if (props.statsForQualifier.hasLocked) {
         return (
             <>
-                <p className="mb-4 font-bold">
-                    You have locked{' '}
+                <h2 className="mt-10 text-xl font-bold">Locked</h2>
+                <p className="mt-2 font-bold">
                     {props.statsForQualifier.lockedAmount
                         .div(10 ** 18)
-                        .toNumber()}{' '}
-                    DGNX.
+                        .toNumber()
+                        .toLocaleString('en', {
+                            maximumFractionDigits: 3,
+                        })}{' '}
+                    DGNX
                 </p>
-                <p className="mb-4 font-bold">
-                    During the lock period, you can view the status of your
-                    collected rewards right here.
-                </p>
-                <p className=" italic">
-                    <span className="font-bold">Important:</span> You can claim
-                    your tokens at all time. Once you&apos;ve claimed your tokens,
-                    your not eligible to join the locking program anymore. If
-                    you claim your tokens during the lock period of 365 days,
-                    your already collected rewards will be charged with a{' '}
-                    {props.stats.rewardPenaltyBps.toNumber() / 100}% loyalty
-                    penalty.
-                </p>
-
+                {!props.stats.lockPeriodActive && (
+                    <>
+                        <p className="mt10 font-bold">
+                            What will happen next:
+                            <br />
+                            1. The lock or claim will run approx. 3 days from
+                            start.
+                            <br />
+                            2. Lock period start will be announced in time in
+                            the VC Telegram group
+                        </p>
+                    </>
+                )}
                 {props.stats.lockPeriodActive && (
                     <>
-                        <div className="my-1 mt-4 flex h-6 w-full rounded-full bg-gray-200 dark:bg-gray-700">
+                        <h2 className="mt-10 text-xl font-bold">
+                            Collected Rewards
+                        </h2>
+                        <div className="relative flex flex-col overflow-clip">
                             <div
-                                className="flex h-6 items-center justify-center gap-3 rounded-full bg-degenOrange font-bold leading-none"
-                                style={{ width: `${lockTimeProgress * 100}%` }}
+                                className="mb-1 mt-2 whitespace-nowrap text-center"
+                                style={{
+                                    width: `${lockTimeProgress * 100}%`,
+                                }}
                             >
-                                {lockTimeProgress > 0.5 && (
-                                    <span className="text-black">
-                                        {props.statsForQualifier.currentRewardAmount
-                                            .div(10 ** 18)
-                                            .toNumber()}{' '}
-                                        DGNX /{' '}
-                                        {props.statsForQualifier.estimatedTotalRewardAmount
-                                            .div(10 ** 18)
-                                            .toNumber()}{' '}
-                                        DGNX
-                                    </span>
-                                )}
+                                {props.statsForQualifier.currentRewardAmount
+                                    .div(10 ** 18)
+                                    .toNumber()
+                                    .toLocaleString('en', {
+                                        maximumFractionDigits: 3,
+                                    })}{' '}
+                                DGNX
                             </div>
-                            {lockTimeProgress <= 0.5 && (
-                                <div className="ml-3 font-bold text-white">
-                                    {props.statsForQualifier.currentRewardAmount
-                                        .div(10 ** 18)
-                                        .toNumber()}{' '}
-                                    DGNX /{' '}
-                                    {props.statsForQualifier.estimatedTotalRewardAmount
-                                        .div(10 ** 18)
-                                        .toNumber()}{' '}
-                                    DGNX
-                                </div>
-                            )}
+                            <div className="absolute right-0 leading-[2.5rem]">
+                                {props.statsForQualifier.estimatedTotalRewardAmount
+                                    .div(10 ** 18)
+                                    .toNumber()
+                                    .toLocaleString('en', {
+                                        maximumFractionDigits: 3,
+                                    })}{' '}
+                                DGNX
+                            </div>
                         </div>
+
+                        <div className="mb-1 h-2.5 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
+                            <div
+                                className="h-2.5 rounded-r-full bg-degenOrange"
+                                style={{
+                                    width: `${lockTimeProgress * 100}%`,
+                                }}
+                            ></div>
+                        </div>
+
                         <div className="flex">
                             <div>{startTime}</div>
                             <div className="flex-grow" />
@@ -354,7 +428,7 @@ const AtmClaimForm = (props: {
                         </div>
                     </>
                 )}
-                <div className="mt-6 font-bold">
+                <div className="my-6 font-bold">
                     {!lockLeaveLoading && !lockLeaveSuccess && (
                         <>
                             <Button
@@ -383,13 +457,39 @@ const AtmClaimForm = (props: {
                         </>
                     )}
                 </div>
+                <p className="italic">
+                    <span className="font-bold">Important:</span> You can claim
+                    your tokens at any time. Once you&apos;ve claimed your
+                    tokens, you&apos;re no longer eligible to rejoin the extra
+                    reward program. If you claim your tokens prior to the end of
+                    the 365 day period, any extra rewards will be charged with a{' '}
+                    {props.stats.rewardPenaltyBps.toNumber() / 100}% loyalty
+                    penalty.
+                </p>
             </>
         )
     } else {
         return (
             <>
                 <p className="font-bold">
-                    Claim your DNGX now, or lock them for an additional reward!
+                    Lock your{' '}
+                    {toPrecision(
+                        props.statsForQualifier.estimatedTotalClaimAmount
+                            .div(10 ** 18)
+                            .toNumber() -
+                            props.statsForQualifier.estimatedTotalRewardAmount
+                                .div(10 ** 18)
+                                .toNumber(),
+                        4
+                    )}{' '}
+                    DGNX in the next 3 days to receive{' '}
+                    {toPrecision(
+                        props.statsForQualifier.estimatedTotalClaimAmount
+                            .div(10 ** 18)
+                            .toNumber(),
+                        4
+                    )}{' '}
+                    DGNX over 365 days, or claim your DNGX right now!
                 </p>
                 <div className="mt-5 flex w-full flex-col items-center">
                     <div className="relative flex items-center rounded-xl border-2 border-activeblue bg-darkblue p-5 font-bold">
@@ -439,15 +539,18 @@ const AtmClaimForm = (props: {
                                     {props.stats.lockPeriodActive ? (
                                         'Lock option expired'
                                     ) : (
-                                        <span>
-                                            Receive{' '}
+                                        <span className="text-center">
+                                            Lock for{' '}
                                             {toPrecision(
                                                 props.statsForQualifier.estimatedTotalClaimAmount
                                                     .div(10 ** 18)
                                                     .toNumber(),
                                                 4
                                             )}{' '}
-                                            DGNX
+                                            DGNX <br />
+                                            <span className="font-bold">
+                                                over time
+                                            </span>
                                         </span>
                                     )}
                                 </>
@@ -475,6 +578,9 @@ const AtmClaimForm = (props: {
                                     <Button
                                         className="w-full"
                                         color="orange"
+                                        disabled={
+                                            lockJoinLoading || claimLoading
+                                        }
                                         onClick={() => claimWrite()}
                                     >
                                         Claim
@@ -579,16 +685,24 @@ export const ATMApp = (props: RouteObject) => {
             <>
                 <div className="mb-8 font-bold">
                     The collection phase has finished. Please wait until the
-                    claiming starts.
+                    claiming starts. It&apos;ll be announced in the VC Telegram
+                    group.
                 </div>
-                <div className="font-bold">
-                    Total amount collected:{' '}
+                <div className="mb-8 font-bold">
+                    Total amount collected: <br className="sm:hidden" />
                     {stats.totalDeposits.div(10 ** 18).toNumber()} ETH
                 </div>
+                <div className="text-xl font-bold">
+                    Your deposited amount: <br className="sm:hidden" />
+                    {statsForQualifier.totalDeposited
+                        .div(10 ** 18)
+                        .toNumber()}{' '}
+                    ETH
+                </div>
                 <AtmLockRewardPreview
-                    claimAmountWithLock={statsForQualifier.estimatedTotalClaimAmount.div(
-                        10 ** 18
-                    ).toNumber()}
+                    claimAmountWithLock={statsForQualifier.estimatedTotalClaimAmount
+                        .div(10 ** 18)
+                        .toNumber()}
                     claimAmountWithoutLock={statsForQualifier.estimatedTotalClaimAmount
                         .minus(statsForQualifier.estimatedTotalRewardAmount)
                         .div(10 ** 18)

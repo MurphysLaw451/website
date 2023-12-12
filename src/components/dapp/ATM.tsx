@@ -1,5 +1,6 @@
 import { useAccount } from 'wagmi'
 import { ATMApp } from './elements/ATMApp'
+import { ToastContainer } from 'react-toastify'
 
 export const ATM = () => {
     const { isConnected } = useAccount()
@@ -19,6 +20,7 @@ export const ATM = () => {
                     )}
                 </div>
             </div>
+            <ToastContainer />
         </div>
     )
 }
