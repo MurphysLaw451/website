@@ -234,10 +234,6 @@ const AtmCollection = (props: { stats: DgnxAtmStats }) => {
         <div className="max-w-2xl">
             <H2>The ATM is currently accepting deposits!</H2>
             <div className="grid grid-cols-2">
-                <div>Total deposits:</div>
-                <div className="font-bold">
-                    {stats.totalDeposits.div(10 ** 18).toString()} ETH
-                </div>
                 <div>Maximum deposit per wallet:</div>
                 <div className="font-bold">
                     {stats.allocationLimit.div(10 ** 18).toNumber()} ETH
