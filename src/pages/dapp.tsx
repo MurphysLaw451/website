@@ -75,10 +75,7 @@ export default function Dapp() {
                                     element={<Disburser />}
                                     path="/dapp/disburser"
                                 />
-                                <Route
-                                    element={<ATM />}
-                                    path="/dapp/atm"
-                                />
+                                <Route element={<ATM />} path="/dapp/atm" />
                             </Routes>
                         </main>
                     </div>

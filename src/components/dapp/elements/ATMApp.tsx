@@ -647,10 +647,6 @@ export const ATMApp = (props: RouteObject) => {
     const chainId = useChainId()
     const { switchNetwork } = useSwitchNetwork()
 
-    if (stats.loading === 'yes' || statsForQualifier.loading === 'yes') {
-        return null
-    }
-
     if (!isConnected) {
         return <div className="font-bold">Please connect wallet</div>
     }
@@ -670,6 +666,10 @@ export const ATMApp = (props: RouteObject) => {
                 </Button>
             </div>
         )
+    }
+
+    if (stats.loading === 'yes' || statsForQualifier.loading === 'yes') {
+        return null
     }
 
     if (!stats.collecting && !stats.claiming && stats.totalDeposits.eq(0)) {
