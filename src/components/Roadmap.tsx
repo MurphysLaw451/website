@@ -124,6 +124,7 @@ export function Roadmap() {
                                 year="2023"
                                 items={[
                                     { text: 'Add Arbitrum to BroccoliSwap' },
+                                    { text: 'Launch Broccoliswap Pro' },
                                 ]}
                             />
                             
@@ -139,7 +140,6 @@ export function Roadmap() {
                                 <div className="text-light-600">LinkBridge audit</div>
                                 <div className="text-light-600">LinkBridge launch to ETH</div>
                                 <div className="text-light-600">LinkBridge launch to BSC</div>
-                                <div className="text-light-600">Broccoliswap [REDACTED]</div>
                                 <div className="text-light-600">Broccoliswap token sniffer</div>
                             </div>
                         </div>
