@@ -3,6 +3,7 @@ import clsx from 'clsx'
 import { visualAddress } from '../../helpers/address'
 import { useFeeConfigs } from '../../hooks/multi-chain/useFeeConfigs'
 import { FeeConfigState } from '../../types'
+import { Button } from '../Button'
 
 const FeeConfigStateDot = (props: { syncState: FeeConfigState }) => {
     const color = clsx({
@@ -53,7 +54,7 @@ export const Monitoring = () => {
                         className="max-w-48 inline-block w-48 fill-activeblue"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 256 253"
-                        enable-background="new 0 0 256 253"
+                        enableBackground="new 0 0 256 253"
                     >
                         <path
                             d="M102.416,148.646l-8.293-21.305l0.027-0.031h26.819L102.416,148.646z M90.278,131.592l-14.922,17.16h21.602L90.278,131.592z
@@ -78,14 +79,41 @@ export const Monitoring = () => {
                         </p>
                     </div>
                 </div>
-                <div></div>
+                <div className="self-center justify-self-center">
+                    {data.isFeeDistributorBountyActive &&
+                        data.getFeeDistributorLastBounty[1] > 0n && (
+                            <>
+                                <div className="flex flex-col items-center gap-2">
+                                    <Button color="orange">
+                                        EARN XXX $DGNX
+                                    </Button>{' '}
+                                    <span className="text-center">
+                                        Last Bounty
+                                        <br />
+                                        {(
+                                            Number(
+                                                data
+                                                    .getFeeDistributorLastBounty[1]
+                                            ) /
+                                            10 ** 18
+                                        ).toLocaleString(
+                                            navigator.language
+                                        )}{' '}
+                                        {data.isFeeDistributorBountyInToken
+                                            ? 'DGNX'
+                                            : 'AVAX'}
+                                    </span>
+                                </div>
+                            </>
+                        )}
+                </div>
                 <div className="text-center">
                     <h2 className="mb-5 text-2xl font-bold">Ethereum</h2>
                     <svg
                         className="max-w-48 inline-block w-48 fill-activeblue"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 256 253"
-                        enable-background="new 0 0 256 253"
+                        enableBackground="new 0 0 256 253"
                     >
                         <path
                             d="M102.416,148.646l-8.293-21.305l0.027-0.031h26.819L102.416,148.646z M90.278,131.592l-14.922,17.16h21.602L90.278,131.592z
@@ -132,7 +160,10 @@ export const Monitoring = () => {
                 </h2>
                 <div className="xs:grid-cols-2 mt-10 grid grid-cols-1 gap-4  sm:grid-cols-2 md:grid-cols-4 ">
                     {data?.feeConfigs?.map((feeConfig: any) => (
-                        <div className="rounded-lg border-2 border-solid border-activeblue bg-gradient-to-bl from-darkerblue to-darkblue">
+                        <div
+                            key={'k-' + feeConfig.id}
+                            className="rounded-lg border-2 border-solid border-activeblue bg-gradient-to-bl from-darkerblue to-darkblue"
+                        >
                             <p className="p-4">
                                 <span className="font-bold">Fee ID</span>
                                 <br />
@@ -158,7 +189,7 @@ export const Monitoring = () => {
                                 {feeConfig.receiver ===
                                 '0x0000000000000000000000000000000000000000' ? (
                                     <span className="italic">
-                                        Fee Distributor Managed
+                                        Managed by distributor
                                     </span>
                                 ) : (
                                     visualAddress(feeConfig.receiver)
@@ -168,14 +199,14 @@ export const Monitoring = () => {
                                 <span className="font-bold">
                                     Deployment Status
                                 </span>
-                                <div className="mt-2 flex flex-col">
-                                    <div className="flex flex-row items-center">
+                                <span className="mt-2 flex flex-col">
+                                    <span className="flex flex-row items-center">
                                         Avalanche:{' '}
                                         <FeeConfigStateDot
                                             syncState={FeeConfigState.DEPLOYED}
                                         />
-                                    </div>
-                                    <div className="flex flex-row items-center">
+                                    </span>
+                                    <span className="flex flex-row items-center">
                                         Ethereum:{' '}
                                         {feeConfig.deleted ? (
                                             'removed'
@@ -190,16 +221,16 @@ export const Monitoring = () => {
                                                 )}
                                             />
                                         )}
-                                    </div>
-                                </div>
+                                    </span>
+                                </span>
                             </p>
                             <p className="border-t border-dashed border-activeblue p-4">
                                 <span className="font-bold">Revenue</span>
-                                <div className="mt-4 flex flex-col gap-4">
+                                <span className="mt-4 flex flex-col gap-4">
                                     {/* <div className="flex flex-row items-center">
                                         Avalanche: 0
                                     </div> */}
-                                    <div className="flex flex-row items-center">
+                                    <span className="flex flex-row items-center">
                                         Ethereum:{' '}
                                         {(
                                             parseInt(feeConfig.amount) /
@@ -208,8 +239,8 @@ export const Monitoring = () => {
                                             maximumFractionDigits: 3,
                                         })}{' '}
                                         DGNX
-                                    </div>
-                                </div>
+                                    </span>
+                                </span>
                             </p>
                         </div>
                     ))}
@@ -236,14 +267,24 @@ export const Monitoring = () => {
                 </div>
             </div>
             <div className="mb-10">
-                <h2 className="mt-4 flex flex-col gap-1 font-title text-xl font-bold tracking-wide sm:mb-8 sm:flex-row">
-                    <span className="text-techGreen">FEE</span>
-                    <span className="text-degenOrange">DISTRIBUTION</span>
+                <h2 className="mt-4 flex flex-col gap-1 font-title tracking-wide sm:mb-8 sm:flex-row">
+                    <span className="text-xl font-bold ">
+                        <span className="text-techGreen">FEE</span>
+                        <span className="text-degenOrange">DISTRIBUTION</span>
+                    </span>
+                    {!data.isFeeDistributorRunning && (
+                        <span className="ml-2 self-center font-normal italic">
+                            (not running)
+                        </span>
+                    )}
                 </h2>
                 <div className="xs:grid-cols-2 mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
                     {data?.getFeeDistributorReceivers?.map(
                         (feeDistribution: any) => (
-                            <div className="rounded-lg border-2 border-solid border-activeblue bg-gradient-to-bl from-darkerblue to-darkblue">
+                            <div
+                                key={'k-' + feeDistribution.receiver}
+                                className="rounded-lg border-2 border-solid border-activeblue bg-gradient-to-bl from-darkerblue to-darkblue"
+                            >
                                 <p className="p-4">
                                     <span className="font-bold">Target</span>
                                     <br />
