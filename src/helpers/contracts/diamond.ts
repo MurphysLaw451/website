@@ -26,15 +26,6 @@ const diamonds: { [key: number]: Address } = {
   [avalanche.id]: '0x0000000000000000000000000000000000000000',
 }
 
-const getChainId = () => {
-  const {
-    data: {
-      chain: { id: chainId },
-    },
-  } = useConnect()
-  return chainId
-}
-
 const useDiamondRead = (
   abi: any,
   data: {
@@ -43,8 +34,14 @@ const useDiamondRead = (
     account?: Address
   }
 ) => {
+  const {
+    data: {
+      chain: { id: chainId },
+    },
+  } = useConnect()
+
   return useContractRead({
-    address: diamonds[getChainId()],
+    address: diamonds[chainId],
     abi,
     functionName: data.functionName,
     args: data.args,
