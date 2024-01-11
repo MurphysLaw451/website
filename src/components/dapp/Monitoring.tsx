@@ -1,5 +1,6 @@
 'use client'
 import clsx from 'clsx'
+import { useEffect, useState } from 'react'
 import { visualAddress } from '../../helpers/address'
 import { useFeeConfigs } from '../../hooks/multi-chain/useFeeConfigs'
 import { FeeConfigState } from '../../types'
@@ -27,7 +28,68 @@ const FeeConfigStateDot = (props: { syncState: FeeConfigState }) => {
 
 export const Monitoring = () => {
     const data = useFeeConfigs()
-    console.log({ data })
+
+    const [bountyCTA, setBountyCTA] = useState({
+        isLoading: true,
+        show: true,
+        receiveAmount: 0n,
+    })
+
+    useEffect(() => {
+        const estimateAmountUrl = (
+            chainFrom: number,
+            chainTo: number,
+            amount: bigint,
+            receiver: string,
+            slippageTolerande = 3000,
+            is_pegged = true
+        ) => {
+            return `https://cbridge-prod2.celer.app/v2/estimateAmt?src_chain_id=${chainFrom}&dst_chain_id=${chainTo}&token_symbol=DGNX&amt=${amount}&usr_addr=${receiver}&slippage_tolerance=${slippageTolerande}${
+                !is_pegged || '&is_pegged=1'
+            }`
+        }
+
+        if (
+            data.isFeeDistributorBountyActive &&
+            data.getFeeDistributorLastBounty[1] > 0n
+        ) {
+            fetch(
+                estimateAmountUrl(
+                    1,
+                    43114,
+                    data.getFeeDistributorLastBounty[1],
+                    ''
+                )
+            )
+                .then((x) => x.json())
+                .then((data) => {
+                    if (!data.err) {
+                        setBountyCTA({
+                            isLoading: false,
+                            show: true,
+                            receiveAmount:
+                                BigInt(data.estimated_receive_amt) > 0
+                                    ? BigInt(data.estimated_receive_amt)
+                                    : 0n,
+                        })
+                    } else {
+                        console.error({ data })
+                        setBountyCTA({
+                            isLoading: false,
+                            show: false,
+                            receiveAmount: 0n,
+                        })
+                    }
+                })
+        } else {
+            setBountyCTA({
+                isLoading: false,
+                show: true,
+                receiveAmount: 0n,
+            })
+        }
+    }, [data.isFeeDistributorBountyActive, data.getFeeDistributorLastBounty[1]])
+
     const deploymentStatusMap = (status: number) => {
         switch (status) {
             case 1:
@@ -80,32 +142,42 @@ export const Monitoring = () => {
                     </div>
                 </div>
                 <div className="self-center justify-self-center">
-                    {data.isFeeDistributorBountyActive &&
-                        data.getFeeDistributorLastBounty[1] > 0n && (
-                            <>
-                                <div className="flex flex-col items-center gap-2">
+                    {bountyCTA.show && (
+                        <>
+                            <div className="flex flex-col items-center gap-2">
+                                {bountyCTA.receiveAmount > 0n && (
                                     <Button color="orange">
-                                        EARN XXX $DGNX
-                                    </Button>{' '}
-                                    <span className="text-center">
-                                        Last Bounty
-                                        <br />
+                                        EARN{' '}
                                         {(
-                                            Number(
-                                                data
-                                                    .getFeeDistributorLastBounty[1]
-                                            ) /
+                                            Number(bountyCTA.receiveAmount) /
                                             10 ** 18
                                         ).toLocaleString(
                                             navigator.language
                                         )}{' '}
-                                        {data.isFeeDistributorBountyInToken
-                                            ? 'DGNX'
-                                            : 'AVAX'}
-                                    </span>
-                                </div>
-                            </>
-                        )}
+                                        $DGNX
+                                    </Button>
+                                )}
+                                {bountyCTA.receiveAmount === 0n && (
+                                    <Button color="orange" disabled={true}>
+                                        EARN $DGNX SOON
+                                    </Button>
+                                )}
+                                <span className="text-center">
+                                    Last Bounty
+                                    <br />
+                                    {(
+                                        Number(
+                                            data.getFeeDistributorLastBounty[1]
+                                        ) /
+                                        10 ** 18
+                                    ).toLocaleString(navigator.language)}{' '}
+                                    {data.isFeeDistributorBountyInToken
+                                        ? 'DGNX'
+                                        : 'AVAX'}
+                                </span>
+                            </div>
+                        </>
+                    )}
                 </div>
                 <div className="text-center">
                     <h2 className="mb-5 text-2xl font-bold">Ethereum</h2>
