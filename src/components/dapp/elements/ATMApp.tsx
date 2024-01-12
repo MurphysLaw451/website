@@ -428,7 +428,7 @@ const AtmClaimForm = (props: {
                     </>
                 )}
                 <div className="my-6 font-bold">
-                    {!lockLeaveLoading && !lockLeaveSuccess && (
+                    {!lockLeaveLoading && !lockLeaveSuccess && lockLeaveWrite && (
                         <>
                             <Button
                                 className="my-3 w-full"
@@ -513,7 +513,7 @@ const AtmClaimForm = (props: {
                     <div className="h-24" />
                     <div className="mt-5 grid grid-cols-2 gap-16">
                         <div className="flex flex-col items-center gap-3 rounded-xl border-2 border-activeblue bg-darkblue p-5 font-bold text-success">
-                            {!lockJoinLoading && !lockJoinSuccess && (
+                            {!lockJoinLoading && !lockJoinSuccess && lockJoinWrite && (
                                 <>
                                     <Button
                                         className="w-full"
@@ -540,10 +540,9 @@ const AtmClaimForm = (props: {
                                             <span className="font-bold">
                                                 over time
                                             </span>
-                                        </span>
-                                    )}
-                                </>
-                            )}
+                                        )}
+                                    </>
+                                )}
                             {lockJoinLoading && <Spinner />}
                             {lockJoinSuccess && (
                                 <>
@@ -562,7 +561,7 @@ const AtmClaimForm = (props: {
                             )}
                         </div>
                         <div className="flex flex-col items-center gap-3 rounded-xl border-2 border-activeblue bg-darkblue p-5 font-bold">
-                            {!claimLoading && !claimSuccess && (
+                            {!claimLoading && !claimSuccess && claimWrite && (
                                 <>
                                     <Button
                                         className="w-full"

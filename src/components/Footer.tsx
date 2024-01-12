@@ -19,7 +19,7 @@ export function Footer() {
     return (
         <footer className="">
             <Container>
-                <div className="py-16">
+                <div className="pb-8 pt-16">
                     <Image
                         className="mx-auto h-10 w-auto"
                         src={logoImage}
@@ -27,6 +27,15 @@ export function Footer() {
                         width={56}
                         height={56}
                     />
+                </div>
+                <div className="pb-8 text-center text-slate-500">
+                    CA:{' '}
+                    <a
+                        className="text-slate-500 hover:text-light-200"
+                        href="https://snowtrace.io/token/0x51e48670098173025c477d9aa3f0eff7bf9f7812/balances?chainId=43114"
+                    >
+                        0x51e48670098173025c477d9aa3f0eff7bf9f7812
+                    </a>
                 </div>
                 <div className="flex flex-col items-center border-t border-slate-400/10 py-10 sm:flex-row-reverse sm:justify-between">
                     <div className="flex gap-x-6">
@@ -42,7 +51,9 @@ export function Footer() {
                             target="_blank"
                             className="group"
                         >
-                            <div className="h-6 text-center text-light-600 hover:text-light-200 text-2xl -mt-1">𝕏</div>
+                            <div className="-mt-1 h-6 text-center text-2xl text-light-600 hover:text-light-200">
+                                𝕏
+                            </div>
                         </Link>
                         <Link
                             href="https://discord.gg/BMaVtEVkgC"

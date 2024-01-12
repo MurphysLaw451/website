@@ -37,15 +37,19 @@ export default function Document(props) {
                     async
                     src="https://www.googletagmanager.com/gtag/js?id=G-SHQ22SS768"
                 ></script>
-                <script>
-                    {`window.dataLayer = window.dataLayer || [];
-          function gtag(){
-            dataLayer.push(arguments);
-          }
-          gtag("js", new Date());
+                <script
+                    dangerouslySetInnerHTML={{
+                        __html: `
+window.dataLayer = window.dataLayer || [];
+function gtag(){
+dataLayer.push(arguments);
+}
+gtag("js", new Date());
 
-          gtag("config", "G-SHQ22SS768");`}
-                </script>
+gtag("config", "G-SHQ22SS768");
+`,
+                    }}
+                ></script>
             </Head>
             <body className="flex h-full flex-col bg-light-200 bg-fixed dark:bg-gradient-radial dark:from-darkblue dark:to-dark">
                 <Main />
