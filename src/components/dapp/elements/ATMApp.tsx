@@ -425,7 +425,7 @@ const AtmClaimForm = (props: {
                     </>
                 )}
                 <div className="my-6 font-bold">
-                    {!lockLeaveLoading && !lockLeaveSuccess && (
+                    {!lockLeaveLoading && !lockLeaveSuccess && lockLeaveWrite && (
                         <>
                             <Button
                                 className="my-3 w-full"
@@ -519,38 +519,40 @@ const AtmClaimForm = (props: {
                     <div className="h-24" />
                     <div className="mt-5 grid grid-cols-2 gap-16">
                         <div className="flex flex-col items-center gap-3 rounded-xl border-2 border-activeblue bg-darkblue p-5 font-bold text-success">
-                            {!lockJoinLoading && !lockJoinSuccess && (
-                                <>
-                                    <Button
-                                        className="w-full"
-                                        color={
-                                            props.stats.lockPeriodActive
-                                                ? 'disabled'
-                                                : 'orange'
-                                        }
-                                        onClick={() => lockJoinWrite()}
-                                    >
-                                        Lock
-                                    </Button>
-                                    {props.stats.lockPeriodActive ? (
-                                        'Lock option expired'
-                                    ) : (
-                                        <span className="text-center">
-                                            Lock for{' '}
-                                            {toPrecision(
-                                                props.statsForQualifier.estimatedTotalClaimAmount
-                                                    .div(10 ** 18)
-                                                    .toNumber(),
-                                                4
-                                            )}{' '}
-                                            DGNX <br />
-                                            <span className="font-bold">
-                                                over time
+                            {!lockJoinLoading &&
+                                !lockJoinSuccess &&
+                                lockJoinWrite && (
+                                    <>
+                                        <Button
+                                            className="w-full"
+                                            color={
+                                                props.stats.lockPeriodActive
+                                                    ? 'disabled'
+                                                    : 'orange'
+                                            }
+                                            onClick={() => lockJoinWrite()}
+                                        >
+                                            Lock
+                                        </Button>
+                                        {props.stats.lockPeriodActive ? (
+                                            'Lock option expired'
+                                        ) : (
+                                            <span className="text-center">
+                                                Lock for{' '}
+                                                {toPrecision(
+                                                    props.statsForQualifier.estimatedTotalClaimAmount
+                                                        .div(10 ** 18)
+                                                        .toNumber(),
+                                                    4
+                                                )}{' '}
+                                                DGNX <br />
+                                                <span className="font-bold">
+                                                    over time
+                                                </span>
                                             </span>
-                                        </span>
-                                    )}
-                                </>
-                            )}
+                                        )}
+                                    </>
+                                )}
                             {lockJoinLoading && <Spinner />}
                             {lockJoinSuccess && (
                                 <>
@@ -569,7 +571,7 @@ const AtmClaimForm = (props: {
                             )}
                         </div>
                         <div className="flex flex-col items-center gap-3 rounded-xl border-2 border-activeblue bg-darkblue p-5 font-bold">
-                            {!claimLoading && !claimSuccess && (
+                            {!claimLoading && !claimSuccess && claimWrite && (
                                 <>
                                     <Button
                                         className="w-full"
