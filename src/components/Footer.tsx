@@ -29,12 +29,22 @@ export function Footer() {
                     />
                 </div>
                 <div className="pb-8 text-center text-slate-500">
-                    CA:{' '}
+                    Avalanche:{' '}
                     <a
                         className="text-slate-500 hover:text-light-200"
+                        target='_blank'
                         href="https://snowtrace.io/token/0x51e48670098173025c477d9aa3f0eff7bf9f7812/balances?chainId=43114"
                     >
                         0x51e48670098173025c477d9aa3f0eff7bf9f7812
+                    </a>
+                    <br />
+                    Ethereum:{' '}
+                    <a
+                        className="text-slate-500 hover:text-light-200"
+                        target='_blank'
+                        href="https://etherscan.io/address/0x0000000000300dd8B0230efcfEf136eCdF6ABCDE"
+                    >
+                        0x0000000000300dd8B0230efcfEf136eCdF6ABCDE
                     </a>
                 </div>
                 <div className="flex flex-col items-center border-t border-slate-400/10 py-10 sm:flex-row-reverse sm:justify-between">
