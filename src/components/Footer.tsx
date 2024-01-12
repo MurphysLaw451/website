@@ -33,7 +33,7 @@ export function Footer() {
                     <a
                         className="text-slate-500 hover:text-light-200"
                         target="_blank"
-                        rel="noopener"
+                        rel="noopener noreferrer"
                         href="https://snowtrace.io/token/0x51e48670098173025c477d9aa3f0eff7bf9f7812/balances?chainId=43114"
                     >
                         0x51e48670098173025c477d9aa3f0eff7bf9f7812
@@ -43,7 +43,7 @@ export function Footer() {
                     <a
                         className="text-slate-500 hover:text-light-200"
                         target="_blank"
-                        rel="noopener"
+                        rel="noopener noreferrer"
                         href="https://etherscan.io/address/0x0000000000300dd8B0230efcfEf136eCdF6ABCDE"
                     >
                         0x0000000000300dd8B0230efcfEf136eCdF6ABCDE
