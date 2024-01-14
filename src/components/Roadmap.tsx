@@ -125,6 +125,15 @@ export function Roadmap() {
                                 items={[
                                     { text: 'Add Arbitrum to BroccoliSwap' },
                                     { text: 'Launch Broccoliswap Pro' },
+                                    { text: 'LinkBridge audit' },
+                                ]}
+                            />
+                            <RoadmapItem
+                                quarter="Q1"
+                                year="2024"
+                                items={[
+                                    { text: 'Add Polygon and Fantom to BroccoliSwap' },
+                                    { text: 'LinkBridge launch to ETH' },
                                 ]}
                             />
                             
@@ -137,8 +146,6 @@ export function Roadmap() {
                                 <BsSquareFill className="text-techGreen rotate-45 z-1 mb-5" />
                             </div>
                             <div className="col-span-1 sm:col-span-7">
-                                <div className="text-light-600">LinkBridge audit</div>
-                                <div className="text-light-600">LinkBridge launch to ETH</div>
                                 <div className="text-light-600">LinkBridge launch to BSC</div>
                                 <div className="text-light-600">Broccoliswap token sniffer</div>
                             </div>
