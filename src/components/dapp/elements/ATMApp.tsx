@@ -234,10 +234,6 @@ const AtmCollection = (props: { stats: DgnxAtmStats }) => {
         <div className="max-w-2xl">
             <H2>The ATM is currently accepting deposits!</H2>
             <div className="grid grid-cols-2">
-                <div>Total deposits:</div>
-                <div className="font-bold">
-                    {stats.totalDeposits.div(10 ** 18).toString()} ETH
-                </div>
                 <div>Maximum deposit per wallet:</div>
                 <div className="font-bold">
                     {stats.allocationLimit.div(10 ** 18).toNumber()} ETH
@@ -429,7 +425,7 @@ const AtmClaimForm = (props: {
                     </>
                 )}
                 <div className="my-6 font-bold">
-                    {!lockLeaveLoading && !lockLeaveSuccess && (
+                    {!lockLeaveLoading && !lockLeaveSuccess && lockLeaveWrite && (
                         <>
                             <Button
                                 className="my-3 w-full"
@@ -523,38 +519,40 @@ const AtmClaimForm = (props: {
                     <div className="h-24" />
                     <div className="mt-5 grid grid-cols-2 gap-16">
                         <div className="flex flex-col items-center gap-3 rounded-xl border-2 border-activeblue bg-darkblue p-5 font-bold text-success">
-                            {!lockJoinLoading && !lockJoinSuccess && (
-                                <>
-                                    <Button
-                                        className="w-full"
-                                        color={
-                                            props.stats.lockPeriodActive
-                                                ? 'disabled'
-                                                : 'orange'
-                                        }
-                                        onClick={() => lockJoinWrite()}
-                                    >
-                                        Lock
-                                    </Button>
-                                    {props.stats.lockPeriodActive ? (
-                                        'Lock option expired'
-                                    ) : (
-                                        <span className="text-center">
-                                            Lock for{' '}
-                                            {toPrecision(
-                                                props.statsForQualifier.estimatedTotalClaimAmount
-                                                    .div(10 ** 18)
-                                                    .toNumber(),
-                                                4
-                                            )}{' '}
-                                            DGNX <br />
-                                            <span className="font-bold">
-                                                over time
+                            {!lockJoinLoading &&
+                                !lockJoinSuccess &&
+                                lockJoinWrite && (
+                                    <>
+                                        <Button
+                                            className="w-full"
+                                            color={
+                                                props.stats.lockPeriodActive
+                                                    ? 'disabled'
+                                                    : 'orange'
+                                            }
+                                            onClick={() => lockJoinWrite()}
+                                        >
+                                            Lock
+                                        </Button>
+                                        {props.stats.lockPeriodActive ? (
+                                            'Lock option expired'
+                                        ) : (
+                                            <span className="text-center">
+                                                Lock for{' '}
+                                                {toPrecision(
+                                                    props.statsForQualifier.estimatedTotalClaimAmount
+                                                        .div(10 ** 18)
+                                                        .toNumber(),
+                                                    4
+                                                )}{' '}
+                                                DGNX <br />
+                                                <span className="font-bold">
+                                                    over time
+                                                </span>
                                             </span>
-                                        </span>
-                                    )}
-                                </>
-                            )}
+                                        )}
+                                    </>
+                                )}
                             {lockJoinLoading && <Spinner />}
                             {lockJoinSuccess && (
                                 <>
@@ -573,7 +571,7 @@ const AtmClaimForm = (props: {
                             )}
                         </div>
                         <div className="flex flex-col items-center gap-3 rounded-xl border-2 border-activeblue bg-darkblue p-5 font-bold">
-                            {!claimLoading && !claimSuccess && (
+                            {!claimLoading && !claimSuccess && claimWrite && (
                                 <>
                                     <Button
                                         className="w-full"
@@ -651,10 +649,6 @@ export const ATMApp = (props: RouteObject) => {
     const chainId = useChainId()
     const { switchNetwork } = useSwitchNetwork()
 
-    if (stats.loading === 'yes' || statsForQualifier.loading === 'yes') {
-        return null
-    }
-
     if (!isConnected) {
         return <div className="font-bold">Please connect wallet</div>
     }
@@ -674,6 +668,10 @@ export const ATMApp = (props: RouteObject) => {
                 </Button>
             </div>
         )
+    }
+
+    if (stats.loading === 'yes' || statsForQualifier.loading === 'yes') {
+        return null
     }
 
     if (!stats.collecting && !stats.claiming && stats.totalDeposits.eq(0)) {
