@@ -162,11 +162,6 @@ const AtmDepositForm = (props: {
                                     depositAmount > maximum
                                 }
                                 onClick={() => {
-                                    console.log(
-                                        BigNumber(
-                                            tokensToBurnInputRef.current.value
-                                        ).lt(minDeposit)
-                                    )
                                     if (
                                         BigNumber(
                                             tokensToBurnInputRef.current.value
@@ -384,9 +379,15 @@ const AtmClaimForm = (props: {
                         </h2>
                         <div className="relative flex flex-col overflow-clip">
                             <div
-                                className="mb-1 mt-2 whitespace-nowrap text-center"
+                                className="mb-1 mt-2 w-0 whitespace-nowrap text-center"
                                 style={{
-                                    width: `${lockTimeProgress * 100}%`,
+                                    width: `${
+                                        lockTimeProgress
+                                            ? (
+                                                  lockTimeProgress * 100
+                                              ).toString()
+                                            : '0'
+                                    }%`,
                                 }}
                             >
                                 {props.statsForQualifier.currentRewardAmount
@@ -410,9 +411,15 @@ const AtmClaimForm = (props: {
 
                         <div className="mb-1 h-2.5 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
                             <div
-                                className="h-2.5 rounded-r-full bg-degenOrange"
+                                className="h-2.5 w-0 rounded-r-full bg-degenOrange transition-all duration-1000 ease-out"
                                 style={{
-                                    width: `${lockTimeProgress * 100}%`,
+                                    width: `${
+                                        lockTimeProgress
+                                            ? (
+                                                  lockTimeProgress * 100
+                                              ).toString()
+                                            : '0'
+                                    }%`,
                                 }}
                             ></div>
                         </div>
@@ -425,12 +432,14 @@ const AtmClaimForm = (props: {
                     </>
                 )}
                 <div className="my-6 font-bold">
-                    {!lockLeaveLoading && !lockLeaveSuccess && lockLeaveWrite && (
+                    {!lockLeaveLoading && !lockLeaveSuccess && (
                         <>
                             <Button
                                 className="my-3 w-full"
                                 color="orange"
-                                onClick={() => lockLeaveWrite()}
+                                onClick={() => {
+                                    lockLeaveWrite()
+                                }}
                             >
                                 Claim now
                             </Button>
@@ -519,40 +528,40 @@ const AtmClaimForm = (props: {
                     <div className="h-24" />
                     <div className="mt-5 grid grid-cols-2 gap-16">
                         <div className="flex flex-col items-center gap-3 rounded-xl border-2 border-activeblue bg-darkblue p-5 font-bold text-success">
-                            {!lockJoinLoading &&
-                                !lockJoinSuccess &&
-                                lockJoinWrite && (
-                                    <>
-                                        <Button
-                                            className="w-full"
-                                            color={
-                                                props.stats.lockPeriodActive
-                                                    ? 'disabled'
-                                                    : 'orange'
-                                            }
-                                            onClick={() => lockJoinWrite()}
-                                        >
-                                            Lock
-                                        </Button>
-                                        {props.stats.lockPeriodActive ? (
-                                            'Lock option expired'
-                                        ) : (
-                                            <span className="text-center">
-                                                Lock for{' '}
-                                                {toPrecision(
-                                                    props.statsForQualifier.estimatedTotalClaimAmount
-                                                        .div(10 ** 18)
-                                                        .toNumber(),
-                                                    4
-                                                )}{' '}
-                                                DGNX <br />
-                                                <span className="font-bold">
-                                                    over time
-                                                </span>
+                            {!lockJoinLoading && !lockJoinSuccess && (
+                                <>
+                                    <Button
+                                        className="w-full"
+                                        color={
+                                            props.stats.lockPeriodActive
+                                                ? 'disabled'
+                                                : 'orange'
+                                        }
+                                        onClick={() => {
+                                            lockJoinWrite()
+                                        }}
+                                    >
+                                        Lock
+                                    </Button>
+                                    {props.stats.lockPeriodActive ? (
+                                        'Lock option expired'
+                                    ) : (
+                                        <span className="text-center">
+                                            Lock for{' '}
+                                            {toPrecision(
+                                                props.statsForQualifier.estimatedTotalClaimAmount
+                                                    .div(10 ** 18)
+                                                    .toNumber(),
+                                                4
+                                            )}{' '}
+                                            DGNX <br />
+                                            <span className="font-bold">
+                                                over time
                                             </span>
-                                        )}
-                                    </>
-                                )}
+                                        </span>
+                                    )}
+                                </>
+                            )}
                             {lockJoinLoading && <Spinner />}
                             {lockJoinSuccess && (
                                 <>
@@ -571,7 +580,7 @@ const AtmClaimForm = (props: {
                             )}
                         </div>
                         <div className="flex flex-col items-center gap-3 rounded-xl border-2 border-activeblue bg-darkblue p-5 font-bold">
-                            {!claimLoading && !claimSuccess && claimWrite && (
+                            {!claimLoading && !claimSuccess && (
                                 <>
                                     <Button
                                         className="w-full"
@@ -579,7 +588,9 @@ const AtmClaimForm = (props: {
                                         disabled={
                                             lockJoinLoading || claimLoading
                                         }
-                                        onClick={() => claimWrite()}
+                                        onClick={() => {
+                                            claimWrite()
+                                        }}
                                     >
                                         Claim
                                     </Button>
