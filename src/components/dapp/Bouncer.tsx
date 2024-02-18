@@ -135,6 +135,18 @@ export const Bouncer = () => {
                 <span className="text-techGreen">Bouncer</span>
                 <span className="text-degenOrange">WalletVerification</span>
             </h1>
+            <div className="mb-4  rounded-xl border-2 border-degenOrange bg-light-100 p-4 text-light-200 dark:border-activeblue  dark:bg-darkerblue  dark:text-light-200">
+                <p>
+                    If you're visiting this site, it's likely because you
+                    received the URL from our DEGENX Bouncer. Through this form,
+                    the bouncer ensures that everything is in order with your
+                    mentioned wallets.
+                    <br />
+                    <br />
+                    Please connect and verify all your wallets, so we can invite
+                    you to the group.
+                </p>
+            </div>
             <div className="mb-4 rounded-xl border-2 border-degenOrange bg-light-100 text-light-200 dark:border-activeblue  dark:bg-darkerblue  dark:text-light-200">
                 {!verificationData && (
                     <div className="flex items-center justify-center p-3">
