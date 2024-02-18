@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -40,6 +41,9 @@ jobs:
           NEXT_PUBLIC_TOKEN_ADDRESS: ${{ vars.NEXT_PUBLIC_TOKEN_ADDRESS }}
           NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID: ${{ vars.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID }}
           NEXT_PUBLIC_INFURA_ID: ${{ vars.NEXT_PUBLIC_INFURA_ID }}
+          NEXT_PUBLIC_BOUNCER_VERIFICATION_DATA: ${{ vars.NEXT_PUBLIC_BOUNCER_VERIFICATION_DATA }}
+          NEXT_PUBLIC_BOUNCER_VERIFY_WALLET: ${{ vars.NEXT_PUBLIC_BOUNCER_VERIFY_WALLET }}
+          NEXT_PUBLIC_BOUNCER_FINISH_VERIFICATION: ${{ vars.NEXT_PUBLIC_BOUNCER_FINISH_VERIFICATION }}
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
