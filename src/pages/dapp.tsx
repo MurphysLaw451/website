@@ -1,19 +1,19 @@
-import { avalanche, avalancheFuji, mainnet, goerli } from '@wagmi/chains'
+import { avalanche, avalancheFuji, goerli, mainnet } from '@wagmi/chains'
+import { ConnectKitProvider, getDefaultConfig } from 'connectkit'
 import { useTheme } from 'next-themes'
 import Head from 'next/head'
 import { useEffect, useState } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { WagmiConfig, configureChains, createClient } from 'wagmi'
 import { publicProvider } from 'wagmi/providers/public'
+import { ATM } from '../components/dapp/ATM'
+import { Bouncer } from '../components/dapp/Bouncer'
 import { Dashboard } from '../components/dapp/Dashboard'
+import { Disburser } from '../components/dapp/Disburser'
 import { Governance } from '../components/dapp/Governance'
 import { LiquidityBacking } from '../components/dapp/LiquidityBacking'
 import { DappHeader } from '../components/dapp/elements/DappHeader'
 import Sidebar from '../components/dapp/elements/Sidebar'
-
-import { ConnectKitProvider, getDefaultConfig } from 'connectkit'
-import { Disburser } from '../components/dapp/Disburser'
-import { ATM } from '../components/dapp/ATM'
 
 const { chains, provider } = configureChains(
     [avalanche, avalancheFuji, mainnet, goerli],
@@ -76,6 +76,10 @@ export default function Dapp() {
                                     path="/dapp/disburser"
                                 />
                                 <Route element={<ATM />} path="/dapp/atm" />
+                                <Route
+                                    element={<Bouncer />}
+                                    path="/dapp/bouncer/:hash"
+                                />
                             </Routes>
                         </main>
                     </div>
