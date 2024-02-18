@@ -197,7 +197,10 @@ export const Bouncer = () => {
                                         <td className="whitespace-nowrap border-2 border-l-0 border-r-0 border-t-0 border-activeblue p-4 px-6 text-center align-middle">
                                             <div className="flex justify-center">
                                                 {item.verified ? (
-                                                    <IoShieldCheckmarkOutline className="inline-block" />
+                                                    <div className="flex items-center justify-center gap-1 text-green-500">
+                                                        <IoShieldCheckmarkOutline className="inline-block" />
+                                                        Verified
+                                                    </div>
                                                 ) : (
                                                     <VerifyButton
                                                         onVerificationStatusUpdate={
@@ -281,9 +284,9 @@ export const Bouncer = () => {
                                         )}{' '}
                                         DGNX
                                     </p>
-                                    <div className="flex items-center justify-center">
+                                    <div className="text-center">
                                         {item.verified ? (
-                                            <div>
+                                            <div className="flex items-center justify-center gap-1 text-green-500">
                                                 <IoShieldCheckmarkOutline className="inline-block" />
                                                 Verified
                                             </div>
