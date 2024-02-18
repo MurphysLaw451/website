@@ -137,7 +137,7 @@ export const Bouncer = () => {
             </h1>
             <div className="mb-4  rounded-xl border-2 border-degenOrange bg-light-100 p-4 text-light-200 dark:border-activeblue  dark:bg-darkerblue  dark:text-light-200">
                 <p>
-                    If you're visiting this site, it's likely because you
+                    If you&apos;re visiting this site, it&apos;s likely because you
                     received the URL from our DEGENX Bouncer. Through this form,
                     the bouncer ensures that everything is in order with your
                     mentioned wallets.
@@ -257,7 +257,7 @@ export const Bouncer = () => {
                     verificationData.data.verificationFinished && (
                         <div className="flex items-center justify-center p-3">
                             <p className="text-center">
-                                You've finished the verification successfully.
+                                You&apos;ve finished the verification successfully.
                                 <br />
                                 <br />
                                 You should have received an invite link through

@@ -107,7 +107,7 @@ export const BurnForBacking = (props: {
         BigNumber(0)
     )
     const { address, isConnected } = useAccount()
-    const chainId = useChainId();
+    const chainId = useChainId()
     const { switchNetwork } = useSwitchNetwork()
     const [hash, setTxHash] = useState('')
     const { data: signer } = useSigner()
@@ -338,23 +338,19 @@ export const BurnForBacking = (props: {
                     <div className="flex items-center">
                         {allowance.isGreaterThanOrEqualTo(amountToBurn) ? (
                             <Button
-                                className="w-full mt-3"
+                                className="mt-3 w-full"
                                 color="orange"
                                 onClick={() => execBurn()}
                             >
-                                {txRunning ? <Spinner className="" /> : 'Burn'}
+                                {txRunning ? <Spinner /> : 'Burn'}
                             </Button>
                         ) : (
                             <Button
-                                className="w-full mt-3"
+                                className="mt-3 w-full"
                                 color="orange"
                                 onClick={() => execApprove()}
                             >
-                                {txRunning ? (
-                                    <Spinner className="" />
-                                ) : (
-                                    'Approve'
-                                )}
+                                {txRunning ? <Spinner /> : 'Approve'}
                             </Button>
                         )}
                     </div>
@@ -363,7 +359,7 @@ export const BurnForBacking = (props: {
                 {chainId !== 43114 && amountToBurn.isGreaterThan(0) && (
                     <div className="flex items-center">
                         <Button
-                            className="w-full mt-3"
+                            className="mt-3 w-full"
                             color="orange"
                             onClick={() => switchNetwork(43114)}
                         >
