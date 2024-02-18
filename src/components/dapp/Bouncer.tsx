@@ -6,6 +6,7 @@ import { VscDebugDisconnect } from 'react-icons/vsc'
 import { useParams } from 'react-router-dom'
 import { ToastContainer, toast } from 'react-toastify'
 import { useSignMessage } from 'wagmi'
+import { visualAddress } from '../../helpers/address'
 import { useFinishVerification } from '../../hooks/bouncer/useFinishVerification'
 import { useGetVerificationData } from '../../hooks/bouncer/useGetVerificationData'
 import { Button } from '../Button'
@@ -131,23 +132,23 @@ export const Bouncer = () => {
 
     return (
         <div>
-            <h1 className="mb-5 mt-4 flex flex-col gap-1 font-title text-3xl font-bold tracking-wide sm:mb-8 sm:flex-row">
+            <h1 className="mb-5 mt-4 flex flex-col gap-1 font-title text-3xl font-bold tracking-wide lg:mb-8 lg:flex-row">
                 <span className="text-techGreen">Bouncer</span>
                 <span className="text-degenOrange">WalletVerification</span>
             </h1>
             <div className="mb-4  rounded-xl border-2 border-degenOrange bg-light-100 p-4 text-light-200 dark:border-activeblue  dark:bg-darkerblue  dark:text-light-200">
                 <p>
-                    If you&apos;re visiting this site, it&apos;s likely because you
-                    received the URL from our DEGENX Bouncer. Through this form,
-                    the bouncer ensures that everything is in order with your
-                    mentioned wallets.
+                    If you&apos;re visiting this site, it&apos;s likely because
+                    you received the URL from our DEGENX Bouncer. Through this
+                    form, the bouncer ensures that everything is in order with
+                    your mentioned wallets.
                     <br />
                     <br />
                     Please connect and verify all your wallets, so we can invite
                     you to the group.
                 </p>
             </div>
-            <div className="mb-4 rounded-xl border-2 border-degenOrange bg-light-100 text-light-200 dark:border-activeblue  dark:bg-darkerblue  dark:text-light-200">
+            <div className="mb-4 lg:rounded-xl lg:border-2 lg:border-degenOrange lg:bg-light-100 lg:text-light-200 lg:dark:border-activeblue  lg:dark:bg-darkerblue  lg:dark:text-light-200">
                 {!verificationData && (
                     <div className="flex items-center justify-center p-3">
                         <Spinner theme="dark" />
@@ -164,7 +165,7 @@ export const Bouncer = () => {
                     verificationData.data &&
                     !verificationData.data.verificationFinished &&
                     verificationData.data.items?.length > 0 && (
-                        <table className="w-full border-collapse items-center">
+                        <table className="hidden w-full border-collapse items-center lg:table">
                             <thead>
                                 <tr>
                                     <th className="bg-blueGray-50 whitespace-nowrap border-2 border-l-0 border-r-0 border-t-0 border-solid border-activeblue px-6 py-3 text-left align-middle font-semibold uppercase">
@@ -182,7 +183,7 @@ export const Bouncer = () => {
                                 {verificationData.data.items?.map((item, k) => (
                                     <tr key={item.wallet}>
                                         <td className="whitespace-nowrap border-2 border-l-0 border-r-0 border-t-0 border-activeblue p-4 px-6 text-left align-middle">
-                                            {item.wallet}
+                                            {visualAddress(item.wallet)}
                                         </td>
                                         <td className="whitespace-nowrap border-2 border-l-0 border-r-0 border-t-0 border-activeblue p-4 px-6 text-right align-middle">
                                             {item.amount.toLocaleString(
@@ -254,10 +255,94 @@ export const Bouncer = () => {
                     )}
                 {verificationData &&
                     verificationData.data &&
+                    !verificationData.data.verificationFinished &&
+                    verificationData.data.items?.length > 0 && (
+                        <div className="lg:hidden">
+                            {verificationData.data.items?.map((item, k) => (
+                                <div
+                                    key={item.wallet}
+                                    className="mb-4 flex flex-col gap-2 rounded-lg border-2 border-degenOrange p-4 dark:border-activeblue dark:bg-darkerblue  dark:text-light-200"
+                                >
+                                    <p className="text-center">
+                                        <span className="md:hidden">
+                                            {visualAddress(item.wallet)}
+                                        </span>
+                                        <span className="hidden md:inline">
+                                            {item.wallet}
+                                        </span>
+                                    </p>
+                                    <p className="text-center">
+                                        {item.amount.toLocaleString(
+                                            navigator.language,
+                                            {
+                                                minimumFractionDigits: 3,
+                                                maximumFractionDigits: 3,
+                                            }
+                                        )}{' '}
+                                        DGNX
+                                    </p>
+                                    <div className="flex items-center justify-center">
+                                        {item.verified ? (
+                                            <div>
+                                                <IoShieldCheckmarkOutline className="inline-block" />
+                                                Verified
+                                            </div>
+                                        ) : (
+                                            <VerifyButton
+                                                onVerificationStatusUpdate={
+                                                    onVerificationStatusUpdate
+                                                }
+                                                keyToVerify={
+                                                    verificationData.data.key
+                                                }
+                                                addressToVerify={item.wallet}
+                                                messageToVerify={
+                                                    item.verifyMessage
+                                                }
+                                            />
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                            <div className="mb-4 flex flex-col gap-2 rounded-lg border-2 border-degenOrange p-4 text-center dark:border-activeblue  dark:bg-darkerblue dark:text-light-200">
+                                Total amount:{' '}
+                                {verificationData.data.totalAmount.toLocaleString(
+                                    navigator.language,
+                                    {
+                                        minimumFractionDigits: 3,
+                                        maximumFractionDigits: 3,
+                                    }
+                                )}{' '}
+                                DGNX
+                            </div>
+                            <div>
+                                <Button
+                                    onClick={finishVerification}
+                                    disabled={!canFinishVerification}
+                                    className="w-full"
+                                    color={
+                                        !canFinishVerification
+                                            ? 'disabled'
+                                            : 'orange'
+                                    }
+                                >
+                                    {isFinishVerificationLoading ? (
+                                        <Spinner />
+                                    ) : (
+                                        <>Finish verification</>
+                                    )}
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+
+                {verificationData &&
+                    verificationData.data &&
                     verificationData.data.verificationFinished && (
                         <div className="flex items-center justify-center p-3">
                             <p className="text-center">
-                                You&apos;ve finished the verification successfully.
+                                You&apos;ve finished the verification
+                                successfully.
                                 <br />
                                 <br />
                                 You should have received an invite link through
