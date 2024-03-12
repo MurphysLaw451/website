@@ -148,6 +148,7 @@ export function Roadmap() {
                             <div className="col-span-1 sm:col-span-7">
                                 <div className="text-light-600">LinkBridge launch to BSC</div>
                                 <div className="text-light-600">Broccoliswap token sniffer</div>
+                                <div className="text-light-600">StakeX</div>
                             </div>
                         </div>
                     </div>
