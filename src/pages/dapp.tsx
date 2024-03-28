@@ -27,7 +27,7 @@ const client = createClient({
         walletConnectProjectId:
             process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID!,
         infuraId: process.env.NEXT_PUBLIC_INFURA_ID!,
-        appName: 'DegenX Ecosystem DAPP',
+        appName: 'DEGENX Ecosystem DAPP',
     }),
     provider,
 })
@@ -47,10 +47,10 @@ export default function Dapp() {
     return (
         <BrowserRouter>
             <Head>
-                <title>DegenX Ecosystem</title>
+                <title>DEGENX Ecosystem</title>
                 <meta
                     name="description"
-                    content="DegenX is multichain ecosystem that offers a suite of decentralized applications (dApps) and services to provide solutions for projects and individuals in the DeFi space. $DGNX is a multichain token with liquidity backing."
+                    content="DEGENX is multichain ecosystem that offers a suite of decentralized applications (dApps) and services to provide solutions for projects and individuals in the DeFi space. $DGNX is a multichain token with liquidity backing."
                 />
             </Head>
             <WagmiConfig client={client}>
