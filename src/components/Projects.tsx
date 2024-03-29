@@ -32,7 +32,7 @@ const Slide = (props: {
                 </div>
                 <p>{props.text}</p>
                 {props.children && (
-                    <div className="flex h-full flex-col items-end sm:flex-row sm:gap-4">
+                    <div className="flex h-full flex-col justify-end sm:justify-center items-center sm:items-end sm:flex-row sm:gap-4">
                         {props.children}
                     </div>
                 )}
@@ -171,7 +171,7 @@ export function Projects() {
                     >
                         <Button
                             className="mb-2 mt-4 flex gap-2"
-                            href="https://broccoliswap.com"
+                            href="https://broccoliswap.com/?swap=1000-DGNX-to-DGNX"
                             color="orange"
                             target="_blank"
                         >
