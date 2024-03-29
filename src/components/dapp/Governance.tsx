@@ -1,18 +1,17 @@
 import Image from 'next/image'
+import { BsArrowUpRight } from 'react-icons/bs'
 import { RouteObject } from 'react-router-dom'
 import { Button } from '../Button'
-import { H1 } from '../H1'
 import { H2 } from '../H2'
-import { BsArrowUpRight } from 'react-icons/bs'
 
-import imageDAO from '../../images/projects/dao.svg';
+import imageDAO from '../../images/projects/dao.svg'
 
 export const Governance = (props: RouteObject) => {
     return (
         <div>
-            <div className="items-center mb-5 sm:mb-8 h-16 w-full flex justify-center sm:justify-start">
+            <div className="mb-5 flex h-16 w-full items-center justify-center sm:mb-8 sm:justify-start">
                 <Image
-                    alt={`DegenX DAO logo`}
+                    alt={`DEGENX DAO logo`}
                     src={imageDAO}
                     height={64}
                     // fill
@@ -35,7 +34,7 @@ export const Governance = (props: RouteObject) => {
             <H2 className="mt-3">Proposal types</H2>
 
             <div className="flex w-full flex-col items-start text-light-800 dark:text-light-600 sm:flex-row">
-                <div className=" mr-8 mb-8 w-full rounded-xl border-2 border-degenOrange bg-light-100 p-6 dark:border-activeblue dark:bg-darkerblue">
+                <div className=" mb-8 mr-8 w-full rounded-xl border-2 border-degenOrange bg-light-100 p-6 dark:border-activeblue dark:bg-darkerblue">
                     <H2>Off-chain</H2>
                     <ul className="ml-6 list-disc">
                         <li>Organizational</li>
@@ -43,7 +42,7 @@ export const Governance = (props: RouteObject) => {
                         <li>Community decisions</li>
                     </ul>
                 </div>
-                <div className=" mr-8 mb-8 w-full rounded-xl border-2 border-degenOrange bg-light-100 p-6 dark:border-activeblue dark:bg-darkerblue">
+                <div className=" mb-8 mr-8 w-full rounded-xl border-2 border-degenOrange bg-light-100 p-6 dark:border-activeblue dark:bg-darkerblue">
                     <H2>On-chain</H2>
                     <ul className="ml-6 list-disc">
                         <li>Changing fees</li>

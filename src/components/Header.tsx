@@ -1,11 +1,11 @@
-import { Fragment } from 'react'
-import Image from 'next/image'
-import { FaDiscord, FaTelegramPlane } from 'react-icons/fa'
-import { SiLinktree } from 'react-icons/si'
-import { BsArrowUpRight } from 'react-icons/bs'
-import Link from 'next/link'
 import { Popover, Transition } from '@headlessui/react'
 import clsx from 'clsx'
+import Image from 'next/image'
+import Link from 'next/link'
+import { Fragment } from 'react'
+import { BsArrowUpRight } from 'react-icons/bs'
+import { FaDiscord, FaTelegramPlane } from 'react-icons/fa'
+import { SiLinktree } from 'react-icons/si'
 
 import { Button } from './Button'
 import { Container } from './Container'
@@ -90,23 +90,18 @@ function MobileNavigation() {
                         as="div"
                         className="absolute inset-x-0 top-full mt-4 flex origin-top flex-col rounded-2xl bg-white p-4 text-lg tracking-tight text-slate-900 shadow-xl ring-1 ring-slate-900/5"
                     >
-                        <MobileNavLink href="#holder">
-                            $DGNX
-                        </MobileNavLink>
+                        <MobileNavLink href="#holder">$DGNX</MobileNavLink>
                         <MobileNavLink href="#ecosystem">
                             Ecosystem
                         </MobileNavLink>
-                        <MobileNavLink href="#roadmap">
-                            Roadmap
-                        </MobileNavLink>
-                        <MobileNavLink href="#join">
-                            Social
-                        </MobileNavLink>
-                        <MobileNavLink href="#team">
-                            Team
-                        </MobileNavLink>
+                        <MobileNavLink href="#roadmap">Roadmap</MobileNavLink>
+                        <MobileNavLink href="#join">Social</MobileNavLink>
+                        <MobileNavLink href="#team">Team</MobileNavLink>
                         <hr className="m-2 border-slate-300/40" />
-                        <MobileNavLink href="https://broccoliswap.com/?inputToken=AVAX&inputChain=AVAX&outputToken=DGNX&outputChain=AVAX&amount=10" target="_blank">
+                        <MobileNavLink
+                            href="https://broccoliswap.com/?inputToken=AVAX&inputChain=AVAX&outputToken=DGNX&outputChain=AVAX&amount=10"
+                            target="_blank"
+                        >
                             {translations.header.buy.en}
                         </MobileNavLink>
                     </Popover.Panel>
@@ -120,70 +115,65 @@ export function Header() {
     return (
         <header className="py-2 sm:py-5">
             <Container>
-                <nav className="relative z-50 flex justify-between items-center gap-y-3">
+                <nav className="relative z-50 flex items-center justify-between gap-y-3">
                     <div className="flex items-center lg:gap-x-12">
                         <Link href="#" aria-label="Home">
-                            <Image
-                                src={logoImage}
-                                alt=""
-                                height={48}
-                            />
+                            <Image src={logoImage} alt="" height={48} />
                         </Link>
                         <div className="hidden lg:flex lg:gap-x-1 xl:gap-x-5">
-                            <NavLink href="#holder">
-                                $DGNX
-                            </NavLink>
-                            <NavLink href="#ecosystem">
-                                Ecosystem
-                            </NavLink>
-                            <NavLink href="#roadmap">
-                                Roadmap
-                            </NavLink>
-                            <NavLink href="#join">
-                                Social
-                            </NavLink>
-                            <NavLink href="#team">
-                                Team
-                            </NavLink>
-                            <NavLink href="https://broccoliswap.com/?inputToken=AVAX&inputChain=AVAX&outputToken=DGNX&outputChain=AVAX&amount=10" target="_blank">
+                            <NavLink href="#holder">$DGNX</NavLink>
+                            <NavLink href="#ecosystem">Ecosystem</NavLink>
+                            <NavLink href="#roadmap">Roadmap</NavLink>
+                            <NavLink href="#join">Social</NavLink>
+                            <NavLink href="#team">Team</NavLink>
+                            <NavLink
+                                href="https://broccoliswap.com/?inputToken=AVAX&inputChain=AVAX&outputToken=DGNX&outputChain=AVAX&amount=10"
+                                target="_blank"
+                            >
                                 Buy
                             </NavLink>
                         </div>
                     </div>
-                    <div className="flex items-center gap-x-5 md:gap-x-3 xl:gap-x-3 flex-col sm:flex-row">
-                        <div className="hidden sm:flex gap-x-5 md:gap-x-3 xl:gap-x-3">
+                    <div className="flex flex-col items-center gap-x-5 sm:flex-row md:gap-x-3 xl:gap-x-3">
+                        <div className="hidden gap-x-5 sm:flex md:gap-x-3 xl:gap-x-3">
                             <Link
-                                href="https://t.me/DegenXportal"
-                                className="group text-light-600 hover:border-degenOrange border-b-2 border-transparent pb-2"
+                                href="https://t.me/DEGENXecosystem"
+                                className="group border-b-2 border-transparent pb-2 text-light-600 hover:border-degenOrange"
                                 target="_blank"
                             >
                                 <FaTelegramPlane className="h-6 w-6 " />
                             </Link>
                             <Link
                                 href="https://twitter.com/DegenEcosystem"
-                                className="group text-light-600 hover:border-degenOrange border-b-2 border-transparent pb-2"
+                                className="group border-b-2 border-transparent pb-2 text-light-600 hover:border-degenOrange"
                                 target="_blank"
                             >
-                                <div className="h-6 text-center  text-2xl -mt-1">𝕏</div>
+                                <div className="-mt-1 h-6  text-center text-2xl">
+                                    𝕏
+                                </div>
                             </Link>
                             <Link
                                 href="https://discord.gg/BMaVtEVkgC"
-                                className="group text-light-600 hover:border-degenOrange border-b-2 border-transparent pb-2"
+                                className="group border-b-2 border-transparent pb-2 text-light-600 hover:border-degenOrange"
                                 target="_blank"
                             >
                                 <FaDiscord className="h-6 w-6 " />
                             </Link>
                             <Link
                                 href="https://linktr.ee/DEGENX"
-                                className="group text-light-600 hover:border-degenOrange border-b-2 border-transparent pb-2"
+                                className="group border-b-2 border-transparent pb-2 text-light-600 hover:border-degenOrange"
                                 target="_blank"
                             >
                                 <SiLinktree className="h-6 w-6 " />
                             </Link>
                         </div>
                         <DarkmodeToggle />
-                        <div className="flex gap-1 items-center flex-row-reverse sm:flex-row">
-                            <Button className="hidden sm:flex gap-1 lg:ml-3" href="/dapp" color="orange">
+                        <div className="flex flex-row-reverse items-center gap-1 sm:flex-row">
+                            <Button
+                                className="hidden gap-1 sm:flex lg:ml-3"
+                                href="/dapp"
+                                color="orange"
+                            >
                                 <span>Launch app</span>
                                 <BsArrowUpRight />
                             </Button>

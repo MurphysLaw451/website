@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { RouteObject } from 'react-router-dom'
 
 import BigNumber from 'bignumber.js'
+import Image from 'next/image'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.min.css'
 import { useAccount } from 'wagmi'
@@ -14,13 +15,11 @@ import {
     getTotalValue,
 } from '../../helpers/liquidityBacking'
 import { BNtoNumber } from '../../helpers/number'
+import { H2 } from '../H2'
 import { BurnForBacking } from './elements/BurnForBacking'
 import { Chart } from './elements/Chart'
-import Image from 'next/image'
-import { H1 } from '../H1'
-import { H2 } from '../H2'
 
-import imageLiqBack from '../../images/projects/liqback.svg';
+import imageLiqBack from '../../images/projects/liqback.svg'
 
 const chainId = +process.env.NEXT_PUBLIC_CHAIN_ID
 const provider = new ethers.providers.JsonRpcProvider(
@@ -137,10 +136,10 @@ export const LiquidityBacking = (props: RouteObject) => {
 
     return (
         <div>
-            <div className="sm:mb-8 flex flex-col items-center lg:flex-row">
-                <div className="items-center mb-5 h-16 w-full flex justify-center sm:justify-start">
+            <div className="flex flex-col items-center sm:mb-8 lg:flex-row">
+                <div className="mb-5 flex h-16 w-full items-center justify-center sm:justify-start">
                     <Image
-                        alt={`DegenX Liquidity Backing logo`}
+                        alt={`DEGENX Liquidity Backing logo`}
                         src={imageLiqBack}
                         height={64}
                         // fill
@@ -148,8 +147,10 @@ export const LiquidityBacking = (props: RouteObject) => {
                 </div>
             </div>
             <div className="mb-8 flex flex-col items-center lg:flex-row">
-                <h2 className="text-2xl font-bold text-light-100">Show backing values in</h2>
-                <div className="mt-8 mb-2 flex flex-row lg:mt-0 lg:mb-0">
+                <h2 className="text-2xl font-bold text-light-100">
+                    Show backing values in
+                </h2>
+                <div className="mb-2 mt-8 flex flex-row lg:mb-0 lg:mt-0">
                     {stats?.wantTokenData &&
                         stats.wantTokenData.map((token) => (
                             <span
