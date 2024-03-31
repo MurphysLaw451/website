@@ -55,7 +55,7 @@ export function Projects() {
                 and users
             </p>
 
-            <div className="mt-5 flex h-auto">
+            <div className="mt-5 h-auto">
                 <Carousel
                     slide
                     slideInterval={1000000}
