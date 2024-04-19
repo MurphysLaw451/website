@@ -1,13 +1,19 @@
 import { RouteObject } from 'react-router-dom'
-import { useAccount, useContractRead, useContractWrite, useClient } from 'wagmi'
+import {
+    useAccount,
+    useContractRead,
+    useContractWrite,
+    useClient,
+    usePrepareContractWrite,
+} from 'wagmi'
 import abi from '../../../abi/disburser.json'
 import { Spinner } from './Spinner'
 import BigNumber from 'bignumber.js'
 import { useCountdownTimer } from 'use-countdown-timer'
 import { useEffect } from 'react'
 import { Button } from '../../Button'
-
-const DISBURSER_ADDRESS = '0x8a0E3264Da08bf999AfF5a50AabF5d2dc89fab79'
+import { DISBURSER_ADDRESS } from '../../../constants'
+import { toast } from 'react-toastify'
 
 const countdownStr = (s: number) => {
     const d = Math.floor(s / (3600 * 24))
@@ -39,17 +45,26 @@ const Countdown = (props: { seconds: number }) => {
 }
 
 const ClaimButton = (props: { amount: string | number }) => {
-    const {
-        data,
-        isLoading: claimLoading,
-        isSuccess: claimSuccess,
-        write: claim,
-    } = useContractWrite({
+    const { config } = usePrepareContractWrite({
         address: DISBURSER_ADDRESS,
         abi,
         functionName: 'claim',
-        mode: 'recklesslyUnprepared',
+        enabled: BigNumber(props.amount).gt(0),
     })
+
+    const {
+        isLoading: claimLoading,
+        isSuccess: claimSuccess,
+        write: claim,
+        isError,
+        error,
+    } = useContractWrite(config)
+
+    useEffect(() => {
+        if (isError) {
+            toast.error(error.message)
+        }
+    }, [isError])
 
     if (claimLoading) {
         return (
@@ -68,9 +83,17 @@ const ClaimButton = (props: { amount: string | number }) => {
     }
 
     return (
-        <Button className="mt-3 w-full" color="orange" onClick={() => claim()}>
-            Claim {props.amount} now!
-        </Button>
+        claim && (
+            <Button
+                className="mt-3 w-full"
+                color="orange"
+                onClick={() => {
+                    claim()
+                }}
+            >
+                Claim {props.amount} now!
+            </Button>
+        )
     )
 }
 
@@ -152,7 +175,7 @@ const Dapp = () => {
     )
 }
 
-export const DisburserApp = (props: RouteObject) => {
+export const DisburserApp = () => {
     const { address, isConnected } = useAccount()
     const { data: hasAmountLeft, isLoading } = useContractRead({
         address: DISBURSER_ADDRESS,
