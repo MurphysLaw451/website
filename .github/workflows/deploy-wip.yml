@@ -1,6 +1,9 @@
 name: Deploy WIP Branch
 on:
   push:
+    branches:
+      - '*'
+      - '!main'
   workflow_dispatch:
     inputs:
       BEARER_TOKEN:
