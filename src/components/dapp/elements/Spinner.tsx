@@ -1,12 +1,26 @@
-export const Spinner = (props: { theme?: 'light' | 'dark' }) => {
-    let className = 'fill-white text-orange-600 dark:text-orange-600'
+import clsx from 'clsx'
+
+export const Spinner = (props: {
+    theme?: 'light' | 'dark'
+    className?: string
+}) => {
+    const baseStyles = clsx('h-6 w-6 animate-spin')
+    let className = clsx(
+        baseStyles,
+        'fill-white text-orange-600 dark:text-orange-600',
+        props.className
+    )
     if (props.theme === 'dark')
-        className = 'fill-activeblue text-darkerblue dark:text-darkerblue'
+        className = clsx(
+            baseStyles,
+            'fill-activeblue text-darkerblue dark:text-darkerblue',
+            props.className
+        )
     return (
         <div role="status">
             <svg
                 aria-hidden="true"
-                className={`h-6 w-6 animate-spin ${className}`}
+                className={className}
                 viewBox="0 0 100 101"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"

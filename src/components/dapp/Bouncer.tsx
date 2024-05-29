@@ -1,3 +1,6 @@
+import { visualAddress } from '@dapphelpers/address'
+import { useFinishVerification } from '@dapphooks/bouncer/useFinishVerification'
+import { useGetVerificationData } from '@dapphooks/bouncer/useGetVerificationData'
 import { ConnectKitButton } from 'connectkit'
 import { useEffect, useState } from 'react'
 import { IoShieldCheckmarkOutline } from 'react-icons/io5'
@@ -6,9 +9,6 @@ import { VscDebugDisconnect } from 'react-icons/vsc'
 import { useParams } from 'react-router-dom'
 import { ToastContainer, toast } from 'react-toastify'
 import { useSignMessage } from 'wagmi'
-import { visualAddress } from '../../helpers/address'
-import { useFinishVerification } from '../../hooks/bouncer/useFinishVerification'
-import { useGetVerificationData } from '../../hooks/bouncer/useGetVerificationData'
 import { Button } from '../Button'
 import { Spinner } from './elements/Spinner'
 
@@ -18,31 +18,37 @@ const VerifyButton = (props: {
     messageToVerify: string
     onVerificationStatusUpdate: () => void
 }) => {
+    const {
+        keyToVerify,
+        addressToVerify,
+        messageToVerify,
+        onVerificationStatusUpdate,
+    } = props
     const [verificationLoading, setVerificationLoading] = useState(false)
     const {
         data: signMessageData,
         error,
-        isLoading,
+        isPending,
         reset,
         signMessage,
         variables,
     } = useSignMessage()
 
     const verify = () => {
-        signMessage({ message: props.messageToVerify })
+        signMessage({ message: messageToVerify })
     }
 
     useEffect(() => {
         if (!signMessageData) return
         setVerificationLoading(true)
-        fetch(process.env.NEXT_PUBLIC_BOUNCER_VERIFY_WALLET, {
+        fetch(process.env.NEXT_PUBLIC_BOUNCER_VERIFY_WALLET!, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                key: props.keyToVerify,
-                wallet: props.addressToVerify,
+                key: keyToVerify,
+                wallet: addressToVerify,
                 signature: signMessageData,
             }),
         })
@@ -51,9 +57,15 @@ const VerifyButton = (props: {
                 reset()
                 setVerificationLoading(false)
                 if (res.status === 'error') return false
-                props.onVerificationStatusUpdate()
+                onVerificationStatusUpdate()
             })
-    }, [signMessageData])
+    }, [
+        keyToVerify,
+        addressToVerify,
+        onVerificationStatusUpdate,
+        reset,
+        signMessageData,
+    ])
 
     return (
         <ConnectKitButton.Custom>
@@ -81,10 +93,10 @@ const VerifyButton = (props: {
                     return (
                         <button
                             onClick={verify}
-                            disabled={isLoading}
+                            disabled={isPending}
                             className="flex items-center justify-center gap-2 rounded-lg border p-2 dark:border-activeblue dark:bg-darkblue dark:text-light-200 dark:hover:bg-activeblue"
                         >
-                            {isLoading || verificationLoading ? (
+                            {isPending || verificationLoading ? (
                                 <Spinner theme="dark" />
                             ) : (
                                 <>
@@ -109,14 +121,15 @@ const VerifyButton = (props: {
 
 export const Bouncer = () => {
     const { hash } = useParams()
-    const [verificationData, reloadVerificationData] =
-        useGetVerificationData(hash)
+    const [verificationData, reloadVerificationData] = useGetVerificationData(
+        hash!
+    )
     const {
         request: finishVerification,
         response,
         isLoading: isFinishVerificationLoading,
         error,
-    } = useFinishVerification(hash)
+    } = useFinishVerification(hash!)
 
     const canFinishVerification = !verificationData?.data?.items?.find(
         (item) => !item.verified
@@ -125,10 +138,11 @@ export const Bouncer = () => {
         reloadVerificationData()
     }
     useEffect(() => {
-        if (error) toast.error(error.message, { autoClose: 5000 })
-        if (response) toast.success(response.message, { autoClose: 5000 })
-        reloadVerificationData()
-    }, [response, error])
+        if (error) toast.error((error as any).message, { autoClose: 5000 })
+        if (response)
+            toast.success((response as any).message, { autoClose: 5000 })
+        reloadVerificationData && reloadVerificationData()
+    }, [response, error, reloadVerificationData])
 
     return (
         <div>
@@ -207,8 +221,8 @@ export const Bouncer = () => {
                                                             onVerificationStatusUpdate
                                                         }
                                                         keyToVerify={
-                                                            verificationData
-                                                                .data.key
+                                                            verificationData?.data!
+                                                                .key
                                                         }
                                                         addressToVerify={
                                                             item.wallet
@@ -296,7 +310,7 @@ export const Bouncer = () => {
                                                     onVerificationStatusUpdate
                                                 }
                                                 keyToVerify={
-                                                    verificationData.data.key
+                                                    verificationData?.data!.key
                                                 }
                                                 addressToVerify={item.wallet}
                                                 messageToVerify={

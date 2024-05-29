@@ -9,28 +9,32 @@ import { Projects } from '../components/Projects'
 import { Empower } from '../components/Empower'
 import { Discover } from '../components/Discover'
 import { Roadmap } from '../components/Roadmap'
+import { useRouter } from 'next/router'
 
 export default function Home() {
-  return (
-    <>
-      <Head>
-        <title>DEGENX Ecosystem</title>
-        <meta
-          name="description"
-          content="DEGENX is multichain ecosystem that offers a suite of decentralized applications (dApps) and services to provide solutions for projects and individuals in the DeFi space. $DGNX is a multichain token with liquidity backing."
-        />
-      </Head>
-      <Header />
-      <main>
-        <Hero />
-        <Empower />
-        <Projects />
-        <Discover />
-        <Roadmap />
-        <CallToAction />
-        <Team />
-      </main>
-      <Footer />
-    </>
-  )
+    const { isReady } = useRouter()
+    return (
+        isReady && (
+            <>
+                <Head>
+                    <title>DEGENX Ecosystem</title>
+                    <meta
+                        name="description"
+                        content="DEGENX is multichain ecosystem that offers a suite of decentralized applications (dApps) and services to provide solutions for projects and individuals in the DeFi space. $DGNX is a multichain token with liquidity backing."
+                    />
+                </Head>
+                <Header />
+                <main className="website">
+                    <Hero />
+                    <Empower />
+                    <Projects />
+                    <Discover />
+                    <Roadmap />
+                    <CallToAction />
+                    <Team />
+                </main>
+                <Footer />
+            </>
+        )
+    )
 }

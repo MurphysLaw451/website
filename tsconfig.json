@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2020",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
@@ -17,15 +13,19 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "baseUrl": ".",
+    "strictNullChecks": true,
+    "exactOptionalPropertyTypes": true,
+    "paths": {
+      "@dapphooks/*": ["src/hooks/*"],
+      "@dapphelpers/*": ["src/helpers/*"],
+      "@dappshared/*": ["src/components/dapp/shared/*"],
+      "@dapptypes": ["src/types"],
+      "@dappconstants": ["src/constants"],
+      "@dappabis/*": ["src/abi/*"]
+    }
   },
-  "include": [
-    "additional.d.ts",
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["additional.d.ts", "next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
 }

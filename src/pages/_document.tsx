@@ -1,10 +1,7 @@
 import { Head, Html, Main, NextScript } from 'next/document'
-import { useEffect, useState } from 'react'
 
 export default function Document(props) {
     let pageProps = props.__NEXT_DATA__?.props?.pageProps
-
-    const [ready, setReady] = useState(false)
 
     return (
         <Html
@@ -51,7 +48,7 @@ gtag("config", "G-SHQ22SS768");
                     }}
                 ></script>
             </Head>
-            <body className="flex h-full flex-col bg-light-200 bg-fixed dark:bg-gradient-radial dark:from-darkblue dark:to-dark">
+            <body>
                 <Main />
                 <NextScript />
             </body>

@@ -1,15 +1,15 @@
+import clsx from 'clsx'
 import { ConnectKitButton } from 'connectkit'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
+import { useAccount, useBalance } from 'wagmi'
+import { chainFromChainId } from '../../../helpers/chain'
+import { toPrecision } from '../../../helpers/number'
 import logoImage from '../../../images/logo_large.png'
 import { DarkmodeToggle } from '../../DarkmodeToggle'
 import { DappContainer } from './DappContainer'
 import Sidebar from './Sidebar'
-import clsx from 'clsx'
-import { useAccount, useBalance, useNetwork } from 'wagmi'
-import { useEffect, useState } from 'react'
-import { toPrecision } from '../../../helpers/number'
-import { chainFromChainId } from '../../../helpers/chain'
 
 const TokenImage = (props: { src: string; symbol: string; size?: number }) => {
     const [showImage, setShowImage] = useState(true)
@@ -42,25 +42,26 @@ const TokenImage = (props: { src: string; symbol: string; size?: number }) => {
 }
 
 const ConnectedButton = () => {
-    const { address } = useAccount()
-    const { chain } = useNetwork()
+    const { address, chain } = useAccount()
 
     const { data: balanceData } = useBalance({
         address,
         chainId: chain?.id,
     })
 
-    const chainInfo = chainFromChainId(chain?.id)
+    const chainInfo = chainFromChainId(chain?.id!)
 
     return (
         <div className="-my-2 flex items-center gap-0.5 p-0">
             {balanceData && (
-                <div className="border-degenGreen mr-2 flex items-center border-r-2 py-1 pr-2 dark:border-activeblue">
-                    <TokenImage
-                        src={`/chains/${chainInfo.logo}`}
-                        symbol={chainInfo.symbol}
-                        size={16}
-                    />
+                <div className="mr-2 flex items-center border-r border-dapp-blue-800 py-1 pr-2">
+                    {chainInfo && (
+                        <TokenImage
+                            src={`/chains/${chainInfo.logo}`}
+                            symbol={chainInfo.symbol}
+                            size={16}
+                        />
+                    )}
                     {toPrecision(parseFloat(balanceData?.formatted || '0'), 4)}
                 </div>
             )}
@@ -71,10 +72,10 @@ const ConnectedButton = () => {
 
 export function DappHeader() {
     return (
-        <header className="absolute z-10 w-full bg-gradient-to-tr from-transparent via-transparent to-light-800 py-3 dark:to-dark lg:fixed">
+        <header className="absolute z-10 w-full  py-6 lg:fixed">
             <DappContainer>
-                <nav className="relative z-50 flex flex-col items-center justify-between gap-3 sm:flex-row">
-                    <div className="flex flex-row-reverse items-center sm:flex-row md:gap-x-12">
+                <nav className="relative z-50 flex flex-col items-center justify-between gap-6 sm:flex-row">
+                    <div className="flex flex-row-reverse items-center sm:flex-row">
                         <div className="mr-3 lg:hidden">
                             <Sidebar mobile />
                         </div>
@@ -90,12 +91,12 @@ export function DappHeader() {
                     </div>
                     <div className="flex items-center gap-x-2 md:gap-x-2">
                         <ConnectKitButton.Custom>
-                            {({ isConnected, show, address }) => {
+                            {({ isConnected, show }) => {
                                 return (
                                     <button
                                         onClick={show}
                                         className={clsx(
-                                            'flex items-center gap-1 rounded-full border-2 border-degenOrange bg-light-100 px-3 py-2 font-bold text-light-800 transition-colors hover:bg-degenOrange hover:text-light-100 dark:border-activeblue dark:bg-darkblue dark:text-light-200 dark:hover:bg-activeblue'
+                                            'flex items-center gap-1 rounded-lg bg-light-100 px-3 py-2 font-bold text-light-800 transition-colors hover:bg-degenOrange  dark:bg-dapp-blue-400 dark:text-dapp-cyan-50 dark:hover:bg-dapp-blue-200'
                                         )}
                                     >
                                         {isConnected ? (

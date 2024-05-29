@@ -6,7 +6,8 @@
   min-height: 100%;
 }
 
-.MuiScopedCssBaseline-root, .MuiInputBase-root {
+.MuiScopedCssBaseline-root,
+.MuiInputBase-root {
   background-color: transparent !important;
 }
 
@@ -16,4 +17,16 @@
 
 .MuiBadge-root .MuiBox-root {
   background-color: #333 !important;
+}
+
+body {
+  @apply flex h-full flex-col bg-fixed;
+}
+
+body:has(.dapp) {
+  @apply bg-dapp-blue-800;
+}
+
+body:has(.website) {
+  @apply bg-light-200 dark:bg-gradient-radial dark:from-darkblue dark:to-dark;
 }

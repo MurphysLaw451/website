@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 export type GetVerificationDataResponseItem = {
     wallet: string
@@ -19,21 +19,21 @@ export type GetVerificationDataResponse = {
 
 export const useGetVerificationData = (
     hash: string
-): [GetVerificationDataResponse, Function] => {
-    const [data, setData] = useState<GetVerificationDataResponse>(null)
-    useEffect(() => {
-        if (!hash) return
-        loadData()
-    }, [hash])
-    const loadData = () => {
+): [GetVerificationDataResponse | null, Function] => {
+    const [data, setData] = useState<GetVerificationDataResponse | null>(null)
+    const loadData = useCallback(() => {
         fetch(
-            process.env.NEXT_PUBLIC_BOUNCER_VERIFICATION_DATA.replace(
+            process.env.NEXT_PUBLIC_BOUNCER_VERIFICATION_DATA!.replace(
                 '{hash}',
                 hash
             )
         )
             .then((res) => res.json())
             .then((res) => setData(res))
-    }
+    }, [hash])
+    useEffect(() => {
+        if (!hash) return
+        loadData()
+    }, [loadData, hash])
     return [data, loadData]
 }

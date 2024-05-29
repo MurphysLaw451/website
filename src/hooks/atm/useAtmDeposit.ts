@@ -1,29 +1,73 @@
+import abi from '@dappabis/degenAtm.json'
+import { ATM_ADDRESS } from '@dappconstants'
+import { useCallback, useEffect, useState } from 'react'
 import {
-    useContractWrite,
-    usePrepareContractWrite,
-    useWaitForTransaction,
+    useSimulateContract,
+    useWatchContractEvent,
+    useWriteContract,
 } from 'wagmi'
 
-import abi from '../../abi/degenAtm.json'
-import { ATM_ADDRESS } from '../../constants'
-import BigNumberJS from 'bignumber.js'
-import { BigNumber } from 'ethers'
+export const useAtmDeposit = (value: bigint) => {
+    const [logs, setLogs] = useState<any[]>()
+    const [isLoading, setIsLoading] = useState<boolean>()
+    const [depositAmount, setDepositAmount] = useState<bigint>()
 
-export const useAtmDeposit = (valueInWEI: BigNumberJS) => {
-    const { config } = usePrepareContractWrite({
+    const {
+        data,
+        isError: isErrorSimulate,
+        error: errorSimulate,
+    } = useSimulateContract({
         address: ATM_ADDRESS,
         abi,
         functionName: 'deposit',
-        overrides: {
-            value: BigNumber.from(valueInWEI.toString()),
-        },
+        value,
     })
 
-    const { data, write } = useContractWrite(config)
+    const {
+        writeContract,
+        data: hash,
+        reset,
+        error: errorWrite,
+        isError: isErrorWrite,
+    } = useWriteContract()
 
-    const { isLoading, isSuccess } = useWaitForTransaction({
-        hash: data?.hash,
+    const write = useCallback(() => {
+        setIsLoading(true)
+        data && writeContract && writeContract(data.request)
+    }, [data, writeContract])
+
+    useWatchContractEvent({
+        address: ATM_ADDRESS,
+        abi,
+        eventName: 'Deposit',
+        batch: true,
+        onLogs: (_logs) => setLogs(_logs),
     })
 
-    return { write, isLoading, isSuccess, hash: data?.hash }
+    useEffect(() => {
+        if (reset && hash && logs && logs.length > 0) {
+            logs.forEach((log) => {
+                if (hash && log.transactionHash == hash) {
+                    setDepositAmount(log.args.amount)
+                    setIsLoading(false)
+                    reset()
+                }
+            })
+        }
+    }, [logs, hash, reset])
+
+    useEffect(() => {
+        if (isErrorWrite) setIsLoading(false)
+    }, [isErrorWrite])
+
+    return {
+        write,
+        reset,
+        error: errorSimulate || errorWrite,
+        isError: isErrorSimulate || isErrorWrite,
+        isLoading,
+        isSuccess: Boolean(!isLoading && depositAmount),
+        depositAmount,
+        hash,
+    }
 }

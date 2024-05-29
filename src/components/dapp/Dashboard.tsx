@@ -1,21 +1,21 @@
+import BigNumber from 'bignumber.js'
 import clsx from 'clsx'
 import { ethers } from 'ethers'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { HiOutlineExternalLink } from 'react-icons/hi'
 import { RouteObject } from 'react-router-dom'
-import { Chart } from './elements/Chart'
-import BigNumber from 'bignumber.js'
-import { H1 } from '../H1'
 import { H2 } from '../H2'
+import { Chart } from './elements/Chart'
 
-import tokenAbi from '../../abi/erc20.json';
+import tokenAbi from '@dappabis/erc20.json'
+import { DGNX_ADDRESS } from '@dappconstants'
+import { Tile } from '@dappshared/Tile'
 
-const DGNX_TOKEN_ADDRESS = '0x51e48670098173025c477d9aa3f0eff7bf9f7812';
-const chainId = +process.env.NEXT_PUBLIC_CHAIN_ID
+const chainId = +process.env.NEXT_PUBLIC_CHAIN_ID!
 const provider = new ethers.providers.JsonRpcProvider(
     process.env.NEXT_PUBLIC_RPC,
     {
-        name: process.env.NEXT_PUBLIC_NAME,
+        name: process.env.NEXT_PUBLIC_NAME!,
         chainId,
     }
 )
@@ -125,10 +125,10 @@ const WalletInfo = (props: any) => {
             {walletData ? (
                 <div className="grid grid-cols-3">
                     <div />
-                    <div className="text-dark dark:text-light-100 font-bold">
+                    <div className="font-bold text-dark dark:text-light-100">
                         Quantity
                     </div>
-                    <div className="text-dark dark:text-light-100 font-bold">
+                    <div className="font-bold text-dark dark:text-light-100">
                         USD value
                     </div>
                     <div>DGNX</div>
@@ -179,9 +179,9 @@ const WalletInfo = (props: any) => {
 }
 
 const getDgnxAmount = async (address: string) => {
-    const contract = new ethers.Contract(DGNX_TOKEN_ADDRESS, tokenAbi, provider);
-    const balance = (await contract.balanceOf(address)).toString();
-    return new BigNumber(balance).div(10 ** 18).toNumber();
+    const contract = new ethers.Contract(DGNX_ADDRESS, tokenAbi, provider)
+    const balance = (await contract.balanceOf(address)).toString()
+    return new BigNumber(balance).div(10 ** 18).toNumber()
 }
 
 const PriceChange = (props: { item: number }) => {
@@ -261,17 +261,17 @@ export const Dashboard = (props: RouteObject) => {
 
     return (
         <div>
-            <h1 className="mt-4 mb-5 sm:mb-8 font-bold text-3xl font-title flex gap-1 tracking-wide flex-col sm:flex-row">
+            <h1 className="mb-5 mt-4 flex flex-col gap-1 px-8 font-title text-3xl font-bold tracking-wide sm:mb-8 sm:flex-row sm:px-0">
                 <span className="text-techGreen">DEGENX</span>
                 <span className="text-degenOrange">DASHBOARD</span>
             </h1>
             <div className="mb-8 grid grid-cols-1 gap-8 xl:grid-cols-3">
-                <div className="col-span-2 rounded-xl border-2 p-5 border-activeblue bg-darkerblue text-light-200">
+                <Tile className="col-span-2">
                     <H2>Decentralized Exchanges</H2>
                     {dexData ? (
                         <div className="flex flex-col gap-8 sm:flex-row">
                             <div className="flex-grow">
-                                <div className="text-light-100 font-bold">
+                                <div className="font-bold text-light-100">
                                     TraderJoe
                                 </div>
                                 <div className="flex">
@@ -315,7 +315,7 @@ export const Dashboard = (props: RouteObject) => {
                                 </div>
                             </div>
                             <div className="flex-grow">
-                                <div className="text-dark dark:text-light-100 font-bold">
+                                <div className="font-bold text-dark dark:text-light-100">
                                     Pangolin
                                 </div>
                                 <div className="flex">
@@ -360,8 +360,8 @@ export const Dashboard = (props: RouteObject) => {
                     ) : (
                         '...'
                     )}
-                </div>
-                <div className="col-span-2 rounded-xl border-2 border-degenOrange bg-light-100 p-5 text-light-800 dark:border-activeblue dark:bg-darkerblue dark:text-light-200 xl:col-span-1">
+                </Tile>
+                <Tile className="col-span-2 xl:col-span-1">
                     <H2>Ø Averages</H2>
                     {dexData ? (
                         <div className="flex">
@@ -446,20 +446,20 @@ export const Dashboard = (props: RouteObject) => {
                             </div>
                         </div>
                     ) : null}
-                </div>
+                </Tile>
             </div>
 
-            <div className="l text-light-200g:col-span-3 mb-8 h-[600px] gap-8 rounded-xl border-2 border-degenOrange bg-light-100 p-5 dark:border-activeblue dark:bg-darkerblue">
+            <Tile className="mb-8 h-[600px] gap-8 lg:col-span-3">
                 <div className="flex h-full flex-col">
                     <H2>Price & Backing</H2>
                     <div className="flex-grow">
                         <Chart wantTokenName="USDC.e" />
                     </div>
                 </div>
-            </div>
+            </Tile>
 
             <div className="mb-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
-                <div className="rounded-xl border-2 border-degenOrange bg-light-100 p-5 text-light-800 dark:border-activeblue dark:bg-darkerblue dark:text-light-200">
+                <Tile>
                     <H2>Supply</H2>
                     {/* <div className="flex">
                         <div className="flex-grow">Minted supply</div>
@@ -510,8 +510,8 @@ export const Dashboard = (props: RouteObject) => {
                                 : '...'}
                         </div>
                     </div>
-                </div>
-                <div className="rounded-xl border-2 border-degenOrange bg-light-100 p-5 text-light-800 dark:border-activeblue dark:bg-darkerblue dark:text-light-200">
+                </Tile>
+                <Tile>
                     <H2>Volume 24h</H2>
                     {dexData ? (
                         <div className="flex">
@@ -577,21 +577,21 @@ export const Dashboard = (props: RouteObject) => {
                             </div>
                         </div>
                     ) : null}
-                </div>
+                </Tile>
             </div>
 
             <div className="mb-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
-                <div className="rounded-xl border-2 border-degenOrange bg-light-100 p-5 text-light-800 dark:border-activeblue dark:bg-darkerblue dark:text-light-200">
+                <Tile>
                     <H2>Price change</H2>
                     {dexData ? (
                         <table className="min-w-full">
                             <tbody className="">
                                 <tr>
                                     <td className=""></td>
-                                    <td className="px-6 text-right text-dark dark:text-light-100 lg:px-1 xl:px-2 2xl:px-6 font-bold">
+                                    <td className="px-6 text-right font-bold text-dark dark:text-light-100 lg:px-1 xl:px-2 2xl:px-6">
                                         TraderJoe
                                     </td>
-                                    <td className="px-6 text-right text-dark dark:text-light-100 lg:px-1 xl:px-2 2xl:px-6 font-bold">
+                                    <td className="px-6 text-right font-bold text-dark dark:text-light-100 lg:px-1 xl:px-2 2xl:px-6">
                                         Pangolin
                                     </td>
                                 </tr>
@@ -675,18 +675,18 @@ export const Dashboard = (props: RouteObject) => {
                             </tbody>
                         </table>
                     ) : null}
-                </div>
-                <div className="rounded-xl border-2 border-degenOrange bg-light-100 p-5 text-light-800 dark:border-activeblue dark:bg-darkerblue dark:text-light-200">
+                </Tile>
+                <Tile>
                     <H2>Transactions (buys / sells)</H2>
                     {dexData ? (
                         <table className="min-w-full">
                             <tbody className="">
                                 <tr>
                                     <td className=""></td>
-                                    <td className="px-6 text-right text-dark dark:text-light-100 lg:px-1 xl:px-2 2xl:px-6 font-bold">
+                                    <td className="px-6 text-right font-bold text-dark dark:text-light-100 lg:px-1 xl:px-2 2xl:px-6">
                                         TraderJoe
                                     </td>
-                                    <td className="px-6 text-right text-dark dark:text-light-100 lg:px-1 xl:px-2 2xl:px-6 font-bold">
+                                    <td className="px-6 text-right font-bold text-dark dark:text-light-100 lg:px-1 xl:px-2 2xl:px-6">
                                         Pangolin
                                     </td>
                                 </tr>
@@ -753,22 +753,22 @@ export const Dashboard = (props: RouteObject) => {
                             </tbody>
                         </table>
                     ) : null}
-                </div>
+                </Tile>
             </div>
 
             <div className="mb-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
-                <div className="rounded-xl border-2 border-degenOrange bg-light-100 p-5 text-light-800 dark:border-activeblue dark:bg-darkerblue dark:text-light-200">
+                <Tile>
                     <WalletInfo
                         name="Marketing"
                         address="0x16eF18E42A7d72E52E9B213D7eABA269B90A4643"
                     />
-                </div>
-                <div className="rounded-xl border-2 border-degenOrange bg-light-100 p-5 text-light-800 dark:border-activeblue dark:bg-darkerblue dark:text-light-200">
+                </Tile>
+                <Tile>
                     <WalletInfo
                         name="Platform"
                         address="0xcA01A9d36F47561F03226B6b697B14B9274b1B10"
                     />
-                </div>
+                </Tile>
             </div>
         </div>
     )
