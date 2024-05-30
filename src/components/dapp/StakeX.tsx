@@ -392,6 +392,7 @@ export const StakeX = () => {
                                             href="https://docs.dgnx.finance/degenx-ecosystem/Products/stakex/introduction"
                                             title="Link to documentation section of STAKEX protocol"
                                             target="_blank"
+                                            rel="noreferrer"
                                             className="text-dapp-cyan-500"
                                         >
                                             documentation
