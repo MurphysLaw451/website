@@ -34,12 +34,12 @@ const navigation = [
         href: 'disburser',
         count: undefined,
     },
-    // {
-    //     name: 'Staking',
-    //     icon: MdLockClock,
-    //     href: 'staking',
-    //     count: undefined,
-    // },
+    {
+        name: 'Staking',
+        icon: MdLockClock,
+        href: 'staking',
+        count: undefined,
+    },
 ]
 
 function MobileNavLink({ href, children, ...props }) {
