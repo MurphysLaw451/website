@@ -16,6 +16,7 @@ import { toReadableNumber } from '../../helpers/number'
 import imageLiqBack from '../../images/projects/liqback.svg'
 import { H2 } from '../H2'
 import { BurnForBacking } from './elements/BurnForBacking'
+import { Chart } from './elements/Chart'
 
 type WalletBackingProps = {
     baseTokenAmount: bigint
@@ -275,7 +276,7 @@ export const LiquidityBacking = () => {
                 </Tile>
 
                 <Tile className="h-[30em] lg:col-span-2">
-                    {/* <Chart wantTokenName={activeWantToken?.info?.name} /> */}
+                    <Chart wantTokenName={activeWantToken?.info?.name!} />
                 </Tile>
 
                 <Tile>
