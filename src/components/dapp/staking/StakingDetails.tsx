@@ -12,6 +12,7 @@ import { SortOption, StakingSortOptions } from './StakingSortOptions'
 import { StakingClaimOverlay } from './overlays/StakingClaimOverlay'
 import { StakingRestakeOverlay } from './overlays/StakingRestakeOverlay'
 import { StakingWithdrawOverlay } from './overlays/StakingWithdrawOverlay'
+import { useGetStakingData } from '@dapphooks/staking/useGetStakingData'
 
 type StakingDetailsProps = {
     stakes: readonly StakeResponse[]
@@ -223,13 +224,6 @@ export const StakingDetails = ({
             setActiveStakeCount(0)
         }
     }, [stakes, selectedSortOption, sortOptions, isInProgess])
-
-    // useEffect(() => {
-    //     tokenIds &&
-    //         defaultShowToken &&
-    //         refetchRewardEstimations &&
-    //         refetchRewardEstimations()
-    // }, [tokenIds, defaultShowToken, refetchRewardEstimations])
 
     useEffect(() => {
         setIsLoading(

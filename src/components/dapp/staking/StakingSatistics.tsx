@@ -2,6 +2,7 @@ import { toReadableNumber } from '@dapphelpers/number'
 import { durationFromSeconds } from '@dapphelpers/staking'
 import { useActive } from '@dapphooks/staking/useActive'
 import { useGetStakingData } from '@dapphooks/staking/useGetStakingData'
+import { useGetUSDForToken } from '@dapphooks/staking/useGetUSDForToken'
 import { Tile } from '@dappshared/Tile'
 import { Address } from 'viem'
 import { Spinner } from '../elements/Spinner'
@@ -13,6 +14,10 @@ type StakingStatisticsProps = {
 export const StakingStatistics = ({ protocol }: StakingStatisticsProps) => {
     const { data: isActive } = useActive(protocol)
     const { data: stakingData, isLoading } = useGetStakingData(protocol)
+
+    const [usdPerToken] = useGetUSDForToken(
+        stakingData?.staked?.tokenInfo.source!
+    )
 
     return (
         <Tile className="w-full max-w-2xl text-lg leading-6">
@@ -66,8 +71,15 @@ export const StakingStatistics = ({ protocol }: StakingStatisticsProps) => {
                         </span>
                         <br />
                         {toReadableNumber(
-                            stakingData.staked.amount,
-                            stakingData.staked.tokenInfo.decimals
+                            usdPerToken *
+                                Number(
+                                    stakingData.staked.amount /
+                                        10n **
+                                            BigInt(
+                                                stakingData.staked.tokenInfo
+                                                    .decimals
+                                            )
+                                )
                         )}
                     </div>
                     <div className="col-span-3 text-left sm:col-span-2 sm:text-right">
@@ -75,9 +87,14 @@ export const StakingStatistics = ({ protocol }: StakingStatisticsProps) => {
                             % of Locked {stakingData.staked.tokenInfo.symbol}
                         </span>
                         <br />
-                        {toReadableNumber(
-                            stakingData.staked.amount / stakingData.totalSupply
-                        )}
+                        {(
+                            (Number(stakingData.staked.amount) /
+                                Number(stakingData.totalSupply)) *
+                            100
+                        ).toLocaleString(navigator.language, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                        })}
                     </div>
                     <div className="col-span-3 text-right sm:col-span-3 sm:text-left">
                         <span className="text-xs text-darkTextLowEmphasis">
