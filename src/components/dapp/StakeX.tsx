@@ -382,6 +382,27 @@ export const StakeX = () => {
                         {({ isConnecting, show }) => {
                             return (
                                 <Tile className="w-full max-w-2xl text-lg leading-10">
+                                    <h2 className="mb-4 text-2xl font-bold">
+                                        Welcome to STAKEX Staking Protocol
+                                    </h2>
+                                    <p>
+                                        You'll find more information about
+                                        STAKEX in our{' '}
+                                        <a
+                                            href="https://docs.dgnx.finance/degenx-ecosystem/Products/stakex/introduction"
+                                            title="Link to documentation section of STAKEX protocol"
+                                            target="_blank"
+                                            className="text-dapp-cyan-500"
+                                        >
+                                            documentation
+                                        </a>{' '}
+                                        section.
+                                    </p>
+                                    <p className="pb-4">
+                                        In order to stake{' '}
+                                        {stakingTokenInfo?.symbol}, you need to
+                                        connect your wallet.
+                                    </p>
                                     <Button
                                         variant="primary"
                                         disabled={isConnecting}
