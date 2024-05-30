@@ -7,7 +7,7 @@ module.exports = {
   content: [
     './src/**/*.{ts,tsx}',
     './node_modules/flowbite-react/**/*.{js,jsx,ts,tsx}',
-    './node_modules/flowbite/**/*.{js,ts}'
+    './node_modules/flowbite/**/*.{js,ts}',
   ],
   plugins: [
     require('flowbite/plugin'),
@@ -53,6 +53,9 @@ module.exports = {
       '9xl': ['8rem', { lineHeight: '1' }],
     },
     extend: {
+      screens: {
+        xs: '390px',
+      },
       borderRadius: {
         '4xl': '2rem',
       },
@@ -68,9 +71,27 @@ module.exports = {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
       },
       colors: {
+        // new colors
+        'dapp-blue': {
+          50: '#225271',
+          100: '#204E6B',
+          200: '#1D455F',
+          400: '#163448',
+          600: '#0F2330',
+          800: '#071219',
+        },
+        'dapp-cyan': {
+          50: '#DBEAE8',
+          500: '#0F978E',
+        },
+        darkTextLowEmphasis: '#848E8D',
+
+        // old colors
         activeblue: '#225271',
         darkblue: '#023148',
         darkerblue: '#081D2E',
+        greenBlue: '#4E928E',
+        lightBlue: '#304C69',
         light: {
           100: '#f2f3f9',
           200: '#dbe8ea',
@@ -78,7 +99,7 @@ module.exports = {
           800: '#878992',
         },
         dark: '#020618',
-        degenOrange: '#ff6c26',
+        degenOrange: '#FF6C26',
         rusty: '#d64900',
         broccoli: '#00705a',
         techGreen: '#0f978e',

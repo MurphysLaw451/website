@@ -1,241 +1,242 @@
-import BigNumber from 'bignumber.js'
-import { ethers } from 'ethers'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { toReadableNumber } from '@dapphelpers/number'
+import { useDoBurnForBacking } from '@dapphooks/liquidityBacking/useDoBurnForBacking'
+import { useGetBackingFromWantToken } from '@dapphooks/liquidityBacking/useGetBackingForWantToken'
+import { useERC20Approve } from '@dapphooks/shared/useERC20Approve'
+import { useHasERC20Allowance } from '@dapphooks/shared/useHasERC20Allowance'
+import { ChangeEvent, useEffect, useRef, useState } from 'react'
 import { AiOutlineCheckCircle } from 'react-icons/ai'
-import { useAccount, useChainId, useSigner, useSwitchNetwork } from 'wagmi'
-import { debounce } from '../../../helpers/debounce'
-import {
-    approveBaseToken,
-    burnForBacking,
-    getControllerAllowance,
-    getExpectedWantTokensByBurningBaseTokens,
-} from '../../../helpers/liquidityBacking'
-import { BNtoNumber } from '../../../helpers/number'
+import { Id, toast } from 'react-toastify'
+import { Address, formatUnits, parseUnits } from 'viem'
+import { useAccount, useChainId, useSwitchChain } from 'wagmi'
+import { Button } from '../../Button'
 import { Spinner } from './Spinner'
 
-import { toast } from 'react-toastify'
-import { Button } from '../../Button'
-
-const calculateReturnAmount = async (
-    signer: ethers.Signer,
-    provider: ethers.providers.Provider,
-    wantTokenAddress: string,
-    allowance: BigNumber,
-    amountToBurn: BigNumber,
-    baseTokenAmount: BigNumber,
-    setExpectedWantTokenAmount: Function,
-    setCalculatingWantTokenAmount: Function
-) => {
-    if (amountToBurn?.eq(0)) {
-        return
-    }
-
-    let expectedOutput: ethers.BigNumber
-    if (!amountToBurn.gt(baseTokenAmount)) {
-        if (allowance.isGreaterThanOrEqualTo(amountToBurn)) {
-            expectedOutput = (await burnForBacking(
-                signer,
-                wantTokenAddress,
-                ethers.BigNumber.from(amountToBurn.toFixed()),
-                ethers.BigNumber.from(0),
-                true
-            )) as ethers.BigNumber
-        } else {
-            expectedOutput = await getExpectedWantTokensByBurningBaseTokens(
-                provider,
-                wantTokenAddress,
-                ethers.BigNumber.from(amountToBurn.toFixed())
-            )
-        }
-
-        setExpectedWantTokenAmount(BigNumber(expectedOutput.toString()))
-    }
-    setCalculatingWantTokenAmount(false)
-}
-
-const calculateReturnDebounced = debounce(
-    async (
-        signer: ethers.Signer,
-        provider: ethers.providers.Provider,
-        wantTokenAddress: string,
-        allowance: BigNumber,
-        amountToBurn: BigNumber,
-        baseTokenAmount: BigNumber,
-        setExpectedWantTokenAmount: Function,
-        setCalculatingWantTokenAmount: Function
-    ) => {
-        if (amountToBurn?.isLessThanOrEqualTo(0)) {
-            return
-        }
-
-        calculateReturnAmount(
-            signer,
-            provider,
-            wantTokenAddress,
-            allowance,
-            amountToBurn,
-            baseTokenAmount,
-            setExpectedWantTokenAmount,
-            setCalculatingWantTokenAmount
-        )
-    }
-)
-
-export const BurnForBacking = (props: {
-    provider: ethers.providers.Provider
-    baseTokenAmount: BigNumber
-    baseTokenDecimals: number
+type BurnForBackingProps = {
+    baseTokenAddress: Address
+    baseTokenAmount: bigint
+    baseTokenDecimals: bigint
+    baseTokenSymbol: string
     activeWantToken: {
-        decimals: number
-        address: string
+        decimals: bigint
+        address: Address
         info: { name: string }
     }
-    forceRefetch: Function
+    onSettingsChange: () => void
     isLoading: boolean
-}) => {
-    const tokensToBurnInputRef = useRef<HTMLInputElement>()
-    const slippageInputRef = useRef<HTMLInputElement>()
-    const [amountToBurn, setAmountToBurn] = useState(BigNumber(0))
-    const [slippage, setSlippage] = useState(0.5)
-    const [showSlippage, setShowSlippage] = useState(false)
-    const [allowance, setAllowance] = useState(BigNumber(0))
-    const [txRunning, setTxRunning] = useState(false)
+}
 
-    const [calculatingWantTokenAmount, setCalculatingWantTokenAmount] =
-        useState(false)
-    const [expectedWantTokenAmount, setExpectedWantTokenAmount] = useState(
-        BigNumber(0)
-    )
-    const { address, isConnected } = useAccount()
+export const BurnForBacking = (props: BurnForBackingProps) => {
+    const tokensToBurnInputRef = useRef<HTMLInputElement>(null)
+    const slippageInputRef = useRef<HTMLInputElement>(null)
+
     const chainId = useChainId()
-    const { switchNetwork } = useSwitchNetwork()
-    const [hash, setTxHash] = useState('')
-    const { data: signer } = useSigner()
-    const updateAllowance = async () => {
-        return getControllerAllowance(props.provider, address).then(
-            (allowance) => {
-                setAllowance(BigNumber(allowance.toString()))
-            }
+    const { switchChain } = useSwitchChain()
+    const { address, isConnected } = useAccount()
+
+    const [toastId, setToastId] = useState<Id>()
+    const [slippage, setSlippage] = useState(0)
+    const [slippageAmount, setSlippageAmount] = useState(0n)
+    const [showSlippage, setShowSlippage] = useState(false)
+
+    const [amountToBurn, setAmountToBurn] = useState<bigint>()
+    const [amountToBurnEntered, setAmountToBurnEntered] = useState<string>('')
+
+    const [isInApproval, setIsInApproval] = useState(false)
+    const [isInBurnForBacking, setIsInBurnForBacking] = useState(false)
+
+    //
+    // Hooks
+    //
+    const {
+        data: dataGetBackingFromWantToken,
+        isLoading: isLoadingGetBackingFromWantToken,
+        refetch: refetchGetBackingFromWantToken,
+    } = useGetBackingFromWantToken(
+        props?.activeWantToken?.address,
+        amountToBurn!
+    )
+    const { data: dataERC20Allowance, refetch: refetchERC20Allowance } =
+        useHasERC20Allowance(
+            props.baseTokenAddress,
+            process.env.NEXT_PUBLIC_CONTROLLER_ADDRESS! as Address
         )
+    const {
+        write: writeERC20Approve,
+        isPending: isPendingERC20Approve,
+        isSuccess: isSuccessERC20Approve,
+        isError: isErrorERC20Approve,
+        error: errorERC20Approve,
+        hash: hashApproval,
+    } = useERC20Approve(
+        props.baseTokenAddress,
+        process.env.NEXT_PUBLIC_CONTROLLER_ADDRESS! as Address,
+        amountToBurn!
+    )
+    const {
+        write: writeDoBurnForBacking,
+        isPending: isPendingDoBurnForBacking,
+        isSuccess: isSuccessDoBurnForBacking,
+        isError: isErrorDoBurnForBacking,
+        error: errorDoBurnForBacking,
+        hash: hashDoBurnForBacking,
+    } = useDoBurnForBacking(
+        amountToBurn!,
+        props?.activeWantToken?.address,
+        slippageAmount
+    )
+
+    const resetForm = () => {
+        setAmountToBurn(undefined)
+        tokensToBurnInputRef.current!.value = ''
     }
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const debouncedCalculateReturnAmount = useCallback(
-        calculateReturnDebounced,
-        []
-    )
+    //
+    // handler
+    //
+    const onBackingAmountInputChange = (
+        _event: ChangeEvent<HTMLInputElement>
+    ) => {
+        _event.preventDefault()
+        setAmountToBurnEntered(tokensToBurnInputRef.current!.value)
+    }
+
+    //
+    // Effects
+    //
+    useEffect(() => {
+        if (!refetchERC20Allowance || !isConnected || !address) return
+        refetchERC20Allowance()
+    }, [isConnected, refetchERC20Allowance, address])
 
     useEffect(() => {
-        setCalculatingWantTokenAmount(true)
-        debouncedCalculateReturnAmount(
-            signer,
-            props.provider,
-            props.activeWantToken?.address,
-            allowance,
-            amountToBurn,
-            props.baseTokenAmount,
-            setExpectedWantTokenAmount,
-            setCalculatingWantTokenAmount
-        )
+        if (Boolean(amountToBurnEntered && props.baseTokenAmount)) {
+            const amountToBurnEnteredProcessable = parseUnits(
+                amountToBurnEntered,
+                Number(props.baseTokenDecimals)
+            )
+
+            const checkAmountToBurnEntered = formatUnits(
+                amountToBurnEnteredProcessable,
+                Number(props.baseTokenDecimals)
+            )
+
+            if (amountToBurnEntered != checkAmountToBurnEntered) {
+                setAmountToBurn(0n)
+                // TODO error
+                return
+            }
+
+            if (props.baseTokenAmount - amountToBurnEnteredProcessable < 0n) {
+                setAmountToBurn(0n)
+                // TODO error
+                return
+            } else {
+                // TODO reset error
+                setAmountToBurn(amountToBurnEnteredProcessable)
+            }
+        }
+
+        if (!amountToBurnEntered) setAmountToBurn(0n)
+
+        if (amountToBurnEntered) {
+        }
+    }, [amountToBurnEntered, props.baseTokenAmount, props.baseTokenDecimals])
+
+    useEffect(() => {
+        if (!isInApproval) return
+
+        if (isPendingERC20Approve) {
+            const id = toast.loading('Approval is being processed', {
+                autoClose: false,
+            })
+            setToastId(id)
+        } else {
+            if (toastId) toast.dismiss(toastId)
+
+            if (isSuccessERC20Approve) {
+                toast.success(
+                    `Approval successfully. View on <a href="https://snowtrace/tx/${hashApproval}">`,
+                    { autoClose: 3000 }
+                )
+                props.onSettingsChange()
+            }
+
+            if (isErrorERC20Approve && errorERC20Approve)
+                toast.error(
+                    `Approval failed! Cause: ${errorERC20Approve.message}`,
+                    {
+                        autoClose: 5000,
+                    }
+                )
+        }
     }, [
-        signer,
-        props.provider,
-        props.activeWantToken,
-        props.baseTokenAmount,
-        amountToBurn,
-        allowance,
-        debouncedCalculateReturnAmount,
+        toast,
+        hashApproval,
+        isInApproval,
+        isPendingERC20Approve,
+        isSuccessERC20Approve,
+        isErrorERC20Approve,
+        errorERC20Approve,
+        props.onSettingsChange
     ])
 
     useEffect(() => {
-        if (!isConnected || !address) {
-            return
-        }
+        if (!isInBurnForBacking) return
 
-        updateAllowance()
-    }, [isConnected, address, props.provider])
+        if (isPendingDoBurnForBacking) {
+            const id = toast.loading('Burn is being processed', {
+                autoClose: false,
+            })
+            setToastId(id)
+        } else {
+            if (toastId) toast.dismiss(toastId)
+
+            if (isSuccessDoBurnForBacking) {
+                toast.success(
+                    `Burn for backing successful. View on <a href="https://snowtrace/tx/${hashDoBurnForBacking}">`,
+                    {
+                        autoClose: 3000,
+                    }
+                )
+                props.onSettingsChange()
+                resetForm()
+            }
+
+            if (isErrorDoBurnForBacking && errorDoBurnForBacking)
+                toast.error(
+                    `Burn for backing failed! Cause: ${errorDoBurnForBacking.message}`,
+                    {
+                        autoClose: 5000,
+                    }
+                )
+        }
+    }, [
+        hashDoBurnForBacking,
+        isInBurnForBacking,
+        isPendingDoBurnForBacking,
+        isSuccessDoBurnForBacking,
+        isErrorDoBurnForBacking,
+        errorDoBurnForBacking,
+        props.onSettingsChange,
+    ])
+
+    useEffect(() => {
+        if (!dataGetBackingFromWantToken || !slippage) return
+        setSlippageAmount(
+            BigInt(
+                Math.floor(
+                    Number(dataGetBackingFromWantToken) * (1 - slippage / 100)
+                )
+            )
+        )
+    }, [slippage, dataGetBackingFromWantToken])
 
     if (!isConnected) {
-        return <p>Connect wallet to be able to burn DGNX for backing</p>
+        return <p>Connect wallet to burn {props.baseTokenSymbol}</p>
     }
 
     if (!props.baseTokenAmount || !props.baseTokenDecimals) {
         return <p>...</p>
-    }
-
-    const execBurn = async () => {
-        setTxRunning(true)
-        const toastId = toast.loading('Burn is being processed', {
-            autoClose: false,
-        })
-        const hash = (await burnForBacking(
-            signer,
-            props.activeWantToken.address,
-            ethers.BigNumber.from(amountToBurn.toFixed()),
-            ethers.BigNumber.from(
-                expectedWantTokenAmount
-                    .times(1 - slippage / 100)
-                    .integerValue()
-                    .toFixed()
-            )
-        )) as string
-        setTxHash(hash)
-        toast.dismiss(toastId)
-        if (!!hash) {
-            setAmountToBurn(BigNumber(0))
-            tokensToBurnInputRef.current.value = ''
-            toast.success('Burn for backing successful', { autoClose: 3000 })
-        } else {
-            toast.error('Burn for backing failed! Please try again', {
-                autoClose: 5000,
-            })
-        }
-        setTxRunning(false)
-        props.forceRefetch()
-    }
-
-    const execApprove = async () => {
-        setTxRunning(true)
-        const toastId = toast.loading('Waiting for approval...', {
-            autoClose: false,
-        })
-        const isApproved = await approveBaseToken(
-            signer,
-            ethers.BigNumber.from(amountToBurn.toFixed())
-        )
-        toast.dismiss(toastId)
-        if (isApproved) {
-            toast.success('Approval successfully', { autoClose: 3000 })
-        } else {
-            toast.error('Approval failed! Please try again', {
-                autoClose: 5000,
-            })
-        }
-        await updateAllowance()
-        await calculateReturnAmount(
-            signer,
-            props.provider,
-            props.activeWantToken.address,
-            allowance,
-            amountToBurn,
-            props.baseTokenAmount,
-            setExpectedWantTokenAmount,
-            setCalculatingWantTokenAmount
-        )
-        setTxRunning(false)
-    }
-
-    const updateBurnAmount = (amount: BigNumber) => {
-        let burnAmount = amount
-        if (burnAmount.gt(props.baseTokenAmount)) {
-            burnAmount = props.baseTokenAmount
-            tokensToBurnInputRef.current.value = BNtoNumber(
-                props.baseTokenAmount,
-                props.baseTokenDecimals
-            ).toString()
-        }
-
-        setAmountToBurn(burnAmount)
     }
 
     return (
@@ -287,12 +288,13 @@ export const BurnForBacking = (props: {
                             <AiOutlineCheckCircle
                                 className="ml-1 inline cursor-pointer "
                                 onClick={() => {
-                                    setSlippage(
-                                        parseFloat(
-                                            slippageInputRef.current.value ||
-                                                '0.5'
+                                    if (slippageInputRef.current)
+                                        setSlippage(
+                                            parseFloat(
+                                                slippageInputRef.current
+                                                    .value || '0.5'
+                                            )
                                         )
-                                    )
                                     setShowSlippage(false)
                                 }}
                             />
@@ -300,122 +302,133 @@ export const BurnForBacking = (props: {
                     </p>
                 )}
                 <input
-                    className="my-2 w-full rounded-xl border-2 border-degenOrange bg-light-100 py-2 text-2xl leading-3 text-light-800 ring-0 focus:border-degenOrange focus:shadow-none focus:outline-none focus:ring-0 dark:border-activeblue dark:bg-dark dark:text-light-200"
+                    className="my-2 w-full rounded-lg border-0 bg-dapp-blue-800 text-right text-2xl leading-10 [appearance:textfield] focus:ring-0 focus:ring-offset-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                     type="number"
                     placeholder="0"
-                    disabled={txRunning}
-                    onChange={(e) =>
-                        updateBurnAmount(
-                            BigNumber(10)
-                                .pow(props.baseTokenDecimals)
-                                .times(
-                                    BigNumber(parseFloat(e.target.value || '0'))
-                                )
-                        )
+                    disabled={
+                        isPendingDoBurnForBacking || isPendingERC20Approve
                     }
+                    value={amountToBurnEntered}
+                    onChange={onBackingAmountInputChange}
                     ref={tokensToBurnInputRef}
+                    onWheel={(e) => {
+                        e.currentTarget.blur()
+                    }}
                 />
                 <p className="text-right text-xs">
                     Max:{' '}
                     <span
                         className="cursor-pointer underline"
                         onClick={() => {
-                            tokensToBurnInputRef.current.value = BNtoNumber(
-                                props.baseTokenAmount,
-                                props.baseTokenDecimals
-                            ).toString()
                             setAmountToBurn(props.baseTokenAmount)
+                            setAmountToBurnEntered(
+                                formatUnits(
+                                    props.baseTokenAmount,
+                                    Number(props.baseTokenDecimals)
+                                )
+                            )
                         }}
                     >
-                        {BNtoNumber(
+                        {toReadableNumber(
                             props.baseTokenAmount,
                             props.baseTokenDecimals
                         )}
-                    </span>
+                    </span>{' '}
+                    {props.baseTokenSymbol}
                 </p>
 
-                {chainId === 43114 && amountToBurn.isGreaterThan(0) && (
-                    <div className="flex items-center">
-                        {allowance.isGreaterThanOrEqualTo(amountToBurn) ? (
-                            <Button
-                                className="mt-3 w-full"
-                                color="orange"
-                                onClick={() => execBurn()}
-                            >
-                                {txRunning ? <Spinner /> : 'Burn'}
-                            </Button>
-                        ) : (
-                            <Button
-                                className="mt-3 w-full"
-                                color="orange"
-                                onClick={() => execApprove()}
-                            >
-                                {txRunning ? <Spinner /> : 'Approve'}
-                            </Button>
-                        )}
-                    </div>
-                )}
+                {chainId === 43114 &&
+                    amountToBurn !== undefined &&
+                    amountToBurn > 0n &&
+                    dataERC20Allowance !== undefined && (
+                        <div className="flex items-center">
+                            {dataERC20Allowance >= amountToBurn ? (
+                                <Button
+                                    className="mt-3 w-full"
+                                    color="orange"
+                                    disabled={isPendingDoBurnForBacking}
+                                    onClick={() => {
+                                        setIsInBurnForBacking(true)
+                                        writeDoBurnForBacking &&
+                                            writeDoBurnForBacking()
+                                    }}
+                                >
+                                    {isPendingDoBurnForBacking ? (
+                                        <Spinner />
+                                    ) : (
+                                        'Burn'
+                                    )}
+                                </Button>
+                            ) : (
+                                <Button
+                                    className="mt-3 w-full"
+                                    color="orange"
+                                    disabled={isPendingERC20Approve}
+                                    onClick={() => {
+                                        setIsInApproval(true)
+                                        writeERC20Approve && writeERC20Approve()
+                                    }}
+                                >
+                                    {isPendingERC20Approve ? (
+                                        <Spinner />
+                                    ) : (
+                                        'Approve'
+                                    )}
+                                </Button>
+                            )}
+                        </div>
+                    )}
 
-                {chainId !== 43114 && amountToBurn.isGreaterThan(0) && (
-                    <div className="flex items-center">
-                        <Button
-                            className="mt-3 w-full"
-                            color="orange"
-                            onClick={() => switchNetwork(43114)}
-                        >
-                            Switch to Avax
-                        </Button>
-                    </div>
-                )}
+                {chainId !== 43114 &&
+                    amountToBurn !== undefined &&
+                    amountToBurn > 0n && (
+                        <div className="flex items-center">
+                            <Button
+                                className="mt-3 w-full"
+                                color="orange"
+                                onClick={() => switchChain({ chainId: 43114 })}
+                            >
+                                Switch to Avax
+                            </Button>
+                        </div>
+                    )}
             </div>
-            <div />
 
-            {hash && (
-                <div>
-                    Tx successful!{' '}
-                    <a
-                        className="text-orange-600"
-                        href={`https://avascan.info/blockchain/c/tx/${hash}`}
-                        target="_blank"
-                        rel="noreferrer"
-                    >
-                        Check transaction on Avascan
-                    </a>
-                </div>
-            )}
-            {(calculatingWantTokenAmount || props.isLoading) &&
-                amountToBurn.isGreaterThan(0) && (
+            {amountToBurn !== undefined &&
+                amountToBurn > 0n &&
+                isLoadingGetBackingFromWantToken &&
+                !dataGetBackingFromWantToken && (
                     <p className="">Calculating expected output...</p>
                 )}
-            {!calculatingWantTokenAmount &&
-                !props.isLoading &&
-                amountToBurn.isGreaterThan(0) &&
-                expectedWantTokenAmount.isGreaterThan(0) && (
+            {amountToBurn !== undefined &&
+                dataERC20Allowance !== undefined &&
+                amountToBurn > 0n &&
+                !isLoadingGetBackingFromWantToken &&
+                dataGetBackingFromWantToken &&
+                dataGetBackingFromWantToken > 0n && (
                     <>
                         <div />
                         <div className="inline-block ">
-                            {allowance.isGreaterThanOrEqualTo(amountToBurn)
+                            {dataERC20Allowance >= amountToBurn
                                 ? 'Includes token tax, fees, etc'
                                 : 'Estimated output. Approve to get exact values'}
                             <div className="flex gap-x-5">
                                 <p className="flex-grow">Expected output:</p>
                                 <p className="text-right">
-                                    {BNtoNumber(
-                                        expectedWantTokenAmount,
+                                    {toReadableNumber(
+                                        dataGetBackingFromWantToken,
                                         props.activeWantToken.decimals
-                                    ).toFixed(8)}{' '}
+                                    )}{' '}
                                     {props.activeWantToken.info.name}
                                 </p>
                             </div>
                             <div className="flex gap-x-5">
                                 <p className="flex-grow">Minimum received:</p>
                                 <p className="text-right">
-                                    {BNtoNumber(
-                                        expectedWantTokenAmount.times(
-                                            1 - slippage / 100
-                                        ),
+                                    {toReadableNumber(
+                                        slippageAmount,
                                         props.activeWantToken.decimals
-                                    ).toFixed(8)}{' '}
+                                    )}{' '}
                                     {props.activeWantToken.info.name}
                                 </p>
                             </div>

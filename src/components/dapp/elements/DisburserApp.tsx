@@ -1,19 +1,15 @@
-import { RouteObject } from 'react-router-dom'
-import {
-    useAccount,
-    useContractRead,
-    useContractWrite,
-    useClient,
-    usePrepareContractWrite,
-} from 'wagmi'
-import abi from '../../../abi/disburser.json'
-import { Spinner } from './Spinner'
-import BigNumber from 'bignumber.js'
-import { useCountdownTimer } from 'use-countdown-timer'
+import abi from '@dappabis/disburser.json'
+import { toReadableNumber } from '@dapphelpers/number'
+import { useDisburserClaim } from '@dapphooks/disburser/useDisburserClaim'
 import { useEffect } from 'react'
+import { RouteObject } from 'react-router-dom'
+import { useCountdownTimer } from 'use-countdown-timer'
+import { useAccount, useReadContract } from 'wagmi'
 import { Button } from '../../Button'
-import { DISBURSER_ADDRESS } from '../../../constants'
-import { toast } from 'react-toastify'
+import { Spinner } from './Spinner'
+import { ToastContainer, toast } from 'react-toastify'
+
+const DISBURSER_ADDRESS = '0x8a0E3264Da08bf999AfF5a50AabF5d2dc89fab79'
 
 const countdownStr = (s: number) => {
     const d = Math.floor(s / (3600 * 24))
@@ -22,7 +18,7 @@ const countdownStr = (s: number) => {
     s -= h * 3600
     const m = Math.floor(s / 60)
     s -= m * 60
-    const tmp = []
+    const tmp: string[] = []
     d && tmp.push(d + 'd')
     ;(d || h) && tmp.push(h + 'h')
     ;(d || h || m) && tmp.push(m + 'm')
@@ -39,110 +35,85 @@ const Countdown = (props: { seconds: number }) => {
         if (!isRunning) {
             start()
         }
-    }, [isRunning])
+    }, [isRunning, start])
 
     return <div>Claim in {countdownStr(countdown / 1000)}</div>
 }
 
 const ClaimButton = (props: { amount: string | number }) => {
-    const { config } = usePrepareContractWrite({
-        address: DISBURSER_ADDRESS,
-        abi,
-        functionName: 'claim',
-        enabled: BigNumber(props.amount).gt(0),
-    })
-
-    const {
-        isLoading: claimLoading,
-        isSuccess: claimSuccess,
-        write: claim,
-        isError,
-        error,
-    } = useContractWrite(config)
+    const { write, isLoading, isSuccess, isError, error } =
+        useDisburserClaim(DISBURSER_ADDRESS)
 
     useEffect(() => {
-        if (isError) {
-            toast.error(error.message)
-        }
-    }, [isError])
-
-    if (claimLoading) {
-        return (
-            <Button className="mt-3 w-full" color="orangeDisabled">
-                Loading...
-            </Button>
-        )
-    }
-
-    if (claimSuccess) {
-        return (
-            <Button className="mt-3 w-full" color="orangeDisabled">
-                Claim success!
-            </Button>
-        )
-    }
+        if (isError) toast.error((error as any).shortMessage)
+    }, [isError, error])
 
     return (
-        claim && (
-            <Button
-                className="mt-3 w-full"
-                color="orange"
-                onClick={() => {
-                    claim()
-                }}
-            >
-                Claim {props.amount} now!
-            </Button>
-        )
+        <Button
+            className={`mt-3 w-full ${
+                isLoading || isSuccess ? 'orangeDisabled' : ''
+            }`}
+            color="orange"
+            disabled={isLoading}
+            onClick={() => {
+                console.log({ write })
+                write && write()
+            }}
+        >
+            {isLoading && 'Loading...'}
+            {isSuccess && 'Claim success!'}
+            {!isSuccess && !isLoading && `Claim ${props.amount} now!`}
+        </Button>
     )
 }
 
 const Dapp = () => {
     const { address } = useAccount()
-    const { data: walletClient } = useClient()
-    const { data: amountLeft, isLoading: amountLeftLoading } = useContractRead({
+
+    const { data: amountLeft, isLoading: amountLeftLoading } = useReadContract({
         address: DISBURSER_ADDRESS,
         abi,
         functionName: 'amountLeft',
         args: [address],
     })
 
-    const { data: paidOut, isLoading: paidOutLoading } = useContractRead({
+    const { data: paidOut, isLoading: paidOutLoading } = useReadContract({
         address: DISBURSER_ADDRESS,
         abi,
         functionName: 'paidOutAmounts',
         args: [address],
     })
 
-    const {
-        data: timeUntilNextClaimBN,
-        isLoading: timeUntilNextClaimBNLoading,
-    } = useContractRead({
+    const { data: timeUntilNextClaim } = useReadContract({
         address: DISBURSER_ADDRESS,
         abi,
         functionName: 'timeLeftUntilNextClaim',
         args: [address],
+        query: {
+            select: (data: bigint) => data,
+        },
     })
 
     const { data: claimEstimate, isLoading: claimEstimateLoading } =
-        useContractRead({
+        useReadContract({
             address: DISBURSER_ADDRESS,
             abi,
             functionName: 'claimEstimate',
-            overrides: {
-                from: walletClient.account,
+            account: address,
+            query: {
+                select: (data: [bigint, bigint, bigint, boolean]) => ({
+                    claimable: data[0],
+                    missedPayouts: data[1],
+                    currentBalance: data[2],
+                    lastClaim: data[3],
+                }),
             },
         })
 
     const claimableAmount = claimEstimateLoading
         ? 0
-        : `${(
-              parseInt((claimEstimate as any).claimable as string) /
-              Math.pow(10, 18)
-          ).toFixed(4)}`
-    const timeUntilNextClaim = timeUntilNextClaimBNLoading
-        ? 0
-        : (timeUntilNextClaimBN as BigNumber).toNumber()
+        : `${toReadableNumber(claimEstimate?.claimable, 18)}`
+
     const amountLeftStr = amountLeftLoading
         ? '...'
         : `${(parseInt(amountLeft as string) / Math.pow(10, 18)).toFixed(4)}`
@@ -163,9 +134,9 @@ const Dapp = () => {
                 </div>
             </div>
             <div className="mt-6 flex w-full items-center justify-center">
-                {timeUntilNextClaim > 0 ? (
+                {timeUntilNextClaim && timeUntilNextClaim > 0 ? (
                     <Button className="mt-3 w-full" color="orangeDisabled">
-                        <Countdown seconds={timeUntilNextClaim} />
+                        <Countdown seconds={Number(timeUntilNextClaim)} />
                     </Button>
                 ) : (
                     <ClaimButton amount={claimableAmount} />
@@ -175,35 +146,35 @@ const Dapp = () => {
     )
 }
 
-export const DisburserApp = () => {
+export const DisburserApp = (props: RouteObject) => {
     const { address, isConnected } = useAccount()
-    const { data: hasAmountLeft, isLoading } = useContractRead({
+    const { data: hasAmountLeft, isLoading } = useReadContract({
         address: DISBURSER_ADDRESS,
         abi,
         functionName: 'hasAmountLeft',
         args: [address],
     })
 
-    if (!isConnected) {
-        return <div className="font-bold">Please connect wallet</div>
-    }
-
-    if (isLoading) {
-        return (
-            <div className="flex w-full items-center justify-center">
-                <Spinner />
-            </div>
-        )
-    }
-
-    if (hasAmountLeft) {
-        return <Dapp />
-    }
-
     return (
-        <div>
-            Unfortunately you don&apos;t have a claim on the legacy disburser
-            (anymore).
-        </div>
+        <>
+            {!isConnected && (
+                <div className="font-bold">Please connect wallet</div>
+            )}
+            {isLoading && (
+                <div className="flex w-full items-center justify-center">
+                    <Spinner />
+                </div>
+            )}
+            {hasAmountLeft && <Dapp />}
+            {isConnected && !isLoading && !hasAmountLeft && (
+                <div>
+                    Unfortunately you don&apos;t have a claim on the legacy
+                    disburser (anymore). <br />
+                    If this is not the case, you may want to check if
+                    you&apos;re connected with the desired wallet.
+                </div>
+            )}
+            <ToastContainer />
+        </>
     )
 }

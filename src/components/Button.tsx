@@ -5,6 +5,9 @@ const baseStyles = {
     solid: 'group inline-flex items-center justify-center rounded-full py-2 px-4  font-semibold focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2',
     outline:
         'group inline-flex items-center justify-center rounded-full py-2 px-4  focus:outline-none',
+    slick: clsx(
+        'group inline-flex items-center justify-center rounded-lg py-2 px-4 focus:outline-none leading-5'
+    ),
 }
 
 const variantStyles = {
@@ -20,6 +23,12 @@ const variantStyles = {
         orange: 'bg-transparent border-2 border-degenOrange rounded-full text-light-100 font-medium hover:bg-dark transition-colors',
         green: 'bg-transparent border-2 border-techGreen rounded-full text-light-100 font-medium hover:bg-dark transition-colors',
     },
+    slick: {
+        greenBlue: clsx('bg-greenBlue disabled:opacity-70'),
+        lightBlue: clsx('bg-lightBlue disabled:opacity-70'),
+    },
+
+    disabled: clsx('opacity-40'),
 }
 
 export function Button({
@@ -31,11 +40,32 @@ export function Button({
     onClick = () => {},
     ...props
 }) {
-    className = clsx(
-        baseStyles[variant],
-        variantStyles[variant][color],
-        className
+    if (variant != 'primary' && variant != 'secondary') {
+        className = clsx(
+            baseStyles[variant],
+            variantStyles[variant][color],
+            className
+        )
+    }
+
+    // TODO new buttons
+    const baseStyle = clsx(
+        'group inline-flex items-center justify-center font-semibold rounded-lg py-2 px-4 focus:outline-none leading-5 active:border disabled:active:border-none  hover:opacity-70 disabled:opacity-40 disabled:hover:opacity-40'
     )
+    if (variant == 'primary') {
+        className = clsx(
+            baseStyle,
+            'bg-dapp-cyan-500 text-dapp-blue-800 active:border-dapp-cyan-50',
+            className
+        )
+    }
+    if (variant == 'secondary') {
+        className = clsx(
+            baseStyle,
+            'bg-dapp-blue-100 disabled:bg-dapp-blue-50 text-dapp-cyan-50 active:border-dapp-cyan-500',
+            className
+        )
+    }
 
     return href ? (
         <Link href={href} className={className} {...props} />

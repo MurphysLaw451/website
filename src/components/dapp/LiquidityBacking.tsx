@@ -1,141 +1,150 @@
-import { ethers } from 'ethers'
-import { useEffect, useState } from 'react'
-import { RouteObject } from 'react-router-dom'
-
-import BigNumber from 'bignumber.js'
+import { useGetBackingFromWantToken } from '@dapphooks/liquidityBacking/useGetBackingForWantToken'
+import { useGetBackingPerDGNX } from '@dapphooks/liquidityBacking/useGetBackingPerDGNX'
+import { useGetBaseToken } from '@dapphooks/liquidityBacking/useGetBaseToken'
+import { useGetStats } from '@dapphooks/liquidityBacking/useGetStats'
+import { useGetTotalValue } from '@dapphooks/liquidityBacking/useGetTotalValue'
+import { useGetERC20BalanceOf } from '@dapphooks/shared/useGetERC20BalanceOf'
+import { useGetERC20Decimals } from '@dapphooks/shared/useGetERC20Decimals'
+import { Tile } from '@dappshared/Tile'
 import Image from 'next/image'
+import { useCallback, useEffect, useState } from 'react'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.min.css'
+import { Address } from 'viem'
 import { useAccount } from 'wagmi'
-import {
-    getBackingForAddress,
-    getBackingPerDGNX,
-    getBaseTokenBalance,
-    getStats,
-    getTotalValue,
-} from '../../helpers/liquidityBacking'
-import { BNtoNumber } from '../../helpers/number'
+import { toReadableNumber } from '../../helpers/number'
+import imageLiqBack from '../../images/projects/liqback.svg'
 import { H2 } from '../H2'
 import { BurnForBacking } from './elements/BurnForBacking'
-import { Chart } from './elements/Chart'
 
-import imageLiqBack from '../../images/projects/liqback.svg'
-
-const chainId = +process.env.NEXT_PUBLIC_CHAIN_ID
-const provider = new ethers.providers.JsonRpcProvider(
-    process.env.NEXT_PUBLIC_RPC,
-    {
-        name: process.env.NEXT_PUBLIC_NAME,
-        chainId,
-    }
-)
-
-const WalletBacking = (props: {
-    amountBaseTokens: number
-    backingValue: number
+type WalletBackingProps = {
+    baseTokenAmount: bigint
+    baseTokenDecimals: bigint
+    backingAmount: bigint
+    backingDecimals: bigint
     wantTokenName?: string
-}) => {
+}
+
+const WalletBacking = ({
+    baseTokenAmount,
+    baseTokenDecimals,
+    backingAmount,
+    backingDecimals,
+    wantTokenName,
+}: WalletBackingProps) => {
     return (
         <>
             <div className="flex">
                 <div className="flex-grow">DGNX in wallet</div>
-                <div>{props.amountBaseTokens?.toFixed(3) || 0}</div>
+                <div>
+                    {toReadableNumber(baseTokenAmount, baseTokenDecimals)}
+                </div>
             </div>
             <div className="flex">
-                <div className="flex-grow">
-                    Value in {props.wantTokenName || 0}
-                </div>
-                <div>{props.backingValue?.toFixed(8) || 0}</div>
+                <div className="flex-grow">Value in {wantTokenName || ''}</div>
+                <div>{toReadableNumber(backingAmount, backingDecimals)}</div>
             </div>
         </>
     )
 }
 
 const tokenIsUSDC = (tokenAddress: string) => {
-    return process.env.NEXT_PUBLIC_USDC_ADDRESSES.split(',')
+    return process.env
+        .NEXT_PUBLIC_USDC_ADDRESSES!.split(',')
         .map((add) => add.toLowerCase())
         .includes(tokenAddress.toLowerCase())
 }
 
-export const LiquidityBacking = (props: RouteObject) => {
-    const [stats, setStats] = useState<Awaited<ReturnType<typeof getStats>>>()
-    const [totalBacking, setTotalBacking] = useState<number>()
-    const [loading, setLoading] = useState(false)
-    const [backingPerDGNX, setBackingPerDGNX] = useState<number>()
+export const LiquidityBacking = () => {
+    const { address, isConnected, chainId } = useAccount()
+
+    const [isLoading, setIsLoading] = useState(false)
     const [activeWantToken, setActiveWantToken] = useState<{
-        decimals: number
-        address: string
+        decimals: bigint
+        address: Address
         info: { name: string }
     }>()
-    const [_forceRefetch, forceRefetch] = useState(Math.random())
 
-    const [baseTokenDecimals, setBaseTokenDecimals] = useState<number>()
-    const [baseTokenBalance, setBaseTokenBalance] = useState<BigNumber>()
-    const [addressBacking, setAddressBacking] = useState<number>()
+    //
+    // Hooks
+    //
+    const { data: dataGetStats, loadData } = useGetStats()
+    const {
+        data: dataGetTotalValue,
+        refetch: refetchGetTotalValue,
+        isLoading: isLoadingGetTotalValue,
+    } = useGetTotalValue(activeWantToken?.address!)
+    const {
+        data: dataGetBackingPerDGNX,
+        refetch: refetchGetBackingPerDGNX,
+        isLoading: isLoadingGetBackingPerDGNX,
+    } = useGetBackingPerDGNX(activeWantToken?.address!)
+    const { data: dataGetBaseToken } = useGetBaseToken()
+    const { data: dataGetERC20BalanceOf } = useGetERC20BalanceOf(
+        dataGetBaseToken!,
+        address!
+    )
+    const { data: dataGetERC20Decimals } = useGetERC20Decimals(
+        dataGetBaseToken!
+    )
+    const { data: dataGetBackingFromWantToken } = useGetBackingFromWantToken(
+        activeWantToken?.address!,
+        dataGetERC20BalanceOf!
+    )
 
-    const { address, isConnected } = useAccount()
+    //
+    // Handler
+    //
+    const onSettingsChange = useCallback(() => {
+        loadData()
+    }, [loadData])
+
+    const onWantTokenChange = (tokenAddress: Address) => {
+        setIsLoading(true)
+        setActiveWantToken(
+            dataGetStats?.wantTokenData?.find(
+                (wantToken) => wantToken.address === tokenAddress
+            )
+        )
+    }
+
+    //
+    // Effects
+    //
+    useEffect(() => {
+        loadData()
+    }, [loadData])
 
     useEffect(() => {
-        getStats(provider).then((data) => {
-            setStats(data)
-
-            // Try to set USDC.e as default wantToken, if that isn't in the list, just take the first one
-            const wantTokenIndex = data.wantTokenData.findIndex((token) =>
-                tokenIsUSDC(token.address)
+        if (dataGetStats && dataGetStats.wantTokenData) {
+            const wantTokenIndex = dataGetStats.wantTokenData.findIndex(
+                (token) =>
+                    process.env
+                        .NEXT_PUBLIC_USDC_ADDRESSES!.split(',')
+                        .map((add) => add.toLowerCase())
+                        .includes(token.address.toLowerCase())
             )
             setActiveWantToken(
-                data.wantTokenData[wantTokenIndex === -1 ? 0 : wantTokenIndex]
+                dataGetStats.wantTokenData[
+                    wantTokenIndex === -1 ? 0 : wantTokenIndex
+                ]
             )
-        })
-    }, [])
+        }
+    }, [dataGetStats])
 
     useEffect(() => {
-        if (!activeWantToken) {
-            return
-        }
-
-        setLoading(true)
-        setTotalBacking(0)
-        setBackingPerDGNX(0)
-        setBaseTokenBalance(BigNumber(0))
-        setAddressBacking(0)
-        Promise.all([
-            getTotalValue(provider, activeWantToken.address).then((data) => {
-                setTotalBacking(BNtoNumber(data, activeWantToken.decimals))
-            }),
-            getBackingPerDGNX(provider, activeWantToken.address).then(
-                (data) => {
-                    setBackingPerDGNX(
-                        BNtoNumber(data, activeWantToken.decimals)
-                    )
-                }
-            ),
-        ]).then(() => setLoading(false))
-    }, [activeWantToken])
+        setIsLoading(isLoadingGetTotalValue || isLoadingGetBackingPerDGNX)
+    }, [isLoadingGetTotalValue, isLoadingGetBackingPerDGNX])
 
     useEffect(() => {
-        if (!isConnected || !address || !activeWantToken?.address) {
-            return
+        if (activeWantToken) {
+            refetchGetTotalValue()
+            refetchGetBackingPerDGNX()
         }
-
-        // Your backing
-        getBaseTokenBalance(provider, address)
-            .then((baseTokens) => {
-                setBaseTokenBalance(BigNumber(baseTokens.balance.toString()))
-                setBaseTokenDecimals(baseTokens.decimals)
-                return getBackingForAddress(
-                    provider,
-                    activeWantToken.address,
-                    baseTokens.balance
-                )
-            })
-            .then((backing) => {
-                setAddressBacking(BNtoNumber(backing, activeWantToken.decimals))
-            })
-    }, [isConnected, address, activeWantToken, _forceRefetch])
+    }, [refetchGetTotalValue, refetchGetBackingPerDGNX, activeWantToken])
 
     return (
-        <div>
+        <div className="text-dapp-cyan-50">
             <div className="flex flex-col items-center sm:mb-8 lg:flex-row">
                 <div className="mb-5 flex h-16 w-full items-center justify-center sm:justify-start">
                     <Image
@@ -146,30 +155,21 @@ export const LiquidityBacking = (props: RouteObject) => {
                     />
                 </div>
             </div>
+
             <div className="mb-8 flex flex-col items-center lg:flex-row">
-                <h2 className="text-2xl font-bold text-light-100">
-                    Show backing values in
-                </h2>
+                <h2 className="text-2xl font-bold">Show backing values in</h2>
                 <div className="mb-2 mt-8 flex flex-row lg:mb-0 lg:mt-0">
-                    {stats?.wantTokenData &&
-                        stats.wantTokenData.map((token) => (
+                    {dataGetStats?.wantTokenData &&
+                        dataGetStats.wantTokenData.map((token) => (
                             <span
                                 key={token.address}
                                 className="mx-3 inline-block cursor-pointer rounded-full opacity-70 ring-orange-600 ring-offset-white hover:opacity-100 data-[selected=true]:opacity-100 data-[selected=true]:ring data-[selected=true]:ring-offset-4 dark:ring-light-200 dark:ring-offset-dark"
                                 data-selected={
-                                    activeWantToken.address === token.address
+                                    activeWantToken?.address === token.address
                                 }
                                 data-address={token.address}
                                 title={token.info.name}
-                                onClick={(e) =>
-                                    setActiveWantToken(
-                                        stats.wantTokenData.find(
-                                            (wantToken) =>
-                                                wantToken.address ===
-                                                token.address
-                                        )
-                                    )
-                                }
+                                onClick={() => onWantTokenChange(token.address)}
                             >
                                 <Image
                                     className="inline-block w-12"
@@ -184,51 +184,62 @@ export const LiquidityBacking = (props: RouteObject) => {
                 </div>
             </div>
             <div className="mb-8 grid grid-cols-1 gap-8 lg:grid-cols-3">
-                <div className="rounded-xl border-2 border-degenOrange bg-light-100 p-6 text-light-100 dark:border-activeblue dark:bg-darkerblue">
+                <Tile>
                     <div className="flex">
                         <H2>Total backing</H2>
                     </div>
-                    {!loading && activeWantToken && (
-                        <div className="text-right text-2xl text-white">
-                            {totalBacking?.toFixed(3) || 0}{' '}
-                            {activeWantToken.info.name}
-                        </div>
-                    )}
-                    {!loading && activeWantToken && (
-                        <div className="flex text-white">
-                            <div className="flex-grow"></div>
-                            <div>
-                                {backingPerDGNX?.toFixed(8) || 0}{' '}
-                                {activeWantToken.info.name} / DGNX
-                            </div>
-                        </div>
-                    )}
-                </div>
-                <div className="rounded-xl border-2 border-degenOrange bg-light-100 p-6 text-light-100 dark:border-activeblue dark:bg-darkerblue">
+                    {!isLoadingGetTotalValue &&
+                        !isLoadingGetBackingPerDGNX &&
+                        activeWantToken && (
+                            <>
+                                <div className="text-right text-2xl">
+                                    {toReadableNumber(
+                                        dataGetTotalValue,
+                                        activeWantToken?.decimals
+                                    )}{' '}
+                                    {activeWantToken.info.name}
+                                </div>
+                                <div className="flex">
+                                    <div className="flex-grow"></div>
+                                    <div>
+                                        {toReadableNumber(
+                                            dataGetBackingPerDGNX,
+                                            activeWantToken?.decimals
+                                        )}{' '}
+                                        {activeWantToken.info.name} / DGNX
+                                    </div>
+                                </div>
+                            </>
+                        )}
+                </Tile>
+                <Tile>
                     <div className="flex">
                         <H2>Your backing</H2>
                     </div>
-                    {isConnected && baseTokenBalance ? (
+                    {isConnected &&
+                    dataGetERC20BalanceOf &&
+                    dataGetERC20Decimals &&
+                    dataGetBackingFromWantToken &&
+                    activeWantToken ? (
                         <WalletBacking
-                            amountBaseTokens={BNtoNumber(
-                                baseTokenBalance,
-                                baseTokenDecimals
-                            )}
-                            backingValue={addressBacking}
-                            wantTokenName={activeWantToken?.info?.name}
+                            baseTokenAmount={dataGetERC20BalanceOf}
+                            baseTokenDecimals={dataGetERC20Decimals}
+                            backingAmount={dataGetBackingFromWantToken}
+                            backingDecimals={activeWantToken.decimals}
+                            wantTokenName={activeWantToken.info?.name}
                         />
                     ) : (
                         <p className="text-center">
                             Connect wallet to see your backing
                         </p>
                     )}
-                </div>
+                </Tile>
 
-                <div className="rounded-xl border-2 border-degenOrange bg-light-100 p-6 text-light-100 dark:border-activeblue dark:bg-darkerblue">
+                <Tile>
                     <H2>Backing breakdown</H2>
                     <div className="flex flex-col gap-2">
-                        {stats?.vaultData ? (
-                            stats?.vaultData.map((vaultItem) => {
+                        {dataGetStats?.vaultData ? (
+                            dataGetStats?.vaultData.map((vaultItem) => {
                                 return (
                                     <div
                                         key={vaultItem.tokenAddress}
@@ -248,10 +259,10 @@ export const LiquidityBacking = (props: RouteObject) => {
                                             {vaultItem.name}
                                         </div>
                                         <div>
-                                            {(
-                                                Number(vaultItem.balance) /
-                                                Number(10 ** vaultItem.decimals)
-                                            ).toFixed(3)}
+                                            {toReadableNumber(
+                                                vaultItem.balance,
+                                                vaultItem.decimals
+                                            )}
                                         </div>
                                     </div>
                                 )
@@ -260,28 +271,29 @@ export const LiquidityBacking = (props: RouteObject) => {
                             <p>...</p>
                         )}
                     </div>
-                </div>
+                </Tile>
 
-                <div className="h-[30em] rounded-xl border-2 border-degenOrange bg-light-100 p-6 text-light-100 dark:border-activeblue dark:bg-darkerblue lg:col-span-2">
-                    <Chart wantTokenName={activeWantToken?.info?.name} />
-                </div>
+                <Tile className="h-[30em] lg:col-span-2">
+                    {/* <Chart wantTokenName={activeWantToken?.info?.name} /> */}
+                </Tile>
 
-                <div className="rounded-xl border-2 border-degenOrange bg-light-100 p-6 text-light-100 dark:border-activeblue dark:bg-darkerblue">
+                <Tile>
                     <H2>Burn DGNX for backing</H2>
                     <p className="mb-3">How much DGNX do you want to burn?</p>
                     <div className="flex justify-center">
                         <div className="flex-grow">
                             <BurnForBacking
-                                baseTokenAmount={baseTokenBalance}
-                                baseTokenDecimals={baseTokenDecimals}
-                                activeWantToken={activeWantToken}
-                                provider={provider}
-                                isLoading={loading}
-                                forceRefetch={forceRefetch}
+                                baseTokenAmount={dataGetERC20BalanceOf!}
+                                baseTokenAddress={dataGetBaseToken!}
+                                baseTokenDecimals={dataGetERC20Decimals!}
+                                baseTokenSymbol={'DGNX'}
+                                activeWantToken={activeWantToken!}
+                                onSettingsChange={onSettingsChange}
+                                isLoading={isLoading}
                             />
                         </div>
                     </div>
-                </div>
+                </Tile>
             </div>
             <ToastContainer />
         </div>

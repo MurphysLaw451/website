@@ -1,11 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
 
+/* https://www.tradingview.com/charting-library-docs/v26/customization/styles/CSS-Color-Themes/ */
 .theme-dark:root {
-  --tv-color-platform-background: #091D2E;
-  --tv-color-pane-background: #091D2E;
-  --tv-color-pane-background-secondary: #091D2E;
+  --tv-color-platform-background: #0f2330;
+  --tv-color-pane-background: #0f2330;
+  --tv-color-pane-background-secondary: #0f2330;
 }
 
 html.theme-dark .chart-page .chart-container-border {
-  background-color: #0D1B28 !important;
+  background-color: #0f2330 !important;
 }

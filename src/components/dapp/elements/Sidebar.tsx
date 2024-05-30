@@ -4,6 +4,7 @@ import { Fragment } from 'react'
 import { FaPiggyBank } from 'react-icons/fa'
 import { GiPayMoney } from 'react-icons/gi'
 import { HiCurrencyDollar, HiHome } from 'react-icons/hi'
+import { MdLockClock } from 'react-icons/md'
 import { RiGovernmentFill } from 'react-icons/ri'
 import { Link, useLocation } from 'react-router-dom'
 
@@ -24,7 +25,7 @@ const navigation = [
     {
         name: 'Governance',
         icon: RiGovernmentFill,
-        href: 'governance',
+        href: 'https://docs.dgnx.finance/degenx-ecosystem/Governance/intro_governance',
         count: undefined,
     },
     {
@@ -33,6 +34,12 @@ const navigation = [
         href: 'disburser',
         count: undefined,
     },
+    // {
+    //     name: 'Staking',
+    //     icon: MdLockClock,
+    //     href: 'staking',
+    //     count: undefined,
+    // },
 ]
 
 function MobileNavLink({ href, children, ...props }) {
@@ -170,20 +177,20 @@ export default function Sidebar(props: { mobile?: boolean }) {
                                 }
                                 className={clsx(
                                     current
-                                        ? 'border-2 border-degenOrange bg-light-100 text-dark'
-                                        : 'border-2 border-transparent text-light-800 hover:border-degenOrange hover:bg-light-100 hover:text-dark',
+                                        ? 'bg-light-100 text-dark'
+                                        : 'text-light-800 hover:border-degenOrange hover:bg-light-100 hover:text-dark',
                                     current
-                                        ? 'border-2 dark:border-activeblue dark:bg-darkblue dark:text-light-100'
-                                        : 'border-2 border-transparent dark:text-light-100 dark:hover:border-activeblue dark:hover:bg-darkblue',
-                                    'text-md group flex items-center rounded-xl px-2 py-2 font-bold transition-colors'
+                                        ? 'dark:bg-dapp-blue-600 dark:text-dapp-cyan-50'
+                                        : 'dark:text-dapp-cyan-50 dark:hover:border-activeblue dark:hover:bg-dapp-blue-600',
+                                    'text-md group flex items-center rounded-lg p-2 font-bold transition-colors'
                                 )}
                             >
                                 <item.icon
                                     className={clsx(
                                         current
-                                            ? 'text-dark dark:text-light-100'
-                                            : 'text-light-800 transition-colors group-hover:text-dark dark:text-light-100 dark:group-hover:text-light-100',
-                                        'mr-3 h-6 w-6 flex-shrink-0 stroke-white '
+                                            ? 'text-dark dark:text-dapp-cyan-50'
+                                            : 'text-light-800 transition-colors group-hover:text-dark dark:text-dapp-cyan-50 dark:group-hover:text-dapp-cyan-50',
+                                        'mr-3 h-6 w-6 flex-shrink-0 stroke-dapp-cyan-50 '
                                     )}
                                     aria-hidden="true"
                                 />

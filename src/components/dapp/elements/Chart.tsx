@@ -41,7 +41,7 @@ export const Chart = (props: { wantTokenName: string; className?: string }) => {
     const [tvLoaded, setTvLoaded] = useState(false)
     const [loadTvCalled, setLoadTvCalled] = useState(false)
     const [ready, setReady] = useState(false)
-    const [containerId] = useState(Math.random().toString());
+    const [containerId] = useState(Math.random().toString())
 
     if (!tvLoaded && !loadTvCalled) {
         setLoadTvCalled(true)
@@ -50,7 +50,9 @@ export const Chart = (props: { wantTokenName: string; className?: string }) => {
 
     const { theme } = useTheme()
 
-    useEffect(() => { setReady(true) }, []);
+    useEffect(() => {
+        setReady(true)
+    }, [])
 
     useEffect(() => {
         // @ts-ignore
@@ -65,7 +67,7 @@ export const Chart = (props: { wantTokenName: string; className?: string }) => {
 
         const backingChartName = `${backingName} in ${props.wantTokenName}`
 
-        const bgColor = theme === 'light' ? '#f2f3f9' : '#091D2E'
+        const bgColor = theme === 'light' ? '#f2f3f9' : '#0F2330'
 
         // @ts-ignore
         const tv = new window.TradingView.widget({
@@ -89,8 +91,8 @@ export const Chart = (props: { wantTokenName: string; className?: string }) => {
                     : '/custom_chart.css',
             custom_font_family: "'Space Mono'",
             customFormatters: {
-                timeFormatter: null,
-                dateFormatter: null,
+                timeFormatter: { format: () => '', formatLocal: () => '' },
+                dateFormatter: { format: () => '', formatLocal: () => '' },
                 priceFormatterFactory: () => {
                     return {
                         format: (price) => numberFormatter.shortenPrice(price),
@@ -269,10 +271,18 @@ export const Chart = (props: { wantTokenName: string; className?: string }) => {
         setTimeout(() => {
             applyOverrides(tv, bgColor)
         }, 7000)
-    }, [ready, props.wantTokenName, backingType, priceMode, theme, tvLoaded, containerId])
+    }, [
+        ready,
+        props.wantTokenName,
+        backingType,
+        priceMode,
+        theme,
+        tvLoaded,
+        containerId,
+    ])
 
     if (!ready) {
-        return null;
+        return null
     }
 
     return (

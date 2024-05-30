@@ -8,7 +8,7 @@ export const useFinishVerification = (hash: string) => {
         setIsLoading(true)
         try {
             const res = await fetch(
-                process.env.NEXT_PUBLIC_BOUNCER_FINISH_VERIFICATION.replace(
+                process.env.NEXT_PUBLIC_BOUNCER_FINISH_VERIFICATION!.replace(
                     '{hash}',
                     _hash
                 )
