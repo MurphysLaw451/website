@@ -56,7 +56,8 @@ const tokenIsUSDC = (tokenAddress: string) => {
 }
 
 export const LiquidityBacking = () => {
-    const { address, isConnected, chainId } = useAccount()
+    const chainId = +process.env.NEXT_PUBLIC_CHAIN_ID!
+    const { address, isConnected } = useAccount()
 
     const [isLoading, setIsLoading] = useState(false)
     const [activeWantToken, setActiveWantToken] = useState<{
