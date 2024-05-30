@@ -82,7 +82,7 @@ export const StakeX = () => {
 
     const protocolAddress = useMemo<Address>(() => {
         return (hash || STAKEX_ADDRESS) as Address
-    }, [hash, STAKEX_ADDRESS])
+    }, [hash])
 
     const { isError: isErrorActive, error: errorActive } =
         useActive(protocolAddress)
@@ -386,7 +386,7 @@ export const StakeX = () => {
                                         Welcome to STAKEX Staking Protocol
                                     </h2>
                                     <p>
-                                        You'll find more information about
+                                        You&apos;ll find more information about
                                         STAKEX in our{' '}
                                         <a
                                             href="https://docs.dgnx.finance/degenx-ecosystem/Products/stakex/introduction"
