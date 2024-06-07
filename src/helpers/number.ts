@@ -26,7 +26,11 @@ export const toPrecision = (x: number, precision = 2) => {
 
 export const toReadableNumber = (
     amount: BigNumberish = 0,
-    decimals: BigNumberish = 0
+    decimals: BigNumberish = 0,
+    options?: {
+        maximumFractionDigits?: number
+        minimumFractionDigits?: number
+    }
 ) => {
     if (BigNumber(amount.toString()).eq(0)) return '0'
 
@@ -34,8 +38,8 @@ export const toReadableNumber = (
         .div(BigNumber(10).exponentiatedBy(decimals.toString()))
         .toNumber()
 
-    let maximumFractionDigits = 7
-    let minimumFractionDigits = 2
+    let maximumFractionDigits = options?.maximumFractionDigits || 7
+    let minimumFractionDigits = options?.minimumFractionDigits || 2
 
     while (no < 1 / 10 ** minimumFractionDigits) {
         minimumFractionDigits++

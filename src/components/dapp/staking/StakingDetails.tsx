@@ -303,7 +303,9 @@ export const StakingDetails = ({
                             <StatsBoxTwoColumn.RightColumn>
                                 {`${toReadableNumber(
                                     Number(stakeShareInfo[0].share) /
-                                        Number(stakeShareInfo[0].divider)
+                                        Number(stakeShareInfo[0].divider),
+                                    0,
+                                    { maximumFractionDigits: 2 }
                                 )}%`}
                             </StatsBoxTwoColumn.RightColumn>
                         </>
@@ -368,7 +370,9 @@ export const StakingDetails = ({
                                             <div className="w-2/4">
                                                 {`${toReadableNumber(
                                                     Number(share.share) /
-                                                        Number(share.divider)
+                                                        Number(share.divider),
+                                                    0,
+                                                    { maximumFractionDigits: 2 }
                                                 )}%`}
                                             </div>
                                         </div>
