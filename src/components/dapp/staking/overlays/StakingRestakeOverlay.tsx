@@ -135,17 +135,18 @@ export const StakingRestakeOverlay = ({
 
     useEffect(() => {
         if (stakeBucketsData) {
-            setDurationButtons([
-                ...stakeBucketsData?.map(
-                    ({ id, duration, burn, multiplier }) => ({
-                        id,
-                        multiplier,
-                        duration,
-                        burn,
-                        selected: id === stakeBucketId,
-                    })
-                ),
-            ])
+            setDurationButtons(
+                stakeBucketsData.map(
+                    ({ id, duration, burn, multiplier }) =>
+                        ({
+                            id,
+                            multiplier,
+                            duration,
+                            burn,
+                            selected: id === stakeBucketId,
+                        } as StakeBucketButton)
+                )
+            )
 
             if (stakeBucketId) {
                 setSelectedStake(
