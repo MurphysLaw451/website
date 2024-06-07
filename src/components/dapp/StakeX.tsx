@@ -126,7 +126,7 @@ export const StakeX = () => {
     }, [isErrorActive, errorActive])
 
     useEffect(() => {
-        if (activeTabIndex) setHeadline(tabs[activeTabIndex].headline)
+        setHeadline(tabs[activeTabIndex]?.headline)
     }, [tabs, activeTabIndex])
 
     useEffect(() => {

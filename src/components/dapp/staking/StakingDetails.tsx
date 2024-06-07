@@ -1,9 +1,14 @@
 import { toReadableNumber } from '@dapphelpers/number'
-import { StakeXContext } from '@dapphelpers/staking'
+import { StakeXContext, durationFromSeconds } from '@dapphelpers/staking'
 import { useGetRewardEstimationForTokens } from '@dapphooks/staking/useGetRewardEstimationForTokens'
 import { useGetTargetTokens } from '@dapphooks/staking/useGetTargetTokens'
 import { StatsBoxTwoColumn } from '@dappshared/StatsBoxTwoColumn'
-import { StakeResponse, StakingBaseProps, TokenInfoResponse } from '@dapptypes'
+import {
+    StakeBucket,
+    StakeResponse,
+    StakingBaseProps,
+    TokenInfoResponse,
+} from '@dapptypes'
 import { useContext, useEffect, useMemo, useState } from 'react'
 import { Button } from '../../Button'
 import { Spinner } from '../elements/Spinner'
@@ -13,12 +18,21 @@ import { StakingClaimOverlay } from './overlays/StakingClaimOverlay'
 import { StakingRestakeOverlay } from './overlays/StakingRestakeOverlay'
 import { StakingWithdrawOverlay } from './overlays/StakingWithdrawOverlay'
 import { useGetStakingData } from '@dapphooks/staking/useGetStakingData'
+import { CaretDivider } from '@dappshared/CaretDivider'
+import {
+    BucketStakedShare,
+    useGetStakedSharesByStaker,
+} from '@dapphooks/staking/useGetStakedSharesByStaker'
+import { useAccount } from 'wagmi'
+import { useGetStakeBuckets } from '@dapphooks/staking/useGetStakeBuckets'
 
 type StakingDetailsProps = {
     stakes: readonly StakeResponse[]
     defaultShowToken: TokenInfoResponse
     defaultPayoutToken: TokenInfoResponse
 }
+
+type BucketStakedShareInfo = Partial<BucketStakedShare & StakeBucket>
 
 type ComponentProps = StakingBaseProps & StakingDetailsProps
 
@@ -73,6 +87,8 @@ export const StakingDetails = ({
     const [canClaimAll, setCanClaimAll] = useState(false)
 
     const [stakesOrdered, setStakesOrdered] = useState<StakeResponse[]>()
+    const [stakeShareInfo, setStakeShareInfo] =
+        useState<BucketStakedShareInfo[]>()
 
     // processing / cta / interative
     const [isInProgess, setIsInProgess] = useState(false)
@@ -85,6 +101,7 @@ export const StakingDetails = ({
     const [tokenIdToWithdraw, setTokenIdToWithdraw] = useState<bigint>()
 
     const { refetchStakes } = useContext(StakeXContext)
+    const { address } = useAccount()
 
     const { data: rewardEstimations, refetch: refetchRewardEstimations } =
         useGetRewardEstimationForTokens(
@@ -93,6 +110,11 @@ export const StakingDetails = ({
             defaultShowToken?.source
         )
     const { data: targetTokens } = useGetTargetTokens(protocolAddress)
+    const { data: dataGetStakedSharesByStaker } = useGetStakedSharesByStaker(
+        protocolAddress,
+        address!
+    )
+    const { data: dataGetStakeBuckets } = useGetStakeBuckets(protocolAddress)
 
     //
     // handlers
@@ -155,6 +177,19 @@ export const StakingDetails = ({
         isInProgessRestake,
         isInProgessWithdraw,
     ])
+
+    useEffect(() => {
+        if (dataGetStakedSharesByStaker && dataGetStakeBuckets) {
+            setStakeShareInfo(
+                dataGetStakedSharesByStaker.map((share) => ({
+                    ...share,
+                    ...dataGetStakeBuckets.find(
+                        (bucket) => share.bucketId == bucket.id
+                    ),
+                }))
+            )
+        }
+    }, [dataGetStakedSharesByStaker, dataGetStakeBuckets])
 
     useEffect(() => {
         if (
@@ -257,6 +292,25 @@ export const StakingDetails = ({
                             stakingTokenInfo?.decimals
                         )}
                     </StatsBoxTwoColumn.RightColumn>
+
+                    {stakeShareInfo && stakeShareInfo.length == 1 && (
+                        <>
+                            <StatsBoxTwoColumn.LeftColumn>
+                                <span className="text-darkTextLowEmphasis">
+                                    Your Share
+                                </span>
+                            </StatsBoxTwoColumn.LeftColumn>
+                            <StatsBoxTwoColumn.RightColumn>
+                                {`${toReadableNumber(
+                                    Number(stakeShareInfo[0].share) /
+                                        Number(stakeShareInfo[0].divider),
+                                    0,
+                                    { maximumFractionDigits: 2 }
+                                )}%`}
+                            </StatsBoxTwoColumn.RightColumn>
+                        </>
+                    )}
+
                     <StatsBoxTwoColumn.LeftColumn>
                         <span className="text-darkTextLowEmphasis">
                             Unclaimed Rewards
@@ -269,6 +323,65 @@ export const StakingDetails = ({
                             defaultShowToken?.decimals
                         )}
                     </StatsBoxTwoColumn.RightColumn>
+
+                    {stakeShareInfo && stakeShareInfo.length > 1 && (
+                        <>
+                            <div className="col-span-2">
+                                <CaretDivider />
+                            </div>
+                            <StatsBoxTwoColumn.LeftColumn>
+                                <span className="font-bold text-darkTextLowEmphasis">
+                                    Locking Period
+                                </span>
+                            </StatsBoxTwoColumn.LeftColumn>
+                            <StatsBoxTwoColumn.RightColumn>
+                                <div className="flex flex-row font-bold text-darkTextLowEmphasis">
+                                    <div className="w-2/4">Total staked</div>
+                                    <div className="w-2/4">Total share</div>
+                                </div>
+                            </StatsBoxTwoColumn.RightColumn>
+
+                            {stakeShareInfo.map((share) => (
+                                <>
+                                    <StatsBoxTwoColumn.LeftColumn>
+                                        <span className="text-darkTextLowEmphasis">
+                                            {share.burn && (
+                                                <span className="font-bold text-degenOrange opacity-60">
+                                                    BURNED
+                                                </span>
+                                            )}
+                                            {Boolean(share.duration) &&
+                                                durationFromSeconds(
+                                                    Number(share.duration),
+                                                    {
+                                                        long: true,
+                                                    }
+                                                )}
+                                        </span>
+                                    </StatsBoxTwoColumn.LeftColumn>
+                                    <StatsBoxTwoColumn.RightColumn>
+                                        <div className="flex flex-row">
+                                            <div className="w-2/4">
+                                                {toReadableNumber(
+                                                    Number(share.staked),
+                                                    stakingTokenInfo.decimals
+                                                )}
+                                            </div>
+                                            <div className="w-2/4">
+                                                {`${toReadableNumber(
+                                                    Number(share.share) /
+                                                        Number(share.divider),
+                                                    0,
+                                                    { maximumFractionDigits: 2 }
+                                                )}%`}
+                                            </div>
+                                        </div>
+                                    </StatsBoxTwoColumn.RightColumn>
+                                </>
+                            ))}
+                        </>
+                    )}
+
                     {/* <StatsBoxTwoColumn.LeftColumn>
                     <span className="text-darkTextLowEmphasis">
                         Claimed Rewards

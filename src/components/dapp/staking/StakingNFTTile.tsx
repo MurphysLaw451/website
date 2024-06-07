@@ -91,21 +91,25 @@ export const StakingNFTTile = ({
                 {!isBurned && (
                     <>
                         <StatsBoxTwoColumn.LeftColumn>
-                            Withdraw {stakedTokenSymbol}
+                            Unlock {stakedTokenSymbol} to withdraw
                         </StatsBoxTwoColumn.LeftColumn>
                         <StatsBoxTwoColumn.RightColumn>
-                            {new Date(withdrawDate * 1000).toLocaleDateString(
-                                navigator.language,
-                                {
+                            <span
+                                title={`${new Date(
+                                    lockStartDate * 1000
+                                ).toLocaleDateString(navigator.language, {
                                     year: 'numeric',
                                     month: '2-digit',
                                     day: '2-digit',
-                                }
-                            )}
-                            ,{' '}
-                            {new Date(withdrawDate * 1000).toLocaleTimeString(
-                                navigator.language
-                            )}
+                                })}, ${new Date(
+                                    lockStartDate * 1000
+                                ).toLocaleTimeString(navigator.language)}`}
+                            >
+                                {timeAgo.format(withdrawDate * 1000, {
+                                    future: true,
+                                    round: 'floor',
+                                })}
+                            </span>
                         </StatsBoxTwoColumn.RightColumn>
                     </>
                 )}
@@ -113,7 +117,18 @@ export const StakingNFTTile = ({
                     Lock started
                 </StatsBoxTwoColumn.LeftColumn>
                 <StatsBoxTwoColumn.RightColumn>
-                    {timeAgo.format(lockStartDate * 1000)}
+                    {new Date(lockStartDate * 1000).toLocaleDateString(
+                        navigator.language,
+                        {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                        }
+                    )}
+                    ,{' '}
+                    {new Date(lockStartDate * 1000).toLocaleTimeString(
+                        navigator.language
+                    )}
                 </StatsBoxTwoColumn.RightColumn>
             </StatsBoxTwoColumn.Wrapper>
             <div className="mt-2 grid grid-cols-2 gap-2">

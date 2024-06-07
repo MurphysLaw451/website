@@ -995,19 +995,6 @@
         "type": "address"
       }
     ],
-    "name": "AddedFullConfig",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "manager",
-        "type": "address"
-      }
-    ],
     "name": "AddedLayer",
     "type": "event"
   },
@@ -1859,6 +1846,67 @@
   {
     "inputs": [
       {
+        "internalType": "bytes32",
+        "name": "_bucketId",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getAllStakesByBucket",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "bool",
+            "name": "burned",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "locked",
+            "type": "bool"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "bucketId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "lock",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "lockStart",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "release",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IStakeXPublicFacet.StakeResponse[]",
+        "name": "_stakes",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "_amount",
         "type": "uint256"
@@ -1923,6 +1971,36 @@
         "internalType": "uint256",
         "name": "_feeAmount",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getMultipliersPerOneStakingToken",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "bytes32",
+            "name": "bucketId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint256",
+            "name": "multiplier",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint16",
+            "name": "divider",
+            "type": "uint16"
+          }
+        ],
+        "internalType": "struct IStakeXPublicFacet.BucketMultiplier[]",
+        "name": "_multipliers",
+        "type": "tuple[]"
       }
     ],
     "stateMutability": "view",
@@ -2153,7 +2231,7 @@
             "type": "string"
           }
         ],
-        "internalType": "struct TokenInfoResponse[]",
+        "internalType": "struct IStakeXPublicFacet.TokenInfoResponse[]",
         "name": "_response",
         "type": "tuple[]"
       }
@@ -2271,7 +2349,7 @@
             "type": "string"
           }
         ],
-        "internalType": "struct TokenInfoResponse",
+        "internalType": "struct IStakeXPublicFacet.TokenInfoResponse",
         "name": "_response",
         "type": "tuple"
       }
@@ -2316,8 +2394,49 @@
             "type": "uint256"
           }
         ],
-        "internalType": "struct StakeBucketDataResponse[]",
+        "internalType": "struct IStakeXPublicFacet.StakeBucketDataResponse[]",
         "name": "_response",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_staker",
+        "type": "address"
+      }
+    ],
+    "name": "getStakedSharesByStaker",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "bytes32",
+            "name": "bucketId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint256",
+            "name": "share",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "staked",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint32",
+            "name": "divider",
+            "type": "uint32"
+          }
+        ],
+        "internalType": "struct IStakeXPublicFacet.BucketStakedShare[]",
+        "name": "_results",
         "type": "tuple[]"
       }
     ],
@@ -2377,7 +2496,7 @@
             "type": "uint256"
           }
         ],
-        "internalType": "struct StakeResponse[]",
+        "internalType": "struct IStakeXPublicFacet.StakeResponse[]",
         "name": "_stakes",
         "type": "tuple[]"
       }
@@ -2568,7 +2687,7 @@
             "type": "uint256"
           }
         ],
-        "internalType": "struct StakingData",
+        "internalType": "struct IStakeXPublicFacet.StakingData",
         "name": "_data",
         "type": "tuple"
       }
@@ -2633,7 +2752,7 @@
             "type": "string"
           }
         ],
-        "internalType": "struct TokenInfoResponse",
+        "internalType": "struct IStakeXPublicFacet.TokenInfoResponse",
         "name": "_response",
         "type": "tuple"
       }
@@ -2685,7 +2804,7 @@
             "type": "tuple[]"
           }
         ],
-        "internalType": "struct SwapsResponse[]",
+        "internalType": "struct IStakeXPublicFacet.SwapsResponse[]",
         "name": "_swaps",
         "type": "tuple[]"
       }
@@ -2750,7 +2869,7 @@
             "type": "string"
           }
         ],
-        "internalType": "struct TokenInfoResponse[]",
+        "internalType": "struct IStakeXPublicFacet.TokenInfoResponse[]",
         "name": "_response",
         "type": "tuple[]"
       }
@@ -2821,7 +2940,7 @@
             "type": "string"
           }
         ],
-        "internalType": "struct TokenInfoResponse",
+        "internalType": "struct IStakeXPublicFacet.TokenInfoResponse",
         "name": "_response",
         "type": "tuple"
       }

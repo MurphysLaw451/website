@@ -5,6 +5,7 @@ import { useGetERC20BalanceOf } from '@dapphooks/shared/useGetERC20BalanceOf'
 import { useHasERC20Allowance } from '@dapphooks/shared/useHasERC20Allowance'
 import { useDepositStake } from '@dapphooks/staking/useDepositStake'
 import { useGetFeeFor } from '@dapphooks/staking/useGetFee'
+import { useGetMultipliersPerOneStakingToken } from '@dapphooks/staking/useGetMultipliersPerOneStakingToken'
 import { useGetStakeBuckets } from '@dapphooks/staking/useGetStakeBuckets'
 import { useHasFees } from '@dapphooks/staking/useHasFees'
 import { StatsBoxTwoColumn } from '@dappshared/StatsBoxTwoColumn'
@@ -40,6 +41,7 @@ export const StakingForm = ({
     const [tokenSymbol, setTokenSymbol] = useState<string>()
     const [tokenBalance, setTokenBalance] = useState(0)
     const [durationButtons, setDurationButtons] = useState<StakeBucketButton[]>() // prettier-ignore
+    const [multiplierPerToken, setMultiplierPerToken] = useState<any>() // prettier-ignore
 
     // primary data
     const [stakeAmount, setStakeAmount] = useState<bigint>(0n)
@@ -67,6 +69,8 @@ export const StakingForm = ({
     //
     // base data hooks
     const { data: dataStakeBuckets } = useGetStakeBuckets(protocolAddress)
+    const { data: dataMultiplierPerToken } =
+        useGetMultipliersPerOneStakingToken(protocolAddress)
     const { data: dataBalanceOf } = useGetERC20BalanceOf(
         stakingTokenInfo?.source,
         address!
@@ -231,28 +235,45 @@ export const StakingForm = ({
     ])
 
     useEffect(() => {
-        setDurationButtons(
-            dataStakeBuckets
-                ?.map(({ id, duration, burn, multiplier }) => ({
-                    id,
-                    multiplier,
-                    duration,
-                    burn,
-                    selected: id === stakeBucketId,
-                }))
-                .sort((a, b) => (a.multiplier < b.multiplier ? -1 : 1))
-        )
+        if (multiplierPerToken)
+            setDurationButtons(
+                dataStakeBuckets
+                    ?.map(({ id, duration, burn, multiplier }) => ({
+                        id,
+                        multiplier,
+                        duration,
+                        burn,
+                        selected: id === stakeBucketId,
+                        multiplierPerToken: multiplierPerToken[id],
+                    }))
+                    .sort((a, b) => (a.multiplier < b.multiplier ? -1 : 1))
+            )
 
         if (dataStakeBuckets && stakeBucketId) {
             setSelectedStake(
                 dataStakeBuckets.find(({ id }) => id === stakeBucketId)
             )
         }
-    }, [dataStakeBuckets, stakeBucketId])
+    }, [dataStakeBuckets, stakeBucketId, multiplierPerToken])
 
     useEffect(() => {
         dataBalanceOf && setStakingTokenBalance(dataBalanceOf)
     }, [dataBalanceOf])
+
+    useEffect(() => {
+        dataMultiplierPerToken &&
+            setMultiplierPerToken(
+                dataMultiplierPerToken.reduce(
+                    (acc, m) => ({
+                        ...acc,
+                        [m.bucketId as Address]: Math.floor(
+                            Number(m.multiplier) / m.divider
+                        ),
+                    }),
+                    {}
+                )
+            )
+    }, [dataMultiplierPerToken])
 
     // if wallet disconnects
     useEffect(() => {
@@ -410,6 +431,15 @@ export const StakingForm = ({
                 </StatsBoxTwoColumn.LeftColumn>
                 <StatsBoxTwoColumn.RightColumn>
                     {selectedStake ? `${selectedStake.multiplier}x` : '-'}
+                </StatsBoxTwoColumn.RightColumn>
+
+                <StatsBoxTwoColumn.LeftColumn>
+                    Multiplier per {tokenSymbol} in Pool
+                </StatsBoxTwoColumn.LeftColumn>
+                <StatsBoxTwoColumn.RightColumn>
+                    {selectedStake
+                        ? `${multiplierPerToken?.[selectedStake.id]}x`
+                        : '-'}
                 </StatsBoxTwoColumn.RightColumn>
 
                 {/* <StatsBoxTwoColumn.LeftColumn>

@@ -56,7 +56,6 @@ const ClaimButton = (props: { amount: string | number }) => {
             color="orange"
             disabled={isLoading}
             onClick={() => {
-                console.log({ write })
                 write && write()
             }}
         >

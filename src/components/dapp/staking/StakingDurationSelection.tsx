@@ -9,6 +9,7 @@ export type StakeBucketButton = {
     duration: number
     burn: boolean
     selected: boolean
+    multiplierPerToken: number
 }
 
 type StakingDurationSelectionProps = {
