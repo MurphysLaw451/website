@@ -6,10 +6,12 @@ import { useSimulateContract, useWriteContract } from 'wagmi'
 export const useERC20Approve = (
     address: Address,
     spender: Address,
-    amount: bigint
+    amount: bigint,
+    chainId = 43114
 ) => {
     const { data, isError, error } = useSimulateContract({
         address,
+        chainId,
         abi,
         functionName: 'approve',
         args: [spender, amount],

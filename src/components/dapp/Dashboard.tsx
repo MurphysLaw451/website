@@ -1,24 +1,14 @@
+import { DGNX_ADDRESS } from '@dappconstants'
+import { useGetERC20BalanceOf } from '@dapphooks/shared/useGetERC20BalanceOf'
+import { useGetERC20TotalSupply } from '@dapphooks/shared/useGetERC20TotalSupply'
+import { Tile } from '@dappshared/Tile'
 import BigNumber from 'bignumber.js'
 import clsx from 'clsx'
-import { ethers } from 'ethers'
 import { useEffect, useState } from 'react'
 import { HiOutlineExternalLink } from 'react-icons/hi'
 import { RouteObject } from 'react-router-dom'
 import { H2 } from '../H2'
 import { Chart } from './elements/Chart'
-
-import tokenAbi from '@dappabis/erc20.json'
-import { DGNX_ADDRESS } from '@dappconstants'
-import { Tile } from '@dappshared/Tile'
-
-const chainId = +process.env.NEXT_PUBLIC_CHAIN_ID!
-const provider = new ethers.providers.JsonRpcProvider(
-    process.env.NEXT_PUBLIC_RPC,
-    {
-        name: process.env.NEXT_PUBLIC_NAME!,
-        chainId,
-    }
-)
 
 const numberFormatter2 = new Intl.NumberFormat('en-US', {
     minimumFractionDigits: 2,
@@ -178,12 +168,6 @@ const WalletInfo = (props: any) => {
     )
 }
 
-const getDgnxAmount = async (address: string) => {
-    const contract = new ethers.Contract(DGNX_ADDRESS, tokenAbi, provider)
-    const balance = (await contract.balanceOf(address)).toString()
-    return new BigNumber(balance).div(10 ** 18).toNumber()
-}
-
 const PriceChange = (props: { item: number }) => {
     return (
         <p className={clsx(props.item > 0 ? 'text-green-600' : 'text-red-600')}>
@@ -224,12 +208,48 @@ const getBackingAmount = async () => {
 }
 
 export const Dashboard = (props: RouteObject) => {
+    const DGNX_INITIAL_SUPPLY = 21n * 10n ** 24n
     const [dexData, setDexData] = useState<any>()
 
     const [burnAmount, setBurnAmount] = useState<number>()
     const [disburserAmount, setDisburserAmount] = useState<number>()
     const [lockerAmount, setLockerAmount] = useState<number>()
     const [backingAmountUsd, setBackingAmountUsd] = useState<number>()
+
+    const { data: balanceOfDeadAddress } = useGetERC20BalanceOf(
+        DGNX_ADDRESS,
+        '0x000000000000000000000000000000000000dead'
+    )
+    const { data: balanceOfDisburser } = useGetERC20BalanceOf(
+        DGNX_ADDRESS,
+        '0x8a0e3264da08bf999aff5a50aabf5d2dc89fab79'
+    )
+    const { data: balanceOfLocker } = useGetERC20BalanceOf(
+        DGNX_ADDRESS,
+        '0x2c7d8bb6aba4fff56cddbf9ea47ed270a10098f7'
+    )
+    const { data: dataTotalSupply } = useGetERC20TotalSupply(DGNX_ADDRESS)
+
+    useEffect(() => {
+        balanceOfDisburser &&
+            setDisburserAmount(Number(balanceOfDisburser / 10n ** 18n))
+    }, [balanceOfDisburser])
+
+    useEffect(() => {
+        balanceOfLocker && setLockerAmount(Number(balanceOfLocker / 10n ** 18n))
+    }, [balanceOfLocker])
+
+    useEffect(() => {
+        if (dataTotalSupply && balanceOfDeadAddress)
+            setBurnAmount(
+                Number(
+                    (DGNX_INITIAL_SUPPLY -
+                        dataTotalSupply +
+                        balanceOfDeadAddress) /
+                        10n ** 18n
+                )
+            )
+    }, [balanceOfDeadAddress, dataTotalSupply])
 
     useEffect(() => {
         fetch(
@@ -245,16 +265,6 @@ export const Dashboard = (props: RouteObject) => {
                 )
                 setDexData({ traderJoe, pangolin })
             })
-
-        getDgnxAmount('0x000000000000000000000000000000000000dead').then(
-            (amount) => setBurnAmount(amount as number)
-        )
-        getDgnxAmount('0x8a0e3264da08bf999aff5a50aabf5d2dc89fab79').then(
-            (amount) => setDisburserAmount(amount as number)
-        )
-        getDgnxAmount('0x2c7d8bb6aba4fff56cddbf9ea47ed270a10098f7').then(
-            (amount) => setLockerAmount(amount as number)
-        )
 
         getBackingAmount().then(setBackingAmountUsd)
     }, [])
