@@ -76,5 +76,5 @@ export type RewardEstimation = {
 export type TokenURI = {
     name: string
     description: string
-    image_data: string
+    image: string
 }

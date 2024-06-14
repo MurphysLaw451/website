@@ -46,13 +46,14 @@ export const StakingNFTTile = ({
     const timeAgo = new TimeAgo(navigator.language)
     useMemo(() => {
         if (data) {
+            console.log({ data })
             const w = window.open('about:blank')
             if (w) {
                 setTimeout(() => {
                     w.document.body.style.margin = '0'
                     w.document.body.appendChild(
                         w.document.createElement('img')
-                    ).src = data.image_data
+                    ).src = data.image
                 }, 0)
             }
         }
