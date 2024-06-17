@@ -437,7 +437,9 @@ export const StakingForm = ({
                     Multiplier per {tokenSymbol} in Pool
                 </StatsBoxTwoColumn.LeftColumn>
                 <StatsBoxTwoColumn.RightColumn>
-                    {selectedStake
+                    {multiplierPerToken &&
+                    selectedStake &&
+                    multiplierPerToken[selectedStake.id]
                         ? `${multiplierPerToken?.[selectedStake.id]}x`
                         : '-'}
                 </StatsBoxTwoColumn.RightColumn>
