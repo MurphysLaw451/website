@@ -30,9 +30,7 @@ jobs:
       - name: Install dependencies
         run: npm ci --ignore-scripts
 
-      # - name: Deploy API to production
-      #   run: |
-      #     ./node_modules/serverless/bin/serverless.js config credentials --provider aws --key ${{ secrets.DGNX_WEBSITE_AWS_ACCOUNT_ID }} --secret ${{ secrets.DGNX_WEBSITE_AWS_ACCOUNT_KEY }} --profile dgnx
-      #     cd api && ../node_modules/serverless/bin/serverless.js deploy -s production --force --param="SNOWTRACE_API_KEY=${{ secrets.SNOWTRACE_API_KEY }}"
-      #   env:
-      #     SNOWTRACE_API_KEY: test
+      - name: Deploy API to production
+        run: |
+          npx serverless config credentials --provider aws --key ${{ secrets.DGNX_WEBSITE_AWS_ACCOUNT_ID }} --secret ${{ secrets.DGNX_WEBSITE_AWS_ACCOUNT_KEY }} --profile dgnx
+          cd api && npx serverless deploy -s production --param="SNOWTRACE_API_KEY=${{ secrets.SNOWTRACE_API_KEY }}"

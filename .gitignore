@@ -33,3 +33,4 @@ yarn-error.log*
 
 api/.serverless
 api/.env
+api/.webpack

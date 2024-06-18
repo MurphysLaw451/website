@@ -11,10 +11,33 @@ plugins:
   - serverless-api-cloudfront
 
 custom:
+  defaultStage: dev
+  currentStage: ${opt:stage, self:custom.defaultStage}
+  serviceName: ${self:service}-${self:custom.currentStage}
+  ddb:
+    stages:
+      - default
+      - dev
+    tableNames:
+      dexscreenerPairCache: ${self:custom.serviceName}-dexscreenerPairCache
+      dexscreenerTokenCache: ${self:custom.serviceName}-dexscreenerTokenCache
+    deletionPolicy:
+      default: Retain
+      dev: Retain
+      staging: Retain
+      production: Retain
+    updateReplacePolicy:
+      default: Retain
+      dev: Retain
+      staging: Retain
+      production: Retain
   corsAllowedOrigin:
     dev: http://localhost:3000
     staging: https://staging.dgnx.finance
     production: https://dgnx.finance
+  webpack:
+    isLocal: false
+    # isLocal: true
 
 provider:
   name: aws
@@ -23,7 +46,25 @@ provider:
   stage: dev
   runtime: nodejs18.x
 
+  iam:
+    role:
+      statements:
+        - Effect: 'Allow'
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+            - dynamodb:BatchWriteItem
+          Resource:
+            - 'arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.ddb.tableNames.dexscreenerPairCache}*'
+            - 'arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.ddb.tableNames.dexscreenerTokenCache}*'
+
   environment:
+    DB_TABLE_NAME_DEXSCREENER_PAIR_CACHE: ${self:custom.ddb.tableNames.dexscreenerPairCache}
+    DB_TABLE_NAME_DEXSCREENER_TOKEN_CACHE: ${self:custom.ddb.tableNames.dexscreenerTokenCache}
     CORS_ALLOWED_ORIGIN: ${self:custom.corsAllowedOrigin.${opt:stage, self:provider.stage}}
     SNOWTRACE_API_KEY: ${param:SNOWTRACE_API_KEY}
 
@@ -37,3 +78,70 @@ functions:
           cors: true
           path: /snowtrace
           method: get
+
+  dexscreenerProxyLatestDexTokens:
+    handler: dexscreenerProxy/latestDexTokens.handler
+    memorySize: 512
+    timeout: 29
+    events:
+      - http:
+          path: /latest/dex/tokens/{tokenAddress}
+          request:
+            parameters:
+              paths:
+                tokenAddress: true
+          method: get
+
+  dexscreenerProxyLatestDexPairs:
+    handler: dexscreenerProxy/latestDexPairs.handler
+    memorySize: 512
+    timeout: 29
+    events:
+      - http:
+          path: /latest/dex/pairs/{network}/{pairAddress}
+          request:
+            parameters:
+              paths:
+                network: true
+                pairAddress: true
+          method: get
+
+resources:
+  Resources:
+    dexscreenerPairCacheTable:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: ${self:custom.ddb.deletionPolicy.${opt:stage, 'default'}}
+      UpdateReplacePolicy: ${self:custom.ddb.updateReplacePolicy.${opt:stage, 'default'}}
+      Properties:
+        TableName: ${self:custom.ddb.tableNames.dexscreenerPairCache}
+        AttributeDefinitions:
+          - AttributeName: PairKey # network#pairAddress
+            AttributeType: S
+        KeySchema:
+          - AttributeName: PairKey
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        PointInTimeRecoverySpecification:
+          PointInTimeRecoveryEnabled: true
+        TimeToLiveSpecification:
+          AttributeName: ttl
+          Enabled: true
+
+    dexscreenerTokenCacheTable:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: ${self:custom.ddb.deletionPolicy.${opt:stage, 'default'}}
+      UpdateReplacePolicy: ${self:custom.ddb.updateReplacePolicy.${opt:stage, 'default'}}
+      Properties:
+        TableName: ${self:custom.ddb.tableNames.dexscreenerTokenCache}
+        AttributeDefinitions:
+          - AttributeName: TokenKey 
+            AttributeType: S
+        KeySchema:
+          - AttributeName: TokenKey
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        PointInTimeRecoverySpecification:
+          PointInTimeRecoveryEnabled: true
+        TimeToLiveSpecification:
+          AttributeName: ttl
+          Enabled: true
