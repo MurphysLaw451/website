@@ -1,7 +1,7 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import fetch from 'node-fetch'
-import { createReturn } from '../helpers/return'
 import { DynamoDBHelper } from '../helpers/ddb/dynamodb'
+import { createReturn } from '../helpers/return'
 
 export const handler = async (
     event: APIGatewayProxyEvent
@@ -28,7 +28,7 @@ export const handler = async (
             ConsistentRead: true,
         })
         if (_dbResult.Items && _dbResult.Items.length >= 1) {
-            result = _dbResult.Items[0]
+            result = _dbResult.Items[0].result
         }
     }
     if (result.pairs) {
