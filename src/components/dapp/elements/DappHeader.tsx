@@ -4,7 +4,6 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useAccount, useBalance } from 'wagmi'
-import { chainFromChainId } from '../../../helpers/chain'
 import { toPrecision } from '../../../helpers/number'
 import logoImage from '../../../images/logo_large.png'
 import { DarkmodeToggle } from '../../DarkmodeToggle'
@@ -49,16 +48,14 @@ const ConnectedButton = () => {
         chainId: chain?.id,
     })
 
-    const chainInfo = chainFromChainId(chain?.id!)
-
     return (
         <div className="-my-2 flex items-center gap-0.5 p-0">
             {balanceData && (
                 <div className="mr-2 flex items-center border-r border-dapp-blue-800 py-1 pr-2">
-                    {chainInfo && (
+                    {chain && (
                         <TokenImage
-                            src={`/chains/${chainInfo.logo}`}
-                            symbol={chainInfo.symbol}
+                            src={chain.id == 56 ? `/chains/${chain.id}.png` : `/chains/${chain.id}.svg`}
+                            symbol={chain.nativeCurrency.symbol}
                             size={16}
                         />
                     )}
@@ -72,7 +69,7 @@ const ConnectedButton = () => {
 
 export function DappHeader() {
     return (
-        <header className="absolute z-10 w-full  py-6 lg:fixed">
+        <header className="absolute z-10 w-full py-6 lg:fixed bg-gradient-to-b from-dapp-blue-800 from-20%">
             <DappContainer>
                 <nav className="relative z-50 flex flex-col items-center justify-between gap-6 sm:flex-row">
                     <div className="flex flex-row-reverse items-center sm:flex-row">
@@ -99,11 +96,7 @@ export function DappHeader() {
                                             'flex items-center gap-1 rounded-lg bg-light-100 px-3 py-2 font-bold text-light-800 transition-colors hover:bg-degenOrange  dark:bg-dapp-blue-400 dark:text-dapp-cyan-50 dark:hover:bg-dapp-blue-200'
                                         )}
                                     >
-                                        {isConnected ? (
-                                            <ConnectedButton />
-                                        ) : (
-                                            'Connect Wallet'
-                                        )}
+                                        {isConnected ? <ConnectedButton /> : 'Connect Wallet'}
                                     </button>
                                 )
                             }}

@@ -26,12 +26,20 @@ type BurnForBackingProps = {
 }
 
 export const BurnForBacking = (props: BurnForBackingProps) => {
+    const {
+        activeWantToken,
+        baseTokenAddress,
+        baseTokenAmount,
+        baseTokenDecimals,
+        baseTokenSymbol,
+        isLoading,
+        onSettingsChange,
+    } = props
     const tokensToBurnInputRef = useRef<HTMLInputElement>(null)
     const slippageInputRef = useRef<HTMLInputElement>(null)
-
-    const chainId = useChainId()
+    const chainId = +process.env.NEXT_PUBLIC_CHAIN_ID!
     const { switchChain } = useSwitchChain()
-    const { address, isConnected } = useAccount()
+    const { address, isConnected, chain: chainAccount } = useAccount()
 
     const [toastId, setToastId] = useState<Id>()
     const [slippage, setSlippage] = useState(0)
@@ -47,19 +55,15 @@ export const BurnForBacking = (props: BurnForBackingProps) => {
     //
     // Hooks
     //
-    const {
-        data: dataGetBackingFromWantToken,
-        isLoading: isLoadingGetBackingFromWantToken,
-        refetch: refetchGetBackingFromWantToken,
-    } = useGetBackingFromWantToken(
-        props?.activeWantToken?.address,
-        amountToBurn!
+    const { data: dataGetBackingFromWantToken, isLoading: isLoadingGetBackingFromWantToken } =
+        useGetBackingFromWantToken(activeWantToken?.address, amountToBurn!, chainId)
+    const { data: dataERC20Allowance, refetch: refetchERC20Allowance } = useHasERC20Allowance(
+        baseTokenAddress,
+        address!,
+        process.env.NEXT_PUBLIC_CONTROLLER_ADDRESS! as Address,
+        chainId,
+        true
     )
-    const { data: dataERC20Allowance, refetch: refetchERC20Allowance } =
-        useHasERC20Allowance(
-            props.baseTokenAddress,
-            process.env.NEXT_PUBLIC_CONTROLLER_ADDRESS! as Address
-        )
     const {
         write: writeERC20Approve,
         isPending: isPendingERC20Approve,
@@ -68,9 +72,10 @@ export const BurnForBacking = (props: BurnForBackingProps) => {
         error: errorERC20Approve,
         hash: hashApproval,
     } = useERC20Approve(
-        props.baseTokenAddress,
+        baseTokenAddress,
         process.env.NEXT_PUBLIC_CONTROLLER_ADDRESS! as Address,
-        amountToBurn!
+        amountToBurn!,
+        chainId
     )
     const {
         write: writeDoBurnForBacking,
@@ -79,11 +84,7 @@ export const BurnForBacking = (props: BurnForBackingProps) => {
         isError: isErrorDoBurnForBacking,
         error: errorDoBurnForBacking,
         hash: hashDoBurnForBacking,
-    } = useDoBurnForBacking(
-        amountToBurn!,
-        props?.activeWantToken?.address,
-        slippageAmount
-    )
+    } = useDoBurnForBacking(amountToBurn!, activeWantToken?.address, slippageAmount, chainId)
 
     const resetForm = () => {
         setAmountToBurn(undefined)
@@ -93,9 +94,7 @@ export const BurnForBacking = (props: BurnForBackingProps) => {
     //
     // handler
     //
-    const onBackingAmountInputChange = (
-        _event: ChangeEvent<HTMLInputElement>
-    ) => {
+    const onBackingAmountInputChange = (_event: ChangeEvent<HTMLInputElement>) => {
         _event.preventDefault()
         setAmountToBurnEntered(tokensToBurnInputRef.current!.value)
     }
@@ -109,16 +108,10 @@ export const BurnForBacking = (props: BurnForBackingProps) => {
     }, [isConnected, refetchERC20Allowance, address])
 
     useEffect(() => {
-        if (Boolean(amountToBurnEntered && props.baseTokenAmount)) {
-            const amountToBurnEnteredProcessable = parseUnits(
-                amountToBurnEntered,
-                Number(props.baseTokenDecimals)
-            )
+        if (Boolean(amountToBurnEntered && baseTokenAmount)) {
+            const amountToBurnEnteredProcessable = parseUnits(amountToBurnEntered, Number(baseTokenDecimals))
 
-            const checkAmountToBurnEntered = formatUnits(
-                amountToBurnEnteredProcessable,
-                Number(props.baseTokenDecimals)
-            )
+            const checkAmountToBurnEntered = formatUnits(amountToBurnEnteredProcessable, Number(baseTokenDecimals))
 
             if (amountToBurnEntered != checkAmountToBurnEntered) {
                 setAmountToBurn(0n)
@@ -126,7 +119,7 @@ export const BurnForBacking = (props: BurnForBackingProps) => {
                 return
             }
 
-            if (props.baseTokenAmount - amountToBurnEnteredProcessable < 0n) {
+            if (baseTokenAmount - amountToBurnEnteredProcessable < 0n) {
                 setAmountToBurn(0n)
                 // TODO error
                 return
@@ -140,7 +133,7 @@ export const BurnForBacking = (props: BurnForBackingProps) => {
 
         if (amountToBurnEntered) {
         }
-    }, [amountToBurnEntered, props.baseTokenAmount, props.baseTokenDecimals])
+    }, [amountToBurnEntered, baseTokenAmount, baseTokenDecimals])
 
     useEffect(() => {
         if (!isInApproval) return
@@ -151,33 +144,29 @@ export const BurnForBacking = (props: BurnForBackingProps) => {
             })
             setToastId(id)
         } else {
-            if (toastId) toast.dismiss(toastId)
+            toastId && toast.dismiss(toastId)
 
             if (isSuccessERC20Approve) {
-                toast.success(
-                    `Approval successfully. View on <a href="https://snowtrace/tx/${hashApproval}">`,
-                    { autoClose: 3000 }
-                )
-                props.onSettingsChange()
+                toast.success(`Approval successfully. View on <a href="https://snowtrace/tx/${hashApproval}">`, {
+                    autoClose: 3000,
+                })
+                onSettingsChange()
             }
 
             if (isErrorERC20Approve && errorERC20Approve)
-                toast.error(
-                    `Approval failed! Cause: ${errorERC20Approve.message}`,
-                    {
-                        autoClose: 5000,
-                    }
-                )
+                toast.error(`Approval failed! Cause: ${errorERC20Approve.message}`, {
+                    autoClose: 5000,
+                })
         }
     }, [
-        toast,
         hashApproval,
         isInApproval,
         isPendingERC20Approve,
         isSuccessERC20Approve,
         isErrorERC20Approve,
         errorERC20Approve,
-        props.onSettingsChange
+        onSettingsChange,
+        toastId,
     ])
 
     useEffect(() => {
@@ -189,7 +178,7 @@ export const BurnForBacking = (props: BurnForBackingProps) => {
             })
             setToastId(id)
         } else {
-            if (toastId) toast.dismiss(toastId)
+            toastId && toast.dismiss(toastId)
 
             if (isSuccessDoBurnForBacking) {
                 toast.success(
@@ -198,17 +187,14 @@ export const BurnForBacking = (props: BurnForBackingProps) => {
                         autoClose: 3000,
                     }
                 )
-                props.onSettingsChange()
+                onSettingsChange()
                 resetForm()
             }
 
             if (isErrorDoBurnForBacking && errorDoBurnForBacking)
-                toast.error(
-                    `Burn for backing failed! Cause: ${errorDoBurnForBacking.message}`,
-                    {
-                        autoClose: 5000,
-                    }
-                )
+                toast.error(`Burn for backing failed! Cause: ${errorDoBurnForBacking.message}`, {
+                    autoClose: 5000,
+                })
         }
     }, [
         hashDoBurnForBacking,
@@ -217,26 +203,21 @@ export const BurnForBacking = (props: BurnForBackingProps) => {
         isSuccessDoBurnForBacking,
         isErrorDoBurnForBacking,
         errorDoBurnForBacking,
-        props.onSettingsChange,
+        onSettingsChange,
+        toastId,
     ])
 
     useEffect(() => {
         if (!dataGetBackingFromWantToken || !slippage) return
-        setSlippageAmount(
-            BigInt(
-                Math.floor(
-                    Number(dataGetBackingFromWantToken) * (1 - slippage / 100)
-                )
-            )
-        )
+        setSlippageAmount(BigInt(Math.floor(Number(dataGetBackingFromWantToken) * (1 - slippage / 100))))
     }, [slippage, dataGetBackingFromWantToken])
 
     if (!isConnected) {
-        return <p>Connect wallet to burn {props.baseTokenSymbol}</p>
+        return <p>Connect wallet to burn {baseTokenSymbol}</p>
     }
 
-    if (!props.baseTokenAmount || !props.baseTokenDecimals) {
-        return <p>...</p>
+    if (!baseTokenAmount || !baseTokenDecimals) {
+        return <p>You have no {baseTokenSymbol} to burn on the connected wallet.</p>
     }
 
     return (
@@ -289,12 +270,7 @@ export const BurnForBacking = (props: BurnForBackingProps) => {
                                 className="ml-1 inline cursor-pointer "
                                 onClick={() => {
                                     if (slippageInputRef.current)
-                                        setSlippage(
-                                            parseFloat(
-                                                slippageInputRef.current
-                                                    .value || '0.5'
-                                            )
-                                        )
+                                        setSlippage(parseFloat(slippageInputRef.current.value || '0.5'))
                                     setShowSlippage(false)
                                 }}
                             />
@@ -305,9 +281,7 @@ export const BurnForBacking = (props: BurnForBackingProps) => {
                     className="my-2 w-full rounded-lg border-0 bg-dapp-blue-800 text-right text-2xl leading-10 [appearance:textfield] focus:ring-0 focus:ring-offset-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                     type="number"
                     placeholder="0"
-                    disabled={
-                        isPendingDoBurnForBacking || isPendingERC20Approve
-                    }
+                    disabled={isPendingDoBurnForBacking || isPendingERC20Approve}
                     value={amountToBurnEntered}
                     onChange={onBackingAmountInputChange}
                     ref={tokensToBurnInputRef}
@@ -320,21 +294,13 @@ export const BurnForBacking = (props: BurnForBackingProps) => {
                     <span
                         className="cursor-pointer underline"
                         onClick={() => {
-                            setAmountToBurn(props.baseTokenAmount)
-                            setAmountToBurnEntered(
-                                formatUnits(
-                                    props.baseTokenAmount,
-                                    Number(props.baseTokenDecimals)
-                                )
-                            )
+                            setAmountToBurn(baseTokenAmount)
+                            setAmountToBurnEntered(formatUnits(baseTokenAmount, Number(baseTokenDecimals)))
                         }}
                     >
-                        {toReadableNumber(
-                            props.baseTokenAmount,
-                            props.baseTokenDecimals
-                        )}
+                        {toReadableNumber(baseTokenAmount, baseTokenDecimals)}
                     </span>{' '}
-                    {props.baseTokenSymbol}
+                    {baseTokenSymbol}
                 </p>
 
                 {chainId === 43114 &&
@@ -349,15 +315,10 @@ export const BurnForBacking = (props: BurnForBackingProps) => {
                                     disabled={isPendingDoBurnForBacking}
                                     onClick={() => {
                                         setIsInBurnForBacking(true)
-                                        writeDoBurnForBacking &&
-                                            writeDoBurnForBacking()
+                                        writeDoBurnForBacking && writeDoBurnForBacking()
                                     }}
                                 >
-                                    {isPendingDoBurnForBacking ? (
-                                        <Spinner />
-                                    ) : (
-                                        'Burn'
-                                    )}
+                                    {isPendingDoBurnForBacking ? <Spinner /> : 'Burn'}
                                 </Button>
                             ) : (
                                 <Button
@@ -369,37 +330,25 @@ export const BurnForBacking = (props: BurnForBackingProps) => {
                                         writeERC20Approve && writeERC20Approve()
                                     }}
                                 >
-                                    {isPendingERC20Approve ? (
-                                        <Spinner />
-                                    ) : (
-                                        'Approve'
-                                    )}
+                                    {isPendingERC20Approve ? <Spinner /> : 'Approve'}
                                 </Button>
                             )}
                         </div>
                     )}
 
-                {chainId !== 43114 &&
-                    amountToBurn !== undefined &&
-                    amountToBurn > 0n && (
-                        <div className="flex items-center">
-                            <Button
-                                className="mt-3 w-full"
-                                color="orange"
-                                onClick={() => switchChain({ chainId: 43114 })}
-                            >
-                                Switch to Avax
-                            </Button>
-                        </div>
-                    )}
+                {chainId !== 43114 && amountToBurn !== undefined && amountToBurn > 0n && (
+                    <div className="flex items-center">
+                        <Button className="mt-3 w-full" color="orange" onClick={() => switchChain({ chainId: 43114 })}>
+                            Switch to Avax
+                        </Button>
+                    </div>
+                )}
             </div>
 
             {amountToBurn !== undefined &&
                 amountToBurn > 0n &&
                 isLoadingGetBackingFromWantToken &&
-                !dataGetBackingFromWantToken && (
-                    <p className="">Calculating expected output...</p>
-                )}
+                !dataGetBackingFromWantToken && <p className="">Calculating expected output...</p>}
             {amountToBurn !== undefined &&
                 dataERC20Allowance !== undefined &&
                 amountToBurn > 0n &&
@@ -415,21 +364,15 @@ export const BurnForBacking = (props: BurnForBackingProps) => {
                             <div className="flex gap-x-5">
                                 <p className="flex-grow">Expected output:</p>
                                 <p className="text-right">
-                                    {toReadableNumber(
-                                        dataGetBackingFromWantToken,
-                                        props.activeWantToken.decimals
-                                    )}{' '}
-                                    {props.activeWantToken.info.name}
+                                    {toReadableNumber(dataGetBackingFromWantToken, activeWantToken.decimals)}{' '}
+                                    {activeWantToken.info.name}
                                 </p>
                             </div>
                             <div className="flex gap-x-5">
                                 <p className="flex-grow">Minimum received:</p>
                                 <p className="text-right">
-                                    {toReadableNumber(
-                                        slippageAmount,
-                                        props.activeWantToken.decimals
-                                    )}{' '}
-                                    {props.activeWantToken.info.name}
+                                    {toReadableNumber(slippageAmount, activeWantToken.decimals)}{' '}
+                                    {activeWantToken.info.name}
                                 </p>
                             </div>
                         </div>

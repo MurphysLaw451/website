@@ -1,20 +1,20 @@
+import { GoogleTagManager } from '@next/third-parties/google'
 import { Head, Html, Main, NextScript } from 'next/document'
+import Script from 'next/script'
 
 export default function Document(props) {
+    // useRouter isReady forces pre-rendered page to be not pre rendered
     let pageProps = props.__NEXT_DATA__?.props?.pageProps
 
     return (
         <Html
-            className="h-full scroll-smooth antialiased [font-feature-settings:'ss01']"
+            className="dark h-full scroll-smooth antialiased [font-feature-settings:'ss01']"
             lang="en"
+            style={{ colorScheme: 'dark' }}
         >
             <Head>
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
-                <link
-                    rel="preconnect"
-                    href="https://fonts.gstatic.com"
-                    crossOrigin="anonymous"
-                />
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
                 <link
                     href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap"
                     rel="stylesheet"
@@ -23,30 +23,7 @@ export default function Document(props) {
                     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap"
                     rel="stylesheet"
                 />
-
-                <script
-                    async
-                    type="text/javascript"
-                    src="/charting_library/charting_library.js"
-                ></script>
-
-                <script
-                    async
-                    src="https://www.googletagmanager.com/gtag/js?id=G-SHQ22SS768"
-                ></script>
-                <script
-                    dangerouslySetInnerHTML={{
-                        __html: `
-window.dataLayer = window.dataLayer || [];
-function gtag(){
-dataLayer.push(arguments);
-}
-gtag("js", new Date());
-
-gtag("config", "G-SHQ22SS768");
-`,
-                    }}
-                ></script>
+                <Script async type="text/javascript" src="/charting_library/charting_library.js" />
             </Head>
             <body>
                 <Main />

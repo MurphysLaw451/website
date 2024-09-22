@@ -20,10 +20,13 @@
     "paths": {
       "@dapphooks/*": ["src/hooks/*"],
       "@dapphelpers/*": ["src/helpers/*"],
+      "@dappelements/*": ["src/components/dapp/elements/*"],
       "@dappshared/*": ["src/components/dapp/shared/*"],
       "@dapptypes": ["src/types"],
       "@dappconstants": ["src/constants"],
-      "@dappabis/*": ["src/abi/*"]
+      "@dappabis/*": ["src/abi/*"],
+      "@public/*": ["public/*"],
+      "react": ["./node_modules/@types/react"]
     }
   },
   "include": ["additional.d.ts", "next-env.d.ts", "**/*.ts", "**/*.tsx"],

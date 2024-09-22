@@ -7,6 +7,7 @@ package:
   individually: true
 
 plugins:
+  - serverless-dotenv-plugin
   - serverless-webpack
   - serverless-api-cloudfront
 
@@ -21,6 +22,12 @@ custom:
     tableNames:
       dexscreenerPairCache: ${self:custom.serviceName}-dexscreenerPairCache
       dexscreenerTokenCache: ${self:custom.serviceName}-dexscreenerTokenCache
+      coingeckoApiCache: ${self:custom.serviceName}-coingeckoApiCache
+      stakexCustomization: ${self:custom.serviceName}-stakexCustomization
+      stakexProtocols: ${self:custom.serviceName}-stakexProtocols
+      stakexAnnualPercentageLogs: ${self:custom.serviceName}-stakexAnnualPercentageLogs
+      stakexStakeLogs: ${self:custom.serviceName}-stakexStakeLogs
+      stakexChainSync: ${self:custom.serviceName}-stakexChainSync
     deletionPolicy:
       default: Retain
       dev: Retain
@@ -34,7 +41,8 @@ custom:
   corsAllowedOrigin:
     dev: http://localhost:3000
     staging: https://staging.dgnx.finance
-    production: https://dgnx.finance
+    # production: https://dgnx.finance
+    production: '*'
   webpack:
     isLocal: false
     # isLocal: true
@@ -61,14 +69,54 @@ provider:
           Resource:
             - 'arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.ddb.tableNames.dexscreenerPairCache}*'
             - 'arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.ddb.tableNames.dexscreenerTokenCache}*'
+            - 'arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.ddb.tableNames.coingeckoApiCache}*'
+            - 'arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.ddb.tableNames.stakexCustomization}*'
+            - 'arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.ddb.tableNames.stakexProtocols}*'
+            - 'arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.ddb.tableNames.stakexAnnualPercentageLogs}*'
+            - 'arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.ddb.tableNames.stakexStakeLogs}*'
+            - 'arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.ddb.tableNames.stakexChainSync}*'
+
+        - Effect: 'Allow'
+          Action:
+            - lambda:InvokeAsync
+            - lambda:InvokeFunction
+          Resource:
+            - '*'
 
   environment:
     DB_TABLE_NAME_DEXSCREENER_PAIR_CACHE: ${self:custom.ddb.tableNames.dexscreenerPairCache}
     DB_TABLE_NAME_DEXSCREENER_TOKEN_CACHE: ${self:custom.ddb.tableNames.dexscreenerTokenCache}
+    DB_TABLE_NAME_COINGECKO_API_CACHE: ${self:custom.ddb.tableNames.coingeckoApiCache}
+    DB_TABLE_NAME_COINGECKO_API_CACHE_TTL: 2628000 # 1 month
+    DB_TABLE_NAME_STAKEX_CUSTOMIZATION: ${self:custom.ddb.tableNames.stakexCustomization}
+    DB_TABLE_NAME_STAKEX_PROTOCOLS: ${self:custom.ddb.tableNames.stakexProtocols}
+    DB_TABLE_NAME_STAKEX_ANNUAL_PERCENTAGE_LOGS: ${self:custom.ddb.tableNames.stakexAnnualPercentageLogs}
+    DB_TABLE_NAME_STAKEX_LOGS: ${self:custom.ddb.tableNames.stakexStakeLogs}
+    DB_TABLE_NAME_STAKEX_CHAIN_SYNC: ${self:custom.ddb.tableNames.stakexChainSync}
     CORS_ALLOWED_ORIGIN: ${self:custom.corsAllowedOrigin.${opt:stage, self:provider.stage}}
-    SNOWTRACE_API_KEY: ${param:SNOWTRACE_API_KEY}
+    SNOWTRACE_API_KEY: ${env:SNOWTRACE_API_KEY}
+    PINATA_API_KEY: ${env:PINATA_API_KEY}
+    INFURA_ID: ${env:INFURA_ID}
+    ANKR_API_KEY: ${env:ANKR_API_KEY}
 
 functions:
+  # coingecko proxy
+  coingeckoProxy:
+    handler: coingeckoProxy/get.handler
+    memorySize: 512
+    timeout: 29
+    events:
+      - http:
+          cors: true
+          path: /coingecko/{proxyPath+}
+          request:
+            parameters:
+              paths:
+                proxyPath: true
+          method: get
+
+  # snowtrace proxy
+  # TODO remove?
   snowtraceProxy:
     handler: snowtraceProxy/get.handler
     memorySize: 512
@@ -91,6 +139,7 @@ functions:
               paths:
                 tokenAddress: true
           method: get
+          cors: true
 
   dexscreenerProxyLatestDexPairs:
     handler: dexscreenerProxy/latestDexPairs.handler
@@ -105,6 +154,121 @@ functions:
                 network: true
                 pairAddress: true
           method: get
+          cors: true
+
+  ipfsStakexCustomizationUpdate:
+    handler: ipfs/stakex/customization/update.handler
+    memorySize: 512
+    timeout: 29
+    events:
+      - http:
+          path: /ipfs/stakex/customization/update
+          method: post
+          cors: true
+
+  ipfsStakexCustomizationFetch:
+    handler: ipfs/stakex/customization/fetch.handler
+    memorySize: 512
+    timeout: 29
+    events:
+      - http:
+          path: /ipfs/stakex/customization/fetch/{chainId}/{protocol}
+          request:
+            parameters:
+              paths:
+                chainId: true
+                protocol: true
+          method: get
+          cors: true
+    environment:
+      LAMBDA_COINGECKO_NAME: ${self:custom.serviceName}-coingeckoProxy
+
+  ipfsStakexCustomizationCheckAvailability:
+    handler: ipfs/stakex/customization/check-availability.handler
+    memorySize: 512
+    timeout: 29
+    events:
+      - schedule:
+          rate: rate(5 minutes)
+          enabled: true
+
+  # STAKEX API
+  stakexMetrics:
+    name: ${self:custom.serviceName}-stakexMetrics
+    handler: stakex/metrics.handler
+    memorySize: 512
+    timeout: 29
+    events:
+      - http:
+          path: /stakex/metrics/{chainId}/{protocol}
+          request:
+            parameters:
+              paths:
+                chainId: true
+                protocol: true
+          method: get
+          cors: true
+
+  stakexProtocolsGet:
+    name: ${self:custom.serviceName}-stakexProtocolsGet
+    handler: stakex/protocols.handler
+    timeout: 29
+    events:
+      - http:
+          path: /stakex/protocols
+          method: get
+          cors: true
+      - http:
+          path: /stakex/protocols/{chainId}
+          method: get
+          cors: true
+    environment:
+      LAMBDA_CUSTOMIZATION_NAME: ${self:custom.serviceName}-ipfsStakexCustomizationFetch
+
+  stakexUpdateCheck:
+    name: ${self:custom.serviceName}-stakexUpdateCheck
+    handler: stakex/update/check.handler
+    events:
+      - http:
+          path: /stakex/update-check/{chainId}/{protocol}
+          method: get
+          cors: true
+
+  # STAKEX Tasks
+  stakexCalculateApr:
+    name: ${self:custom.serviceName}-stakexCalculateApr
+    handler: stakex/calculate-apr.handler
+    timeout: 120
+
+  stakexCalculateStakes:
+    name: ${self:custom.serviceName}-stakexCalculateStakes
+    handler: stakex/calculate-stakes.handler
+    timeout: 120
+
+  # STAKEX Automations
+  stakexAutomationsTriggerCalculations:
+    handler: stakex/automations/trigger-calculations.handler
+    events:
+      - schedule:
+          rate: rate(1 hour)
+          enabled: true
+    environment:
+      LAMBDA_APR_NAME: ${self:custom.serviceName}-stakexCalculateApr
+      LAMBDA_STAKES_NAME: ${self:custom.serviceName}-stakexCalculateStakes
+
+  stakexAutomationsAddNewProtocols:
+    handler: stakex/automations/add-new-protocols.handler
+    events:
+      - schedule:
+          rate: rate(5 minutes)
+          enabled: true
+
+  stakexAutomationsUpdateEnabledProtocols:
+    handler: stakex/automations/update-enabled-protocols.handler
+    events:
+      - schedule:
+          rate: rate(5 minutes)
+          enabled: true
 
 resources:
   Resources:
@@ -134,7 +298,7 @@ resources:
       Properties:
         TableName: ${self:custom.ddb.tableNames.dexscreenerTokenCache}
         AttributeDefinitions:
-          - AttributeName: TokenKey 
+          - AttributeName: TokenKey
             AttributeType: S
         KeySchema:
           - AttributeName: TokenKey
@@ -145,3 +309,157 @@ resources:
         TimeToLiveSpecification:
           AttributeName: ttl
           Enabled: true
+
+    coingeckoApiCacheTable:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: ${self:custom.ddb.deletionPolicy.${opt:stage, 'default'}}
+      UpdateReplacePolicy: ${self:custom.ddb.updateReplacePolicy.${opt:stage, 'default'}}
+      Properties:
+        TableName: ${self:custom.ddb.tableNames.coingeckoApiCache}
+        AttributeDefinitions:
+          - AttributeName: pkey
+            AttributeType: S
+          - AttributeName: skey # path/to/endpoint
+            AttributeType: S
+        KeySchema:
+          - AttributeName: pkey
+            KeyType: HASH
+          - AttributeName: skey
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+        PointInTimeRecoverySpecification:
+          PointInTimeRecoveryEnabled: true
+        TimeToLiveSpecification:
+          AttributeName: ttl
+          Enabled: true
+
+    stakexCustomizationTable:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: ${self:custom.ddb.deletionPolicy.${opt:stage, 'default'}}
+      UpdateReplacePolicy: ${self:custom.ddb.updateReplacePolicy.${opt:stage, 'default'}}
+      Properties:
+        TableName: ${self:custom.ddb.tableNames.stakexCustomization}
+        AttributeDefinitions:
+          - AttributeName: CustomizationKey # which is the protocol address
+            AttributeType: S
+          - AttributeName: logoIpfs
+            AttributeType: S
+        KeySchema:
+          - AttributeName: CustomizationKey
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: logoIpfsIndex
+            KeySchema:
+              - AttributeName: logoIpfs
+                KeyType: HASH
+            Projection:
+              ProjectionType: 'ALL'
+        BillingMode: PAY_PER_REQUEST
+        PointInTimeRecoverySpecification:
+          PointInTimeRecoveryEnabled: true
+
+    stakexProtocolsTable:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: ${self:custom.ddb.deletionPolicy.${opt:stage, 'default'}}
+      UpdateReplacePolicy: ${self:custom.ddb.updateReplacePolicy.${opt:stage, 'default'}}
+      Properties:
+        TableName: ${self:custom.ddb.tableNames.stakexProtocols}
+        AttributeDefinitions:
+          - AttributeName: pkey # version
+            AttributeType: S
+          - AttributeName: skey # chainId#protocol
+            AttributeType: S
+        KeySchema:
+          - AttributeName: pkey
+            KeyType: HASH
+          - AttributeName: skey
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+        PointInTimeRecoverySpecification:
+          PointInTimeRecoveryEnabled: true
+
+    stakexAnnualPercentageLogsTable:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: ${self:custom.ddb.deletionPolicy.${opt:stage, 'default'}}
+      UpdateReplacePolicy: ${self:custom.ddb.updateReplacePolicy.${opt:stage, 'default'}}
+      Properties:
+        TableName: ${self:custom.ddb.tableNames.stakexAnnualPercentageLogs}
+        AttributeDefinitions:
+          - AttributeName: pkey
+            AttributeType: S
+          - AttributeName: skey
+            AttributeType: S
+          - AttributeName: protocol
+            AttributeType: S
+          - AttributeName: timestamp
+            AttributeType: N
+        KeySchema:
+          - AttributeName: pkey
+            KeyType: HASH
+          - AttributeName: skey
+            KeyType: RANGE
+        GlobalSecondaryIndexes:
+          - IndexName: ProtocolIndex
+            KeySchema:
+              - AttributeName: protocol
+                KeyType: HASH
+              - AttributeName: timestamp
+                KeyType: RANGE
+            Projection:
+              ProjectionType: 'ALL'
+        BillingMode: PAY_PER_REQUEST
+        PointInTimeRecoverySpecification:
+          PointInTimeRecoveryEnabled: true
+
+    stakexStakeLogsTable:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: ${self:custom.ddb.deletionPolicy.${opt:stage, 'default'}}
+      UpdateReplacePolicy: ${self:custom.ddb.updateReplacePolicy.${opt:stage, 'default'}}
+      Properties:
+        TableName: ${self:custom.ddb.tableNames.stakexStakeLogs}
+        AttributeDefinitions:
+          - AttributeName: pkey
+            AttributeType: S
+          - AttributeName: skey
+            AttributeType: S
+          - AttributeName: protocol
+            AttributeType: S
+          - AttributeName: timestamp
+            AttributeType: N
+        KeySchema:
+          - AttributeName: pkey
+            KeyType: HASH
+          - AttributeName: skey
+            KeyType: RANGE
+        GlobalSecondaryIndexes:
+          - IndexName: ProtocolIndex
+            KeySchema:
+              - AttributeName: protocol
+                KeyType: HASH
+              - AttributeName: timestamp
+                KeyType: RANGE
+            Projection:
+              ProjectionType: 'ALL'
+        BillingMode: PAY_PER_REQUEST
+        PointInTimeRecoverySpecification:
+          PointInTimeRecoveryEnabled: true
+
+    stakexChainSyncTable:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: ${self:custom.ddb.deletionPolicy.${opt:stage, 'default'}}
+      UpdateReplacePolicy: ${self:custom.ddb.updateReplacePolicy.${opt:stage, 'default'}}
+      Properties:
+        TableName: ${self:custom.ddb.tableNames.stakexChainSync}
+        AttributeDefinitions:
+          - AttributeName: pkey
+            AttributeType: S
+          - AttributeName: skey
+            AttributeType: N
+        KeySchema:
+          - AttributeName: pkey
+            KeyType: HASH
+          - AttributeName: skey
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+        PointInTimeRecoverySpecification:
+          PointInTimeRecoveryEnabled: true
