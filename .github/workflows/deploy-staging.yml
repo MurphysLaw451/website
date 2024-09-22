@@ -83,11 +83,11 @@ jobs:
           aws s3 sync ./out/ s3://${ROOT_DOMAIN_NAME}/ --delete
           aws s3 sync ./out/lps/stakex/ s3://${ROOT_DOMAIN_NAME}/
         env:
-          STACK_NAME: stkx-production
+          STACK_NAME: stkx-staging
           TEMPLATE_FILE: ${{github.workspace}}/.deployment/s3-static-site.cf.yml
-          ROOT_DOMAIN_NAME: stkx.io 
+          ROOT_DOMAIN_NAME: staging.stkx.io
 
-      - name: Update CloudFlare DNS records for review env stkx.io
+      - name: Update CloudFlare DNS records for review env staging.stkx.io
         uses: rez0n/create-dns-record@v2.1
         with:
           type: 'CNAME'
