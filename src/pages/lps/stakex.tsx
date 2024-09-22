@@ -197,7 +197,7 @@ export default function Home() {
                     <Footer />
                 </div>
             </div>
-            <GoogleTagManager gtmId="GTM-P9D58C2G" />
+            <GoogleTagManager gtmId="GTM-N95JDKHQ" />
         </>
     )
 }
