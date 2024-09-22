@@ -65,12 +65,12 @@ jobs:
       - name: Deploy Cloud Formation & Static Website
         id: deploy-website-bucket
         run: |
-          aws cloudformation deploy --template-file "${TEMPLATE_FILE}" --stack-name "${STACK_NAME}" --parameter-overrides CustomBucketName="${CUSTOM_BUCKET_NAME}"
-          aws s3 sync ./out/ s3://${CUSTOM_BUCKET_NAME}/ --delete
+          aws cloudformation deploy --template-file "${TEMPLATE_FILE}" --stack-name "${STACK_NAME}" --parameter-overrides RootDomainName="${ROOT_DOMAIN_NAME}"
+          aws s3 sync ./out/ s3://${ROOT_DOMAIN_NAME}/ --delete
         env:
           STACK_NAME: degenx-dapp-staging
           TEMPLATE_FILE: ${{github.workspace}}/.deployment/s3-static-site.cf.yml
-          CUSTOM_BUCKET_NAME: staging.dgnx.finance
+          ROOT_DOMAIN_NAME: staging.dgnx.finance
 
       ### DEPLOY LANDINGPAGES
       ## STKX.IO
