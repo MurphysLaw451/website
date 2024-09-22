@@ -5,6 +5,10 @@ on:
       - '*'
       - '!main'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -16,7 +20,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '18'
+          node-version: '20'
 
       - name: Cache dependencies
         uses: actions/cache@v2
@@ -106,5 +110,5 @@ jobs:
           echo "dgnx.finance Review URL: ${URL_DGNX_FINANCE}"
           echo "stkx.io Review URL: ${URL_STKX_IO}"
         env:
-          URL_DGNX_FINANCE: ${{ steps.deploy-website-bucket.outputs.WEBSITE_URL }}
+          URL_DGNX_FINANCE: https://${{ steps.deploy-website-bucket.outputs.WEBSITE_URL }}
           URL_STKX_IO: https://review-${{github.ref_name}}.stkx.io
