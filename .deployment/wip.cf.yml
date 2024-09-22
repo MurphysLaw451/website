@@ -93,35 +93,6 @@ Resources:
         Runtime: cloudfront-js-2.0
       Name: !Sub 'DeepLinkRedirect-${CustomBucketName}'
 
-  # DAPPWIPAuthFunc:
-  #   Type: "AWS::CloudFront::Function"
-  #   Properties:
-  #     AutoPublish: true
-  #     FunctionCode: !Sub "
-  #       function handler(event) {
-  #         var authHeaders = event.request.headers.authorization;
-  #         var expected = 'Basic ${Base64UserPass}';
-
-  #         if (authHeaders && authHeaders.value === expected) {
-  #           return event.request;
-  #         }
-
-  #         var response = {
-  #           statusCode: 401,
-  #           statusDescription: 'Unauthorized',
-  #           headers: {
-  #             'www-authenticate': {
-  #               value: 'Basic realm=\"Enter credentials\"',
-  #             },
-  #           },
-  #         };
-  #         return response;
-  #       }"
-  #     FunctionConfig:
-  #       Comment: "Add HTTP Basic authentication to CloudFront"
-  #       Runtime: cloudfront-js-1.0
-  #     Name: !Sub 'AuthFn-${CustomBucketName}'
-
 Outputs:
   StaticWebsiteHostname:
     Value: !GetAtt DAPPWIPDistribution.DomainName

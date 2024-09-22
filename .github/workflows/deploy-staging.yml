@@ -69,7 +69,7 @@ jobs:
           aws s3 sync ./out/ s3://${CUSTOM_BUCKET_NAME}/ --delete
         env:
           STACK_NAME: degenx-dapp-staging
-          TEMPLATE_FILE: ${{github.workspace}}/.deployment/staging.cf.yml
+          TEMPLATE_FILE: ${{github.workspace}}/.deployment/s3-static-site.cf.yml
           CUSTOM_BUCKET_NAME: staging.dgnx.finance
 
       ### DEPLOY LANDINGPAGES
