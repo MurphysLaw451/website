@@ -4,9 +4,9 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: "Serve password protected development state of the DEGENX Ecosystem dapp through AWS"
 
 Parameters:
-  Base64UserPass:
-    Type: String
-    NoEcho: true
+  # Base64UserPass:
+  #   Type: String
+  #   NoEcho: true
   CustomBucketName:
     Type: String
     NoEcho: true
@@ -65,6 +65,9 @@ Resources:
           # FunctionAssociations:
           #   - EventType: viewer-request
           #     FunctionARN: !GetAtt DAPPWIPAuthFunc.FunctionMetadata.FunctionARN
+          FunctionAssociations:
+            - EventType: viewer-request
+              FunctionARN: !GetAtt DAPPWIPDeepLinkRedirectFunc.FunctionMetadata.FunctionARN
         PriceClass: PriceClass_100
   DAPPWIPOriginAccessControl:
     Type: "AWS::CloudFront::OriginAccessControl"
@@ -74,6 +77,22 @@ Resources:
         OriginAccessControlOriginType: s3
         SigningBehavior: always
         SigningProtocol: sigv4
+  DAPPWIPDeepLinkRedirectFunc:
+    Type: "AWS::CloudFront::Function"
+    Properties:
+      AutoPublish: true
+      FunctionCode: !Sub "
+        async function handler(event) {
+          const request = event.request; 
+          const uri = request.uri;
+          if (uri && (uri.match(/dapp$/) || uri.match(/dapp\\//))) request.uri = `/dapp/index.html`; 
+          return request;
+        }"
+      FunctionConfig:
+        Comment: "Deep Link Redirect to CloudFront"
+        Runtime: cloudfront-js-2.0
+      Name: !Sub 'DeepLinkRedirect-${CustomBucketName}'
+
   # DAPPWIPAuthFunc:
   #   Type: "AWS::CloudFront::Function"
   #   Properties:

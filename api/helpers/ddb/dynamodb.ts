@@ -1,4 +1,9 @@
-import { DynamoDBClient, DynamoDBClientConfig } from '@aws-sdk/client-dynamodb'
+import {
+    DynamoDBClient,
+    DynamoDBClientConfig,
+    PutItemCommand,
+    PutItemCommandInput,
+} from '@aws-sdk/client-dynamodb'
 import {
     BatchWriteCommand,
     BatchWriteCommandInput,
@@ -10,12 +15,12 @@ import {
     GetCommandOutput,
     PutCommand,
     PutCommandInput,
-    QueryCommandInput,
-    UpdateCommand,
-    UpdateCommandInput,
     QueryCommand,
+    QueryCommandInput,
     ScanCommand,
     ScanCommandInput,
+    UpdateCommand,
+    UpdateCommandInput,
 } from '@aws-sdk/lib-dynamodb'
 
 export class DynamoDBHelper {

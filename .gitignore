@@ -26,11 +26,17 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # local env files
-.env*.local
+.env*
+ipfs/.env*
+
 
 # vercel
 .vercel
 
+# api
 api/.serverless
-api/.env
+api/.env*
 api/.webpack
+
+# ipfs
+ipfs/local-data

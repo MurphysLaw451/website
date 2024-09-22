@@ -1,5 +1,5 @@
 import { toReadableNumber } from '@dapphelpers/number'
-import { durationFromSeconds } from '@dapphelpers/staking'
+import { durationFromSeconds, StakeXContext } from '@dapphelpers/staking'
 import { useERC20Approve } from '@dapphooks/shared/useERC20Approve'
 import { useGetERC20BalanceOf } from '@dapphooks/shared/useGetERC20BalanceOf'
 import { useHasERC20Allowance } from '@dapphooks/shared/useHasERC20Allowance'
@@ -10,7 +10,7 @@ import { useGetStakeBuckets } from '@dapphooks/staking/useGetStakeBuckets'
 import { useHasFees } from '@dapphooks/staking/useHasFees'
 import { StatsBoxTwoColumn } from '@dappshared/StatsBoxTwoColumn'
 import { StakeBucket, StakingBaseProps } from '@dapptypes'
-import { ChangeEvent, useCallback, useEffect, useState } from 'react'
+import { ChangeEvent, useCallback, useContext, useEffect, useState } from 'react'
 import { IoCheckmarkCircle } from 'react-icons/io5'
 import { MdError, MdLockOpen, MdLockOutline } from 'react-icons/md'
 import { SpinnerCircular } from 'spinners-react'
@@ -18,22 +18,19 @@ import { Address, formatUnits, parseUnits, toHex } from 'viem'
 import { useAccount } from 'wagmi'
 import { Button } from '../../Button'
 import { Spinner } from '../elements/Spinner'
-import {
-    StakeBucketButton,
-    StakingDurationSelection,
-} from './StakingDurationSelection'
-import { BaseOverlay } from './overlays/BaseOverlay'
+import { BaseOverlay } from '../shared/overlays/BaseOverlay'
+import { StakeBucketButton, StakingDurationSelection } from './StakingDurationSelection'
 
 type StakingFormProps = {
     onDepositSuccessHandler: () => void
 } & StakingBaseProps
 
-export const StakingForm = ({
-    protocolAddress,
-    stakingTokenInfo,
-    onDepositSuccessHandler,
-}: StakingFormProps) => {
+export const StakingForm = ({ stakingTokenInfo, onDepositSuccessHandler }: StakingFormProps) => {
     const defaultBucketId = toHex('boss mode', { size: 32 })
+
+    const {
+        data: { protocol, chain },
+    } = useContext(StakeXContext)
 
     const { address, isConnected, isDisconnected } = useAccount()
 
@@ -68,33 +65,26 @@ export const StakingForm = ({
     // Hooks
     //
     // base data hooks
-    const { data: dataStakeBuckets } = useGetStakeBuckets(protocolAddress)
-    const { data: dataMultiplierPerToken } =
-        useGetMultipliersPerOneStakingToken(protocolAddress)
-    const { data: dataBalanceOf } = useGetERC20BalanceOf(
-        stakingTokenInfo?.source,
-        address!
-    )
+    const { data: dataStakeBuckets } = useGetStakeBuckets(protocol, chain?.id!)
+    const { data: dataMultiplierPerToken } = useGetMultipliersPerOneStakingToken(protocol, chain?.id!)
+    const { data: dataBalanceOf } = useGetERC20BalanceOf(stakingTokenInfo?.source, address!, chain?.id!)
     const {
         data: dataAllowance,
         refetch: refetchERC20Allowance,
         isLoading: isLoadingERC20Allowance,
-    } = useHasERC20Allowance(stakingTokenInfo?.source, protocolAddress)
-    const { data: dataHasFees } = useHasFees(protocolAddress)
-    const { data: feeForStaking } = useGetFeeFor(
-        protocolAddress,
-        'staking',
-        stakeAmount
-    )
+    } = useHasERC20Allowance(stakingTokenInfo?.source, address!, protocol, chain?.id!, true)
+    const { data: dataHasFees } = useHasFees(protocol, chain?.id!)
+    const { data: feeForStaking } = useGetFeeFor(protocol, chain?.id!, 'staking', stakeAmount)
 
     // interactive hooks
     const {
         isPending: isLoadingERC20Approve,
+        isSuccess: isSuccessERC20Approve,
         write: writeERC20Approve,
         reset: resetERC20Approve,
         isError: isErrorERC20Approve,
         error: errorERC20Approve,
-    } = useERC20Approve(stakingTokenInfo?.source, protocolAddress, stakeAmount)
+    } = useERC20Approve(stakingTokenInfo?.source, protocol, stakeAmount, chain?.id!)
 
     const {
         isLoading: isLoadingDepositStake,
@@ -105,27 +95,26 @@ export const StakingForm = ({
         error: errorDepositStake,
         feeAmount: feeAmountDepositStake,
         stakeAmount: stakeAmountDepositStake,
-        isPendingSimulation: isPendingSimulationDepositStake,
-        isSuccessSimulation: isSuccessSimulationDepositStake,
         hash: hashDepositStake,
-    } = useDepositStake(
-        Boolean(hasAllowance && startDeposit),
-        protocolAddress,
-        stakeBucketId,
-        stakeAmount
-    )
+    } = useDepositStake(protocol, chain?.id!, stakeBucketId, stakeAmount, Boolean(hasAllowance && startDeposit))
 
     //
     // Handlers
     //
 
     // duration is selected
-    const onDurationSelectionHandler = (duration: StakeBucketButton | null) =>
+    const onDurationSelectionHandler = (duration: StakeBucketButton | null) => {
+        console.log(duration)
         setStakeBucketId((duration?.id as Address) || defaultBucketId)
+    }
 
     // checkbox is checked
-    const onCheckboxHandler = (checked: boolean) =>
-        setStakeBucketChecked(checked)
+    const onCheckboxHandler = useCallback(
+        (checked: boolean) => {
+            if (dataStakeBuckets && dataStakeBuckets.length > 1) setStakeBucketChecked(checked)
+        },
+        [dataStakeBuckets]
+    )
 
     // amount is entered
     const onChangeHandler = (_event: ChangeEvent<HTMLInputElement>) => {
@@ -135,10 +124,13 @@ export const StakingForm = ({
     }
 
     // deposit button has been clicked
-    const onClickHandler = () => {
+    const onClickHandler = useCallback(() => {
+        resetDepositStake()
+        resetERC20Approve()
         setStartDeposit(true)
-        if (!hasAllowance) writeERC20Approve()
-    }
+        if (hasAllowance) writeDepositStake && writeDepositStake()
+        else writeERC20Approve && writeERC20Approve()
+    }, [resetERC20Approve, resetDepositStake, writeERC20Approve, writeDepositStake, hasAllowance])
 
     const onStaticOverlayCloseHandler = () => {
         resetAfterDeposit()
@@ -201,58 +193,46 @@ export const StakingForm = ({
                 stakeBucketId !== defaultBucketId &&
                 !isLoadingERC20Allowance
         )
-    }, [
-        defaultBucketId,
-        stakeAmount,
-        stakeBucketId,
-        stakeBucketChecked,
-        isConnected,
-        isLoadingERC20Allowance,
-    ])
+    }, [defaultBucketId, stakeAmount, stakeBucketId, stakeBucketChecked, isConnected, isLoadingERC20Allowance])
 
     // initiate deposit when conditions are met
     useEffect(() => {
-        if (
-            startDeposit &&
-            hasAllowance &&
-            !isSuccessDepositStake &&
-            !isLoadingDepositStake &&
-            !isPendingSimulationDepositStake &&
-            !isErrorDepositStake &&
-            isSuccessSimulationDepositStake &&
-            writeDepositStake
-        )
-            writeDepositStake()
+        if (startDeposit && !isLoadingERC20Approve && isSuccessERC20Approve) {
+            if (hasAllowance) writeDepositStake && writeDepositStake()
+            else refetchERC20Allowance && refetchERC20Allowance()
+        }
     }, [
         startDeposit,
         hasAllowance,
-        isSuccessDepositStake,
-        isLoadingDepositStake,
-        isPendingSimulationDepositStake,
-        isErrorDepositStake,
-        isSuccessSimulationDepositStake,
+        isLoadingERC20Approve,
+        isSuccessERC20Approve,
         writeDepositStake,
+        refetchERC20Allowance,
     ])
 
     useEffect(() => {
-        if (multiplierPerToken)
-            setDurationButtons(
-                dataStakeBuckets
-                    ?.map(({ id, duration, burn, multiplier }) => ({
-                        id,
-                        multiplier,
-                        duration,
-                        burn,
-                        selected: id === stakeBucketId,
-                        multiplierPerToken: multiplierPerToken[id],
-                    }))
-                    .sort((a, b) => (a.multiplier < b.multiplier ? -1 : 1))
-            )
+        if (dataStakeBuckets) {
+            if (multiplierPerToken)
+                setDurationButtons(
+                    dataStakeBuckets
+                        .map(({ id, duration, burn, multiplier }) => ({
+                            id,
+                            multiplier,
+                            duration,
+                            burn,
+                            selected: id === stakeBucketId || dataStakeBuckets.length === 1,
+                            multiplierPerToken: multiplierPerToken[id],
+                        }))
+                        .sort((a, b) => (a.multiplier < b.multiplier ? -1 : 1))
+                )
 
-        if (dataStakeBuckets && stakeBucketId) {
-            setSelectedStake(
-                dataStakeBuckets.find(({ id }) => id === stakeBucketId)
-            )
+            if (stakeBucketId)
+                setSelectedStake(
+                    dataStakeBuckets.find(({ id }) => id === stakeBucketId || dataStakeBuckets.length === 1)
+                )
+
+            if (dataStakeBuckets.length === 1 && dataStakeBuckets.find(({ duration, burn }) => !duration && !burn))
+                setStakeBucketChecked(true)
         }
     }, [dataStakeBuckets, stakeBucketId, multiplierPerToken])
 
@@ -266,9 +246,7 @@ export const StakingForm = ({
                 dataMultiplierPerToken.reduce(
                     (acc, m) => ({
                         ...acc,
-                        [m.bucketId as Address]: Math.floor(
-                            Number(m.multiplier) / m.divider
-                        ),
+                        [m.bucketId as Address]: Math.floor(Number(m.multiplier) / m.divider),
                     }),
                     {}
                 )
@@ -287,28 +265,17 @@ export const StakingForm = ({
     // sets the general token balance
     useEffect(() => {
         if (stakingTokenBalance && stakingTokenInfo) {
-            setTokenBalance(
-                Number(stakingTokenBalance) /
-                    10 ** Number(stakingTokenInfo.decimals)
-            )
+            setTokenBalance(Number(stakingTokenBalance) / 10 ** Number(stakingTokenInfo.decimals))
             setTokenBalanceRaw(stakingTokenBalance.toString())
         }
     }, [stakingTokenBalance, stakingTokenInfo])
 
     // entered amount validation and throws error if necessary
     useEffect(() => {
-        if (
-            Boolean(stakeAmountEntered && tokenBalanceRaw && stakingTokenInfo)
-        ) {
+        if (Boolean(stakeAmountEntered && tokenBalanceRaw && stakingTokenInfo)) {
             const tokenBalanceRawBN = BigInt(tokenBalanceRaw)
-            const stakeAmountEnteredBN = parseUnits(
-                stakeAmountEntered,
-                parseInt(stakingTokenInfo.decimals.toString())
-            )
-            const checkAmountEntered = formatUnits(
-                stakeAmountEnteredBN,
-                parseInt(stakingTokenInfo.decimals.toString())
-            )
+            const stakeAmountEnteredBN = parseUnits(stakeAmountEntered, parseInt(stakingTokenInfo.decimals.toString()))
+            const checkAmountEntered = formatUnits(stakeAmountEnteredBN, parseInt(stakingTokenInfo.decimals.toString()))
 
             if (stakeAmountEntered != checkAmountEntered) {
                 setStakeAmount(0n)
@@ -318,9 +285,7 @@ export const StakingForm = ({
 
             if (tokenBalanceRawBN - stakeAmountEnteredBN < 0n) {
                 setStakeAmount(0n)
-                setError(
-                    `Balance not enough to stake ${stakeAmountEntered} ${stakingTokenInfo?.symbol}`
-                )
+                setError(`Balance not enough to stake ${stakeAmountEntered} ${stakingTokenInfo?.symbol}`)
                 return
             } else {
                 setStakeAmount(stakeAmountEnteredBN)
@@ -333,10 +298,7 @@ export const StakingForm = ({
     }, [tokenBalanceRaw, stakeAmountEntered, stakingTokenInfo])
 
     // set token symbol
-    useEffect(
-        () => stakingTokenInfo && setTokenSymbol(stakingTokenInfo?.symbol),
-        [stakingTokenInfo]
-    )
+    useEffect(() => stakingTokenInfo && setTokenSymbol(stakingTokenInfo?.symbol), [stakingTokenInfo])
 
     // set allowance
     useEffect(() => {
@@ -348,9 +310,7 @@ export const StakingForm = ({
             <div className="text-sm">
                 <div className="mb-2 px-1">
                     Deposit {tokenSymbol} &nbsp;&nbsp;{' '}
-                    <span className="text-xs text-darkTextLowEmphasis">
-                        Balance: {tokenBalance.toLocaleString()}
-                    </span>
+                    <span className="text-xs text-darkTextLowEmphasis">Balance: {tokenBalance.toLocaleString()}</span>
                 </div>
                 <div>
                     <input
@@ -364,11 +324,7 @@ export const StakingForm = ({
                         className="w-full rounded-lg border-0 bg-dapp-blue-800 text-right text-2xl leading-10 [appearance:textfield] focus:ring-0 focus:ring-offset-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                     />
                 </div>
-                {hasError && (
-                    <div className="mt-1 px-3 text-xs text-error">
-                        {errorMessage}
-                    </div>
-                )}
+                {hasError && <div className="mt-1 px-3 text-xs text-error">{errorMessage}</div>}
             </div>
 
             <StakingDurationSelection
@@ -395,51 +351,34 @@ export const StakingForm = ({
                 {!startDeposit && (
                     <>
                         <span>Deposit {tokenSymbol}</span>
-                        {isDepositButtonEnabled && isConnected ? (
-                            <MdLockOpen />
-                        ) : (
-                            <MdLockOutline />
-                        )}
+                        {isDepositButtonEnabled && isConnected ? <MdLockOpen /> : <MdLockOutline />}
                     </>
                 )}
             </Button>
 
             <StatsBoxTwoColumn.Wrapper className="rounded-lg bg-dapp-blue-800 px-5 py-2 text-sm">
-                <StatsBoxTwoColumn.LeftColumn>
-                    {tokenSymbol}
-                </StatsBoxTwoColumn.LeftColumn>
+                <StatsBoxTwoColumn.LeftColumn>{tokenSymbol}</StatsBoxTwoColumn.LeftColumn>
                 <StatsBoxTwoColumn.RightColumn>
                     {stakeAmountEntered ? stakeAmountEntered : '-'}
                 </StatsBoxTwoColumn.RightColumn>
 
                 {dataHasFees?.hasFeeForStaking && (
                     <>
-                        <StatsBoxTwoColumn.LeftColumn>
-                            Deposit Fee in {tokenSymbol}
-                        </StatsBoxTwoColumn.LeftColumn>
+                        <StatsBoxTwoColumn.LeftColumn>Deposit Fee in {tokenSymbol}</StatsBoxTwoColumn.LeftColumn>
                         <StatsBoxTwoColumn.RightColumn>
-                            {toReadableNumber(
-                                feeForStaking?.feeAmount,
-                                stakingTokenInfo?.decimals
-                            )}
+                            {toReadableNumber(feeForStaking?.feeAmount, stakingTokenInfo?.decimals)}
                         </StatsBoxTwoColumn.RightColumn>
                     </>
                 )}
 
-                <StatsBoxTwoColumn.LeftColumn>
-                    Reward Multiplier
-                </StatsBoxTwoColumn.LeftColumn>
+                <StatsBoxTwoColumn.LeftColumn>Reward Multiplier</StatsBoxTwoColumn.LeftColumn>
                 <StatsBoxTwoColumn.RightColumn>
                     {selectedStake ? `${selectedStake.multiplier}x` : '-'}
                 </StatsBoxTwoColumn.RightColumn>
 
-                <StatsBoxTwoColumn.LeftColumn>
-                    Multiplier per {tokenSymbol} in Pool
-                </StatsBoxTwoColumn.LeftColumn>
+                <StatsBoxTwoColumn.LeftColumn>Multiplier per {tokenSymbol} in Pool</StatsBoxTwoColumn.LeftColumn>
                 <StatsBoxTwoColumn.RightColumn>
-                    {multiplierPerToken &&
-                    selectedStake &&
-                    multiplierPerToken[selectedStake.id]
+                    {multiplierPerToken && selectedStake && multiplierPerToken[selectedStake.id]
                         ? `${multiplierPerToken?.[selectedStake.id]}x`
                         : '-'}
                 </StatsBoxTwoColumn.RightColumn>
@@ -451,9 +390,7 @@ export const StakingForm = ({
                     {stakeBucketId ? `${expectedApy}%` : '-'}
                 </StatsBoxTwoColumn.RightColumn> */}
 
-                <StatsBoxTwoColumn.LeftColumn>
-                    Stake Duration
-                </StatsBoxTwoColumn.LeftColumn>
+                <StatsBoxTwoColumn.LeftColumn>Stake Duration</StatsBoxTwoColumn.LeftColumn>
                 <StatsBoxTwoColumn.RightColumn>
                     {selectedStake ? (
                         !selectedStake.burn ? (
@@ -465,34 +402,29 @@ export const StakingForm = ({
                                 'None'
                             )
                         ) : (
-                            <span className="font-bold text-degenOrange">
-                                BURNED
-                            </span>
+                            <span className="font-bold text-degenOrange">BURNED</span>
                         )
                     ) : (
                         '-'
                     )}
                 </StatsBoxTwoColumn.RightColumn>
 
-                <StatsBoxTwoColumn.LeftColumn>
-                    Est. Unlock Date
-                </StatsBoxTwoColumn.LeftColumn>
+                <StatsBoxTwoColumn.LeftColumn>Est. Unlock Date</StatsBoxTwoColumn.LeftColumn>
                 <StatsBoxTwoColumn.RightColumn>
                     {selectedStake ? (
                         !selectedStake.burn ? (
-                            `${new Date(
-                                Date.now() + selectedStake.duration * 1000
-                            ).toLocaleDateString(navigator.language, {
-                                year: 'numeric',
-                                month: '2-digit',
-                                day: '2-digit',
-                            })}, ${new Date(
-                                Date.now() + selectedStake.duration * 1000
-                            ).toLocaleTimeString(navigator.language)}`
+                            `${new Date(Date.now() + selectedStake.duration * 1000).toLocaleDateString(
+                                navigator.language,
+                                {
+                                    year: 'numeric',
+                                    month: '2-digit',
+                                    day: '2-digit',
+                                }
+                            )}, ${new Date(Date.now() + selectedStake.duration * 1000).toLocaleTimeString(
+                                navigator.language
+                            )}`
                         ) : (
-                            <span className="font-bold text-degenOrange">
-                                BURNED
-                            </span>
+                            <span className="font-bold text-degenOrange">BURNED</span>
                         )
                     ) : (
                         '-'
@@ -500,86 +432,62 @@ export const StakingForm = ({
                 </StatsBoxTwoColumn.RightColumn>
             </StatsBoxTwoColumn.Wrapper>
 
-            {(startDeposit ||
-                isLoadingERC20Approve ||
-                isLoadingDepositStake) && (
-                <BaseOverlay
-                    isOpen={startDeposit}
-                    closeOnBackdropClick={false}
-                    onClose={onStaticOverlayCloseHandler}
-                >
+            {(startDeposit || isLoadingERC20Approve || isLoadingDepositStake) && (
+                <BaseOverlay isOpen={startDeposit} closeOnBackdropClick={false} onClose={onStaticOverlayCloseHandler}>
                     <>
                         {(isErrorERC20Approve || isErrorDepositStake) && (
                             <div className="flex flex-col items-center gap-6 p-6 text-center text-base">
                                 <MdError className="h-[100px] w-[100px] text-error " />
                                 There was an error: <br />
-                                {errorDepositStake &&
-                                    (errorDepositStake as any).details}
-                                {errorERC20Approve &&
-                                    (errorERC20Approve as any).details}
+                                {errorDepositStake && (errorDepositStake as any).reason}
+                                {errorERC20Approve && (errorERC20Approve as any).reason}
                             </div>
                         )}
 
-                        {!isSuccessDepositStake &&
-                            !isErrorERC20Approve &&
-                            !isErrorDepositStake && (
-                                <div className="flex flex-col items-center gap-6 p-6 text-base">
-                                    <SpinnerCircular
-                                        size={100}
-                                        thickness={200}
-                                        speed={50}
-                                        color="#0F978E"
-                                        secondaryColor="#DBEAE8"
-                                    />
+                        {!isSuccessDepositStake && !isErrorERC20Approve && !isErrorDepositStake && (
+                            <div className="flex flex-col items-center gap-6 p-6 text-base">
+                                <SpinnerCircular
+                                    size={100}
+                                    thickness={200}
+                                    speed={50}
+                                    color="#0F978E"
+                                    secondaryColor="#DBEAE8"
+                                />
 
-                                    {isLoadingERC20Approve && (
-                                        <div className="text-center">
-                                            Please{' '}
-                                            <span className="font-bold">
-                                                approve
-                                            </span>
-                                            , that we&apos;re allowed
-                                            <br />
-                                            to transfer{' '}
-                                            <span className="font-bold">
-                                                {stakeAmountEntered}{' '}
-                                                {tokenSymbol}
-                                            </span>{' '}
-                                            from your account.
-                                        </div>
-                                    )}
+                                {isLoadingERC20Approve && (
+                                    <div className="text-center">
+                                        Please <span className="font-bold">approve</span>
+                                        , that we&apos;re allowed
+                                        <br />
+                                        to transfer{' '}
+                                        <span className="font-bold">
+                                            {stakeAmountEntered} {tokenSymbol}
+                                        </span>{' '}
+                                        from your account.
+                                    </div>
+                                )}
 
-                                    {isLoadingDepositStake &&
-                                        !hashDepositStake && (
-                                            <div className="text-center">
-                                                Please confirm to{' '}
-                                                <span className="font-bold">
-                                                    deposit {stakeAmountEntered}{' '}
-                                                    {tokenSymbol}
-                                                </span>{' '}
-                                                into staking.
-                                            </div>
-                                        )}
+                                {isLoadingDepositStake && !hashDepositStake && (
+                                    <div className="text-center">
+                                        Please confirm to{' '}
+                                        <span className="font-bold">
+                                            deposit {stakeAmountEntered} {tokenSymbol}
+                                        </span>{' '}
+                                        into staking.
+                                    </div>
+                                )}
 
-                                    {isLoadingDepositStake &&
-                                        hashDepositStake && (
-                                            <div className="text-center">
-                                                Waiting for transaction to be
-                                                processed...
-                                            </div>
-                                        )}
+                                {isLoadingDepositStake && hashDepositStake && (
+                                    <div className="text-center">Waiting for transaction to be processed...</div>
+                                )}
 
-                                    {!hasAllowance &&
-                                        !isLoadingERC20Approve &&
-                                        !isLoadingDepositStake && (
-                                            <div className="text-center">
-                                                <span>
-                                                    checking allowance...
-                                                </span>
-                                            </div>
-                                        )}
-                                </div>
-                            )}
+                                {!hasAllowance && !isLoadingERC20Approve && !isLoadingDepositStake && (
+                                    <div className="text-center">
+                                        <span>checking allowance...</span>
+                                    </div>
+                                )}
+                            </div>
+                        )}
 
                         {isSuccessDepositStake && (
                             <>
@@ -588,31 +496,23 @@ export const StakingForm = ({
                                     <span className="font-bold">
                                         Successfully deposited <br />
                                         <span className="text-xl font-bold">
-                                            {toReadableNumber(
-                                                stakeAmountDepositStake,
-                                                stakingTokenInfo?.decimals
-                                            )}{' '}
+                                            {toReadableNumber(stakeAmountDepositStake, stakingTokenInfo?.decimals)}{' '}
                                             {stakingTokenInfo?.symbol}
                                         </span>
-                                        {typeof feeAmountDepositStake ===
-                                            'bigint' &&
-                                            feeAmountDepositStake > 0n && (
-                                                <>
-                                                    <br />
-                                                    <br />A fee of{' '}
-                                                    <span className="text-xl font-bold">
-                                                        {toReadableNumber(
-                                                            feeAmountDepositStake,
-                                                            stakingTokenInfo?.decimals
-                                                        )}{' '}
-                                                        {
-                                                            stakingTokenInfo?.symbol
-                                                        }
-                                                    </span>{' '}
-                                                    has been charged from your
-                                                    staking amount
-                                                </>
-                                            )}
+                                        {typeof feeAmountDepositStake === 'bigint' && feeAmountDepositStake > 0n && (
+                                            <>
+                                                <br />
+                                                <br />A fee of{' '}
+                                                <span className="text-xl font-bold">
+                                                    {toReadableNumber(
+                                                        feeAmountDepositStake,
+                                                        stakingTokenInfo?.decimals
+                                                    )}{' '}
+                                                    {stakingTokenInfo?.symbol}
+                                                </span>{' '}
+                                                has been charged from your staking amount
+                                            </>
+                                        )}
                                     </span>
                                 </div>
                                 <Button

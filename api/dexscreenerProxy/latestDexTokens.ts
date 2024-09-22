@@ -30,8 +30,8 @@ export const handler = async (
         if (_dbResult.Items && _dbResult.Items.length >= 1) {
             result = _dbResult.Items[0].result
         }
-    }
-    if (result.pairs) {
+    } else if (result.pairs) {
+        console.log(result.pairs)
         // write to cache
         await db.batchWrite({
             RequestItems: {
@@ -40,7 +40,48 @@ export const handler = async (
                         PutRequest: {
                             Item: {
                                 TokenKey: tokenAddress,
-                                result,
+                                result: {
+                                    ...result,
+                                    pairs: result.pairs.map((pair: any) => ({
+                                        ...pair,
+                                        liquidity: pair.liquidity
+                                            ? {
+                                                  ...pair.liquidity,
+                                                  base: pair.liquidity.base
+                                                      ? Number.isSafeInteger(
+                                                            pair.liquidity.base
+                                                        )
+                                                          ? pair.liquidity.base
+                                                          : pair.liquidity
+                                                                .base %
+                                                                1 !=
+                                                            0
+                                                          ? pair.liquidity.base
+                                                          : BigInt(
+                                                                pair.liquidity
+                                                                    .base
+                                                            )
+                                                      : 0,
+                                                  quote: pair.liquidity.quote
+                                                      ? Number.isSafeInteger(
+                                                            pair.liquidity.quote
+                                                        )
+                                                          ? pair.liquidity.quote
+                                                          : pair.liquidity
+                                                                .quote %
+                                                                1 !=
+                                                            0
+                                                          ? pair.liquidity.quote
+                                                          : BigInt(
+                                                                pair.liquidity
+                                                                    .quote
+                                                            )
+                                                      : 0,
+                                              }
+                                            : {},
+                                    })),
+                                },
+                                ttl: 86400,
                             },
                         },
                     },
@@ -48,5 +89,6 @@ export const handler = async (
             },
         })
     }
+
     return createReturn(200, JSON.stringify(result))
 }

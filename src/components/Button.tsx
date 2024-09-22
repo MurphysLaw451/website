@@ -3,11 +3,8 @@ import Link from 'next/link'
 
 const baseStyles = {
     solid: 'group inline-flex items-center justify-center rounded-full py-2 px-4  font-semibold focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2',
-    outline:
-        'group inline-flex items-center justify-center rounded-full py-2 px-4  focus:outline-none',
-    slick: clsx(
-        'group inline-flex items-center justify-center rounded-lg py-2 px-4 focus:outline-none leading-5'
-    ),
+    outline: 'group inline-flex items-center justify-center rounded-full py-2 px-4  focus:outline-none',
+    slick: clsx('group inline-flex items-center justify-center rounded-lg py-2 px-4 focus:outline-none leading-5'),
 }
 
 const variantStyles = {
@@ -40,29 +37,31 @@ export function Button({
     onClick = () => {},
     ...props
 }) {
-    if (variant != 'primary' && variant != 'secondary') {
-        className = clsx(
-            baseStyles[variant],
-            variantStyles[variant][color],
-            className
-        )
+    if (variant != 'primary' && variant != 'secondary' && variant != 'error') {
+        className = clsx(baseStyles[variant], variantStyles[variant][color], className)
     }
 
-    // TODO new buttons
     const baseStyle = clsx(
-        'group inline-flex items-center justify-center font-semibold rounded-lg py-2 px-4 focus:outline-none leading-5 active:border disabled:active:border-none  hover:opacity-70 disabled:opacity-40 disabled:hover:opacity-40'
+        'group inline-flex items-center justify-center font-semibold rounded-lg py-2 px-4 focus:outline-none leading-5 border hover:opacity-70 disabled:opacity-40 disabled:hover:opacity-40'
     )
     if (variant == 'primary') {
         className = clsx(
             baseStyle,
-            'bg-dapp-cyan-500 text-dapp-blue-800 active:border-dapp-cyan-50',
+            'bg-dapp-cyan-500 text-dapp-blue-800 border-dapp-cyan-500 active:border-dapp-cyan-50',
             className
         )
     }
     if (variant == 'secondary') {
         className = clsx(
             baseStyle,
-            'bg-dapp-blue-100 disabled:bg-dapp-blue-50 text-dapp-cyan-50 active:border-dapp-cyan-500',
+            'bg-dapp-blue-100 border-dapp-blue-100 disabled:bg-dapp-blue-50 text-dapp-cyan-50 active:border-dapp-cyan-500',
+            className
+        )
+    }
+    if (variant == 'error') {
+        className = clsx(
+            baseStyle,
+            'bg-error/40 border-error/20 disabled:bg-error/30 disabled:text-white/50 text-white/60 active:border-error/100',
             className
         )
     }
@@ -70,11 +69,6 @@ export function Button({
     return href ? (
         <Link href={href} className={className} {...props} />
     ) : (
-        <button
-            disabled={disabled}
-            onClick={onClick}
-            className={className}
-            {...props}
-        />
+        <button disabled={disabled} onClick={onClick} className={className} {...props} />
     )
 }

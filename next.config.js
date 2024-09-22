@@ -1,6 +1,6 @@
-/** @type {import('next').NextConfig} */
 const { withSentryConfig } = require('@sentry/nextjs')
 
+/** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export',
   async rewrites() {
@@ -8,6 +8,14 @@ const nextConfig = {
       {
         source: '/dapp/:path*',
         destination: '/dapp/',
+      },
+      {
+        source: '/lps/stakex',
+        destination: '/lps/stakex/',
+      },
+      {
+        source: '/lps/stakex/',
+        destination: '/lps/stakex/',
       },
     ]
   },
