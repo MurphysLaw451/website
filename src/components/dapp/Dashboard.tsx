@@ -219,9 +219,7 @@ export const Dashboard = (props: RouteObject) => {
 
         // getBackingAmount().then(setBackingAmountUsd)
     }, [])
-    return (
-        <div className="flex flex-row justify-center">We&apos;re updating our Dashboard. It&apos;ll be back soon.</div>
-    )
+
     return (
         <div>
             <h1 className="mb-5 mt-4 flex flex-col gap-1 px-8 font-title text-3xl font-bold tracking-wide sm:mb-8 sm:flex-row sm:px-0">
