@@ -48,7 +48,7 @@ export const toReadableNumber = (
         ? options?.minimumFractionDigits
         : 2
 
-    if (no) {
+    if (no && minimumFractionDigits && maximumFractionDigits) {
         const base = no < 0 ? -10 : 10
         while (no < 1 / base ** minimumFractionDigits) {
             minimumFractionDigits++

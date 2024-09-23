@@ -348,7 +348,7 @@ export const Dashboard = (props: RouteObject) => {
                 </Tile>
                 <Tile className="col-span-2 xl:col-span-1">
                     <H2>Ø Averages</H2>
-                    <div className="mt-4 rounded-lg bg-dapp-blue-800 p-4">
+                    <div className="mt-8 rounded-lg bg-dapp-blue-800 p-4">
                         <div className="grid grid-cols-3">
                             <div className="col-span-2">Market cap</div>
                             <div className="text-right">
