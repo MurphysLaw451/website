@@ -171,7 +171,7 @@ export function Header() {
                         <div className="flex flex-row-reverse items-center gap-1 sm:flex-row">
                             <Button
                                 className="hidden gap-1 sm:flex lg:ml-3"
-                                href="/dapp"
+                                href="/dapp/defitools/"
                                 color="orange"
                             >
                                 <span>Launch app</span>

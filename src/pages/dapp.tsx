@@ -78,16 +78,13 @@ export default function Dapp() {
                                 </div>
                                 <main className="mx-auto w-full sm:w-11/12 lg:w-8/12">
                                     <Routes>
-                                        <Route element={<Dashboard />} path="/dapp" />
+                                        {/* <Route element={<Dashboard />} path="/dapp" /> */}
+                                        <Route index={true} element={<DeFiTools />} path="/dapp/defitools/*" />
                                         <Route element={<LiquidityBacking />} path="/dapp/liquidity-backing" />
                                         <Route element={<Disburser />} path="/dapp/disburser" />
                                         <Route element={<ATM />} path="/dapp/atm" />
                                         <Route element={<Bouncer />} path="/dapp/bouncer/:hash" />
-                                        <Route
-                                            element={<StakeX />}
-                                            path="/dapp/staking/:chainId/:protocolAddress"
-                                        />{' '}
-                                        <Route element={<DeFiTools />} path="/dapp/defitools/*" />
+                                        <Route element={<StakeX />} path="/dapp/staking/:chainId/:protocolAddress" />
                                     </Routes>
                                 </main>
                             </div>

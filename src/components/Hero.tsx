@@ -41,7 +41,7 @@ export function Hero() {
                     </ul>
                 </div>
                 <div className="mt-10 flex justify-center gap-x-6">
-                    <Button className="flex gap-1 lg:ml-3" href="/dapp" color="orange">
+                    <Button className="flex gap-1 lg:ml-3" href="/dapp/defitools/" color="orange">
                         <span>Launch app</span>
                         <BsArrowUpRight />
                     </Button>
