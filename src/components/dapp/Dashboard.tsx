@@ -33,7 +33,7 @@ const showAmount = (walletData: any, tokenAddresses: string[]) => {
 
         let balance = parseInt(token.balance)
         if (tokenAddress === '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7') {
-            balance += parseInt(walletData.find((item) => !item.tokenAddress)?.balance)
+            balance += parseInt(walletData.find((item: any) => !item.tokenAddress)?.balance)
         }
 
         totalBalance += balance / 10 ** token.token.decimals
@@ -205,11 +205,13 @@ export const Dashboard = (props: RouteObject) => {
     }, [balanceOfDeadAddress, dataTotalSupply, DGNX_INITIAL_SUPPLY])
 
     useEffect(() => {
-        fetch('https://api.dexscreener.com/latest/dex/tokens/0x51e48670098173025C477D9AA3f0efF7BF9f7812')
+        fetch(
+            `${process.env.NEXT_PUBLIC_STAKEX_API_ENDPOINT}/latest/dex/tokens/0x51e48670098173025C477D9AA3f0efF7BF9f7812`
+        )
             .then((res) => res.json())
             .then((data) => {
-                const traderJoe = data.pairs.find((pair) => pair.dexId === 'traderjoe')
-                const pangolin = data.pairs.find((pair) => pair.dexId === 'pangolin')
+                const traderJoe = (data.pairs || []).find((pair: any) => pair.dexId === 'traderjoe')
+                const pangolin = (data.pairs || []).find((pair: any) => pair.dexId === 'pangolin')
                 setDexData({ traderJoe, pangolin })
             })
 
