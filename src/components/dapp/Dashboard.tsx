@@ -26,6 +26,7 @@ const percentFormatter = new Intl.NumberFormat('en-US', {
 
 const showAmount = (walletData: any, tokenAddresses: string[]) => {
     let totalBalance = 0
+    console.log({ walletData })
 
     tokenAddresses.forEach((tokenAddress) => {
         const token = walletData.find((item) => item.tokenAddress === tokenAddress)
@@ -70,7 +71,8 @@ const getAddressData = async (address: string, retryNum: number = 0) => {
         if (addressDataCache[address]) return addressDataCache[address]
 
         const dataRaw = await fetch(
-            `https://safe-transaction-avalanche.safe.global/api/v1/safes/${address}/balances/usd/?trusted=false&exclude_spam=true`
+            `https://safe-transaction-avalanche.safe.global/api/v2/safes/${address}/balances/?trusted=false&exclude_spam=true`
+            // `https://safe-transaction-avalanche.safe.global/api/v1/safes/${address}/balances/usd/?trusted=false&exclude_spam=true`
         )
         addressDataCache[address] = dataRaw.json()
         return addressDataCache[address]
@@ -215,9 +217,11 @@ export const Dashboard = (props: RouteObject) => {
                 setDexData({ traderJoe, pangolin })
             })
 
-        getBackingAmount().then(setBackingAmountUsd)
+        // getBackingAmount().then(setBackingAmountUsd)
     }, [])
-
+    return (
+        <div className="flex flex-row justify-center">We&apos;re updating our Dashboard. It&apos;ll be back soon.</div>
+    )
     return (
         <div>
             <h1 className="mb-5 mt-4 flex flex-col gap-1 px-8 font-title text-3xl font-bold tracking-wide sm:mb-8 sm:flex-row sm:px-0">
@@ -233,26 +237,52 @@ export const Dashboard = (props: RouteObject) => {
                                 <div className="font-bold text-light-100">TraderJoe</div>
                                 <div className="flex">
                                     <div className="flex-grow">Market Price</div>
-                                    <div>${dexData.traderJoe.priceUsd}</div>
+                                    <div>
+                                        {dexData.traderJoe && dexData.traderJoe.priceUsd
+                                            ? `$${dexData.traderJoe.priceUsd}`
+                                            : 'no info'}
+                                    </div>
                                 </div>
                                 <div className="flex">
                                     <div className="flex-grow">Native Price AVAX</div>
-                                    <div>{dexData.traderJoe.priceNative}</div>
+                                    <div>
+                                        {dexData.traderJoe && dexData.traderJoe.priceNative
+                                            ? dexData.traderJoe.priceNative
+                                            : 'no info'}
+                                    </div>
                                 </div>
                                 <div className="flex">
                                     <div className="flex-grow">DGNX in Liq. pool</div>
-                                    <div>{dexData.traderJoe.liquidity.base}</div>
+                                    <div>
+                                        {dexData.traderJoe &&
+                                        dexData.traderJoe.liquidity &&
+                                        dexData.traderJoe.liquidity.base
+                                            ? dexData.traderJoe.liquidity.base
+                                            : 'no info'}
+                                    </div>
                                 </div>
 
                                 <div className="flex">
                                     <div className="flex-grow">Price Change 24h</div>
                                     <div
                                         className={clsx(
-                                            dexData.traderJoe.priceChange.h24 > 0 ? 'text-green-600' : 'text-red-600'
+                                            dexData.traderJoe &&
+                                                dexData.traderJoe.priceChange &&
+                                                dexData.traderJoe.priceChange.h24 > 0
+                                                ? 'text-green-600'
+                                                : 'text-red-600'
                                         )}
                                     >
-                                        {dexData.traderJoe.priceChange.h24 > 0 ? '↑' : '↓'}
-                                        {dexData.traderJoe.priceChange.h24}%
+                                        {dexData.traderJoe &&
+                                        dexData.traderJoe.priceChange &&
+                                        dexData.traderJoe.priceChange.h24 ? (
+                                            <>
+                                                {dexData.traderJoe.priceChange.h24 > 0 ? '↑' : '↓'}{' '}
+                                                {dexData.traderJoe.priceChange.h24}%
+                                            </>
+                                        ) : (
+                                            '-'
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -260,27 +290,53 @@ export const Dashboard = (props: RouteObject) => {
                                 <div className="font-bold text-dark dark:text-light-100">Pangolin</div>
                                 <div className="flex">
                                     <div className="flex-grow">Market Price</div>
-                                    <div>${dexData.pangolin.priceUsd}</div>
+                                    <div>
+                                        {dexData.pangolin && dexData.pangolin.priceUsd
+                                            ? `$${dexData.pangolin.priceUsd}`
+                                            : 'no info'}
+                                    </div>
                                 </div>
 
                                 <div className="flex">
                                     <div className="flex-grow">Native Price AVAX</div>
-                                    <div>{dexData.pangolin.priceNative}</div>
+                                    <div>
+                                        {dexData.pangolin && dexData.pangolin.priceNative
+                                            ? dexData.pangolin.priceNative
+                                            : 'no info'}
+                                    </div>
                                 </div>
 
                                 <div className="flex">
                                     <div className="flex-grow">DGNX in Liq. pool</div>
-                                    <div>{dexData.pangolin.liquidity.base}</div>
+                                    <div>
+                                        {dexData.pangolin &&
+                                        dexData.pangolin.liquidity &&
+                                        dexData.pangolin.liquidity.base
+                                            ? dexData.pangolin.liquidity.base
+                                            : 'no info'}
+                                    </div>
                                 </div>
                                 <div className="flex">
                                     <div className="flex-grow">Price Change 24h</div>
                                     <div
                                         className={clsx(
-                                            dexData.pangolin.priceChange.h24 > 0 ? 'text-green-600' : 'text-red-600'
+                                            dexData.pangolin &&
+                                                dexData.pangolin.priceChange &&
+                                                dexData.pangolin.priceChange.h24 > 0
+                                                ? 'text-green-600'
+                                                : 'text-red-600'
                                         )}
                                     >
-                                        {dexData.pangolin.priceChange.h24 > 0 ? '↑' : '↓'}
-                                        {dexData.pangolin.priceChange.h24}%
+                                        {dexData.pangolin &&
+                                        dexData.pangolin.priceChange &&
+                                        dexData.pangolin.priceChange.h24 ? (
+                                            <>
+                                                {dexData.pangolin.priceChange.h24 > 0 ? '↑' : '↓'}{' '}
+                                                {dexData.pangolin.priceChange.h24}%
+                                            </>
+                                        ) : (
+                                            '-'
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -291,34 +347,32 @@ export const Dashboard = (props: RouteObject) => {
                 </Tile>
                 <Tile className="col-span-2 xl:col-span-1">
                     <H2>Ø Averages</H2>
-                    {dexData ? (
+                    {dexData && dexData.traderJoe ? (
                         <div className="flex">
                             <div className="flex-grow">Market cap</div>
                             <div>
-                                $
                                 {burnAmount && disburserAmount && lockerAmount
-                                    ? numberFormatter2.format(
+                                    ? `$${numberFormatter2.format(
                                           (21000000 - burnAmount - disburserAmount - lockerAmount) *
                                               parseFloat(dexData.traderJoe.priceUsd)
-                                      )
-                                    : '...'}
+                                      )}`
+                                    : 'no info'}
                             </div>
                         </div>
                     ) : null}
-                    {dexData ? (
+                    {dexData && dexData.traderJoe ? (
                         <div className="flex">
                             <div className="flex-grow">Market cap FDV</div>
                             <div>
-                                $
                                 {burnAmount
-                                    ? numberFormatter2.format(
+                                    ? `$${numberFormatter2.format(
                                           (21000000 - burnAmount) * parseFloat(dexData.traderJoe.priceUsd)
-                                      )
-                                    : '...'}
+                                      )}`
+                                    : 'no info'}
                             </div>
                         </div>
                     ) : null}
-                    {dexData ? (
+                    {dexData && dexData.traderJoe && dexData.pangolin ? (
                         <div className="flex">
                             <div className="flex-grow">Market price</div>
                             <div>
@@ -331,7 +385,7 @@ export const Dashboard = (props: RouteObject) => {
                             </div>
                         </div>
                     ) : null}
-                    {dexData ? (
+                    {dexData && dexData.traderJoe && dexData.pangolin ? (
                         <div className="flex">
                             <div className="flex-grow">Native price</div>
                             <div>
@@ -396,19 +450,19 @@ export const Dashboard = (props: RouteObject) => {
                 </Tile>
                 <Tile>
                     <H2>Volume 24h</H2>
-                    {dexData ? (
+                    {dexData && dexData.traderJoe ? (
                         <div className="flex">
                             <div className="flex-grow">TraderJoe</div>
                             <div>${numberFormatter2.format(parseFloat(dexData.traderJoe.volume.h24))}</div>
                         </div>
                     ) : null}
-                    {dexData ? (
+                    {dexData && dexData.pangolin ? (
                         <div className="flex">
                             <div className="flex-grow">Pangolin</div>
                             <div>${numberFormatter2.format(parseFloat(dexData.pangolin.volume.h24))}</div>
                         </div>
                     ) : null}
-                    {dexData ? (
+                    {dexData && dexData.traderJoe && dexData.pangolin ? (
                         <div className="flex">
                             <div className="flex-grow">Total</div>
                             <div>
@@ -419,7 +473,7 @@ export const Dashboard = (props: RouteObject) => {
                             </div>
                         </div>
                     ) : null}
-                    {dexData ? (
+                    {dexData && dexData.traderJoe && dexData.pangolin ? (
                         <div className="flex">
                             <div className="flex-grow">Price diff. USD</div>
                             <div>
@@ -429,7 +483,7 @@ export const Dashboard = (props: RouteObject) => {
                             </div>
                         </div>
                     ) : null}
-                    {dexData ? (
+                    {dexData && dexData.traderJoe && dexData.pangolin ? (
                         <div className="flex">
                             <div className="flex-grow">Price diff. AVAX</div>
                             <div>
@@ -447,7 +501,7 @@ export const Dashboard = (props: RouteObject) => {
             <div className="mb-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
                 <Tile>
                     <H2>Price change</H2>
-                    {dexData ? (
+                    {dexData && dexData.traderJoe && dexData.pangolin ? (
                         <table className="min-w-full">
                             <tbody className="">
                                 <tr>
@@ -501,7 +555,7 @@ export const Dashboard = (props: RouteObject) => {
                 </Tile>
                 <Tile>
                     <H2>Transactions (buys / sells)</H2>
-                    {dexData ? (
+                    {dexData && dexData.traderJoe && dexData.pangolin ? (
                         <table className="min-w-full">
                             <tbody className="">
                                 <tr>
