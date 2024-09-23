@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js'
 import { BigNumberish, ethers } from 'ethers'
+import { isNumber } from 'lodash'
 
 export const BNtoNumber = (
     number: ethers.BigNumber | BigNumber,
@@ -30,27 +31,36 @@ export const toReadableNumber = (
     options?: {
         maximumFractionDigits?: number
         minimumFractionDigits?: number
+        style?: 'decimal' | 'percent'
         asNumber?: boolean
     }
 ) => {
-    if (BigNumber(amount.toString()).eq(0)) return '0'
+    const no = BigNumber(amount.toString()).eq(0)
+        ? 0
+        : BigNumber(amount.toString())
+              .div(BigNumber(10).exponentiatedBy(decimals.toString()))
+              .toNumber()
 
-    const no = BigNumber(amount.toString())
-        .div(BigNumber(10).exponentiatedBy(decimals.toString()))
-        .toNumber()
+    let maximumFractionDigits = isNumber(options?.maximumFractionDigits)
+        ? options?.maximumFractionDigits
+        : 7
+    let minimumFractionDigits = isNumber(options?.minimumFractionDigits)
+        ? options?.minimumFractionDigits
+        : 2
 
-    let maximumFractionDigits = options?.maximumFractionDigits || 7
-    let minimumFractionDigits = options?.minimumFractionDigits || 2
-
-    while (no < 1 / 10 ** minimumFractionDigits) {
-        minimumFractionDigits++
-        if (minimumFractionDigits > maximumFractionDigits)
-            maximumFractionDigits = minimumFractionDigits + 3
+    if (no) {
+        const base = no < 0 ? -10 : 10
+        while (no < 1 / base ** minimumFractionDigits) {
+            minimumFractionDigits++
+            if (minimumFractionDigits > maximumFractionDigits)
+                maximumFractionDigits = minimumFractionDigits + 3
+        }
     }
 
     return no.toLocaleString(navigator.language, {
         maximumFractionDigits,
         minimumFractionDigits,
+        style: options?.style || 'decimal',
     })
 }
 

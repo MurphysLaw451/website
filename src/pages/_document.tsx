@@ -1,6 +1,4 @@
-import { GoogleTagManager } from '@next/third-parties/google'
 import { Head, Html, Main, NextScript } from 'next/document'
-import Script from 'next/script'
 
 export default function Document(props) {
     // useRouter isReady forces pre-rendered page to be not pre rendered
@@ -23,7 +21,7 @@ export default function Document(props) {
                     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap"
                     rel="stylesheet"
                 />
-                <Script async type="text/javascript" src="/charting_library/charting_library.js" />
+                <script async type="text/javascript" src="/charting_library/charting_library.js"></script>
             </Head>
             <body>
                 <Main />

@@ -1,6 +1,8 @@
 import { DGNX_ADDRESS } from '@dappconstants'
+import { toReadableNumber } from '@dapphelpers/number'
 import { useGetERC20BalanceOf } from '@dapphooks/shared/useGetERC20BalanceOf'
 import { useGetERC20TotalSupply } from '@dapphooks/shared/useGetERC20TotalSupply'
+import { CaretDivider } from '@dappshared/CaretDivider'
 import { Tile } from '@dappshared/Tile'
 import BigNumber from 'bignumber.js'
 import clsx from 'clsx'
@@ -14,19 +16,9 @@ const numberFormatter2 = new Intl.NumberFormat('en-US', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
 })
-const numberFormatter4 = new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 4,
-})
-const percentFormatter = new Intl.NumberFormat('en-US', {
-    style: 'percent',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-})
 
 const showAmount = (walletData: any, tokenAddresses: string[]) => {
     let totalBalance = 0
-    console.log({ walletData })
 
     tokenAddresses.forEach((tokenAddress) => {
         const token = walletData.find((item) => item.tokenAddress === tokenAddress)
@@ -71,10 +63,11 @@ const getAddressData = async (address: string, retryNum: number = 0) => {
         if (addressDataCache[address]) return addressDataCache[address]
 
         const dataRaw = await fetch(
-            `https://safe-transaction-avalanche.safe.global/api/v2/safes/${address}/balances/?trusted=false&exclude_spam=true`
+            `https://safe-transaction-avalanche.safe.global/api/v2/safes/${address}/balances/?trusted=true&exclude_spam=true`
             // `https://safe-transaction-avalanche.safe.global/api/v1/safes/${address}/balances/usd/?trusted=false&exclude_spam=true`
         )
-        addressDataCache[address] = dataRaw.json()
+        const data = await dataRaw.json()
+        addressDataCache[address] = data.results
         return addressDataCache[address]
     } catch (e) {
         if (retryNum < 3) {
@@ -89,7 +82,7 @@ const WalletInfo = (props: any) => {
     useEffect(() => {
         getAddressData(props.address).then(setWalletData)
     }, [props.address])
-
+    console.log(walletData)
     return (
         <>
             <H2>
@@ -211,11 +204,12 @@ export const Dashboard = (props: RouteObject) => {
             `${process.env.NEXT_PUBLIC_STAKEX_API_ENDPOINT}/latest/dex/tokens/0x51e48670098173025C477D9AA3f0efF7BF9f7812`
         )
             .then((res) => res.json())
-            .then((data) => {
-                const traderJoe = (data.pairs || []).find((pair: any) => pair.dexId === 'traderjoe')
-                const pangolin = (data.pairs || []).find((pair: any) => pair.dexId === 'pangolin')
-                setDexData({ traderJoe, pangolin })
-            })
+            .then((data) =>
+                setDexData({
+                    traderJoe: (data.pairs || []).find((pair: any) => pair.dexId === 'traderjoe'),
+                    pangolin: (data.pairs || []).find((pair: any) => pair.dexId === 'pangolin'),
+                })
+            )
 
         // getBackingAmount().then(setBackingAmountUsd)
     }, [])
@@ -229,179 +223,204 @@ export const Dashboard = (props: RouteObject) => {
             <div className="mb-8 grid grid-cols-1 gap-8 xl:grid-cols-3">
                 <Tile className="col-span-2">
                     <H2>Decentralized Exchanges</H2>
-                    {dexData ? (
-                        <div className="flex flex-col gap-8 sm:flex-row">
-                            <div className="flex-grow">
-                                <div className="font-bold text-light-100">TraderJoe</div>
-                                <div className="flex">
-                                    <div className="flex-grow">Market Price</div>
-                                    <div>
-                                        {dexData.traderJoe && dexData.traderJoe.priceUsd
-                                            ? `$${dexData.traderJoe.priceUsd}`
-                                            : 'no info'}
-                                    </div>
-                                </div>
-                                <div className="flex">
-                                    <div className="flex-grow">Native Price AVAX</div>
-                                    <div>
-                                        {dexData.traderJoe && dexData.traderJoe.priceNative
-                                            ? dexData.traderJoe.priceNative
-                                            : 'no info'}
-                                    </div>
-                                </div>
-                                <div className="flex">
-                                    <div className="flex-grow">DGNX in Liq. pool</div>
-                                    <div>
-                                        {dexData.traderJoe &&
-                                        dexData.traderJoe.liquidity &&
-                                        dexData.traderJoe.liquidity.base
-                                            ? dexData.traderJoe.liquidity.base
-                                            : 'no info'}
-                                    </div>
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <div className="mt-4 rounded-lg bg-dapp-blue-800 p-4">
+                            <div className="grid grid-cols-3">
+                                <div className="col-span-3 font-bold">TraderJoe</div>
+                                <div className="col-span-3">
+                                    <CaretDivider />
                                 </div>
 
-                                <div className="flex">
-                                    <div className="flex-grow">Price Change 24h</div>
-                                    <div
-                                        className={clsx(
-                                            dexData.traderJoe &&
-                                                dexData.traderJoe.priceChange &&
+                                <div className="col-span-2">Market Price</div>
+                                <div className="text-right">
+                                    {dexData && dexData.traderJoe && dexData.traderJoe.priceUsd
+                                        ? `$${dexData.traderJoe.priceUsd}`
+                                        : 'n/a'}
+                                </div>
+
+                                <div className="col-span-2">Native Price AVAX</div>
+                                <div className="text-right">
+                                    {dexData && dexData.traderJoe && dexData.traderJoe.priceNative
+                                        ? dexData.traderJoe.priceNative
+                                        : 'n/a'}
+                                </div>
+
+                                <div className="col-span-2">DGNX in LP</div>
+                                <div className="text-right">
+                                    {dexData &&
+                                    dexData.traderJoe &&
+                                    dexData.traderJoe.liquidity &&
+                                    dexData.traderJoe.liquidity.base
+                                        ? toReadableNumber(dexData.traderJoe.liquidity.base, 0, {
+                                              maximumFractionDigits: 0,
+                                              minimumFractionDigits: 0,
+                                          })
+                                        : 'n/a'}
+                                </div>
+
+                                <div className="col-span-2">Price Change 24h</div>
+                                <div className="text-right">
+                                    {dexData && dexData.traderJoe && dexData.traderJoe.priceChange ? (
+                                        <span
+                                            className={clsx(
                                                 dexData.traderJoe.priceChange.h24 > 0
-                                                ? 'text-green-600'
-                                                : 'text-red-600'
-                                        )}
-                                    >
-                                        {dexData.traderJoe &&
-                                        dexData.traderJoe.priceChange &&
-                                        dexData.traderJoe.priceChange.h24 ? (
-                                            <>
-                                                {dexData.traderJoe.priceChange.h24 > 0 ? '↑' : '↓'}{' '}
-                                                {dexData.traderJoe.priceChange.h24}%
-                                            </>
-                                        ) : (
-                                            '-'
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="flex-grow">
-                                <div className="font-bold text-dark dark:text-light-100">Pangolin</div>
-                                <div className="flex">
-                                    <div className="flex-grow">Market Price</div>
-                                    <div>
-                                        {dexData.pangolin && dexData.pangolin.priceUsd
-                                            ? `$${dexData.pangolin.priceUsd}`
-                                            : 'no info'}
-                                    </div>
-                                </div>
-
-                                <div className="flex">
-                                    <div className="flex-grow">Native Price AVAX</div>
-                                    <div>
-                                        {dexData.pangolin && dexData.pangolin.priceNative
-                                            ? dexData.pangolin.priceNative
-                                            : 'no info'}
-                                    </div>
-                                </div>
-
-                                <div className="flex">
-                                    <div className="flex-grow">DGNX in Liq. pool</div>
-                                    <div>
-                                        {dexData.pangolin &&
-                                        dexData.pangolin.liquidity &&
-                                        dexData.pangolin.liquidity.base
-                                            ? dexData.pangolin.liquidity.base
-                                            : 'no info'}
-                                    </div>
-                                </div>
-                                <div className="flex">
-                                    <div className="flex-grow">Price Change 24h</div>
-                                    <div
-                                        className={clsx(
-                                            dexData.pangolin &&
-                                                dexData.pangolin.priceChange &&
-                                                dexData.pangolin.priceChange.h24 > 0
-                                                ? 'text-green-600'
-                                                : 'text-red-600'
-                                        )}
-                                    >
-                                        {dexData.pangolin &&
-                                        dexData.pangolin.priceChange &&
-                                        dexData.pangolin.priceChange.h24 ? (
-                                            <>
-                                                {dexData.pangolin.priceChange.h24 > 0 ? '↑' : '↓'}{' '}
-                                                {dexData.pangolin.priceChange.h24}%
-                                            </>
-                                        ) : (
-                                            '-'
-                                        )}
-                                    </div>
+                                                    ? 'text-green-600'
+                                                    : 'text-red-600'
+                                            )}
+                                        >
+                                            {dexData.traderJoe.priceChange.h24 ? (
+                                                <>
+                                                    {dexData.traderJoe.priceChange.h24 > 0 ? '↑' : '↓'}{' '}
+                                                    {dexData.traderJoe.priceChange.h24}%
+                                                </>
+                                            ) : (
+                                                'n/a'
+                                            )}
+                                        </span>
+                                    ) : (
+                                        'n/a'
+                                    )}
                                 </div>
                             </div>
                         </div>
-                    ) : (
-                        '...'
-                    )}
+                        <div className="mt-4 rounded-lg bg-dapp-blue-800 p-4">
+                            <div className="grid grid-cols-3">
+                                <div className="col-span-3 font-bold">Pangolin</div>
+                                <div className="col-span-3">
+                                    <CaretDivider />
+                                </div>
+
+                                <div className="col-span-2">Market Price</div>
+                                <div className="text-right">
+                                    {dexData && dexData.pangolin && dexData.pangolin.priceUsd
+                                        ? `$${dexData.pangolin.priceUsd}`
+                                        : 'n/a'}
+                                </div>
+
+                                <div className="col-span-2">Native Price AVAX</div>
+                                <div className="text-right">
+                                    {dexData && dexData.pangolin && dexData.pangolin.priceNative
+                                        ? dexData.pangolin.priceNative
+                                        : 'n/a'}
+                                </div>
+
+                                <div className="col-span-2">DGNX in LP</div>
+                                <div className="text-right">
+                                    {dexData &&
+                                    dexData.pangolin &&
+                                    dexData.pangolin.liquidity &&
+                                    dexData.pangolin.liquidity.base
+                                        ? toReadableNumber(dexData.pangolin.liquidity.base, 0, {
+                                              maximumFractionDigits: 0,
+                                              minimumFractionDigits: 0,
+                                          })
+                                        : 'n/a'}
+                                </div>
+
+                                <div className="col-span-2">Price Change 24h</div>
+                                <div className="text-right">
+                                    {dexData && dexData.pangolin && dexData.pangolin.priceChange ? (
+                                        <span
+                                            className={clsx(
+                                                dexData.pangolin.priceChange.h24 > 0
+                                                    ? 'text-green-600'
+                                                    : dexData.pangolin.priceChange.h24 < 0
+                                                    ? 'text-red-600'
+                                                    : ''
+                                            )}
+                                        >
+                                            {dexData.pangolin.priceChange.h24 ? (
+                                                <>
+                                                    {dexData.pangolin.priceChange.h24 > 0 ? '↑' : '↓'}{' '}
+                                                    {dexData.pangolin.priceChange.h24}%
+                                                </>
+                                            ) : (
+                                                '0%'
+                                            )}
+                                        </span>
+                                    ) : (
+                                        '0%'
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </Tile>
                 <Tile className="col-span-2 xl:col-span-1">
                     <H2>Ø Averages</H2>
-                    {dexData && dexData.traderJoe ? (
-                        <div className="flex">
-                            <div className="flex-grow">Market cap</div>
-                            <div>
-                                {burnAmount && disburserAmount && lockerAmount
-                                    ? `$${numberFormatter2.format(
+                    <div className="mt-4 rounded-lg bg-dapp-blue-800 p-4">
+                        <div className="grid grid-cols-3">
+                            <div className="col-span-2">Market cap</div>
+                            <div className="text-right">
+                                {dexData &&
+                                dexData.traderJoe &&
+                                dexData.traderJoe.priceUsd &&
+                                burnAmount &&
+                                disburserAmount &&
+                                lockerAmount
+                                    ? `$${toReadableNumber(
                                           (21000000 - burnAmount - disburserAmount - lockerAmount) *
-                                              parseFloat(dexData.traderJoe.priceUsd)
+                                              Number(dexData.traderJoe.priceUsd),
+                                          0,
+                                          { maximumFractionDigits: 0, minimumFractionDigits: 0 }
                                       )}`
-                                    : 'no info'}
+                                    : 'n/a'}
                             </div>
-                        </div>
-                    ) : null}
-                    {dexData && dexData.traderJoe ? (
-                        <div className="flex">
-                            <div className="flex-grow">Market cap FDV</div>
-                            <div>
-                                {burnAmount
-                                    ? `$${numberFormatter2.format(
-                                          (21000000 - burnAmount) * parseFloat(dexData.traderJoe.priceUsd)
+
+                            <div className="col-span-2">Market cap FDV</div>
+                            <div className="text-right">
+                                {dexData && dexData.traderJoe && dexData.traderJoe.priceUsd && burnAmount
+                                    ? `$${toReadableNumber(
+                                          (21000000 - burnAmount) * Number(dexData.traderJoe.priceUsd),
+                                          0,
+                                          { maximumFractionDigits: 0, minimumFractionDigits: 0 }
                                       )}`
-                                    : 'no info'}
+                                    : 'n/a'}
+                            </div>
+
+                            <div className="col-span-2">Market price</div>
+                            <div className="text-right">
+                                {dexData?.traderJoe?.priceUsd &&
+                                dexData?.traderJoe?.liquidity?.usd &&
+                                dexData?.pangolin?.priceUsd &&
+                                dexData?.pangolin?.liquidity?.usd
+                                    ? `$${toReadableNumber(
+                                          (dexData.traderJoe.liquidity.usd * Number(dexData.traderJoe.priceUsd) +
+                                              dexData.pangolin.liquidity.usd * Number(dexData.pangolin.priceUsd)) /
+                                              (dexData.traderJoe.liquidity.usd + dexData.pangolin.liquidity.usd),
+                                          0,
+                                          { maximumFractionDigits: 5, minimumFractionDigits: 2 }
+                                      )}`
+                                    : 'n/a'}
+                            </div>
+
+                            <div className="col-span-2">Native price</div>
+                            <div className="text-right">
+                                {dexData?.traderJoe?.priceNative &&
+                                dexData?.traderJoe?.liquidity?.base &&
+                                dexData?.pangolin?.priceNative &&
+                                dexData?.pangolin?.liquidity?.base
+                                    ? `$${toReadableNumber(
+                                          (dexData.traderJoe.liquidity.base * Number(dexData.traderJoe.priceNative) +
+                                              dexData.pangolin.liquidity.base * Number(dexData.pangolin.priceNative)) /
+                                              (dexData.traderJoe.liquidity.base + dexData.pangolin.liquidity.base),
+                                          0,
+                                          { maximumFractionDigits: 5, minimumFractionDigits: 2 }
+                                      )}`
+                                    : 'n/a'}
+                            </div>
+
+                            <div className="col-span-2">Backing price</div>
+                            <div className="text-right">
+                                {backingAmountUsd
+                                    ? `$${toReadableNumber(backingAmountUsd, 0, {
+                                          maximumFractionDigits: 5,
+                                          minimumFractionDigits: 2,
+                                      })}`
+                                    : 'n/a'}
                             </div>
                         </div>
-                    ) : null}
-                    {dexData && dexData.traderJoe && dexData.pangolin ? (
-                        <div className="flex">
-                            <div className="flex-grow">Market price</div>
-                            <div>
-                                $
-                                {numberFormatter4.format(
-                                    (dexData.traderJoe.liquidity.usd * parseFloat(dexData.traderJoe.priceUsd) +
-                                        dexData.pangolin.liquidity.usd * parseFloat(dexData.pangolin.priceUsd)) /
-                                        (dexData.traderJoe.liquidity.usd + dexData.pangolin.liquidity.usd)
-                                )}
-                            </div>
-                        </div>
-                    ) : null}
-                    {dexData && dexData.traderJoe && dexData.pangolin ? (
-                        <div className="flex">
-                            <div className="flex-grow">Native price</div>
-                            <div>
-                                {numberFormatter4.format(
-                                    (dexData.traderJoe.liquidity.base * parseFloat(dexData.traderJoe.priceNative) +
-                                        dexData.pangolin.liquidity.base * parseFloat(dexData.pangolin.priceNative)) /
-                                        (dexData.traderJoe.liquidity.base + dexData.pangolin.liquidity.base)
-                                )}{' '}
-                                AVAX
-                            </div>
-                        </div>
-                    ) : null}
-                    {dexData ? (
-                        <div className="flex">
-                            <div className="flex-grow">LB price per DGNX</div>
-                            <div>${backingAmountUsd && numberFormatter4.format(backingAmountUsd)}</div>
-                        </div>
-                    ) : null}
+                    </div>
                 </Tile>
             </div>
 
@@ -421,200 +440,171 @@ export const Dashboard = (props: RouteObject) => {
                         <div className="flex-grow">Minted supply</div>
                         <div>21,000,000.00</div>
                     </div> */}
-                    <div className="flex">
-                        <div className="flex-grow">Total supply</div>
-                        <div>{burnAmount ? numberFormatter2.format(21000000 - burnAmount) : '...'}</div>
-                    </div>
-                    <div className="flex">
-                        <div className="flex-grow">DGNX Burnt</div>
-                        <div>{burnAmount ? numberFormatter2.format(burnAmount) : '...'}</div>
-                    </div>
-                    <div className="flex">
-                        <div className="flex-grow">Circulating supply</div>
-                        <div>
-                            {burnAmount && disburserAmount && lockerAmount
-                                ? numberFormatter2.format(21000000 - burnAmount - disburserAmount - lockerAmount)
-                                : '...'}
+
+                    <div className="mt-4 rounded-lg bg-dapp-blue-800 p-4">
+                        <div className="grid grid-cols-3">
+                            <div className="col-span-2">Total</div>
+                            <div className="text-right">
+                                {burnAmount ? toReadableNumber(21000000 - burnAmount) : 'n/a'}
+                            </div>
+
+                            <div className="col-span-2">Burnt</div>
+                            <div className="text-right">{burnAmount ? toReadableNumber(burnAmount) : 'n/a'}</div>
+
+                            <div className="col-span-2">Circulating</div>
+                            <div className="text-right">
+                                {burnAmount && disburserAmount && lockerAmount
+                                    ? toReadableNumber(21000000 - burnAmount - disburserAmount - lockerAmount)
+                                    : 'n/a'}
+                            </div>
+
+                            <div className="col-span-2">Locked in Treasury</div>
+                            <div className="text-right">{lockerAmount ? toReadableNumber(lockerAmount) : 'n/a'}</div>
+
+                            <div className="col-span-2">Locked in Disburser</div>
+                            <div className="text-right">
+                                {disburserAmount ? toReadableNumber(disburserAmount) : 'n/a'}
+                            </div>
                         </div>
-                    </div>
-                    <div className="flex">
-                        <div className="flex-grow">Locked in Disburser</div>
-                        <div>{disburserAmount ? numberFormatter2.format(disburserAmount) : '...'}</div>
-                    </div>
-                    <div className="flex">
-                        <div className="flex-grow">Locked in DAO Locker</div>
-                        <div>{lockerAmount ? numberFormatter2.format(lockerAmount) : '...'}</div>
                     </div>
                 </Tile>
                 <Tile>
                     <H2>Volume 24h</H2>
-                    {dexData && dexData.traderJoe ? (
-                        <div className="flex">
-                            <div className="flex-grow">TraderJoe</div>
-                            <div>${numberFormatter2.format(parseFloat(dexData.traderJoe.volume.h24))}</div>
-                        </div>
-                    ) : null}
-                    {dexData && dexData.pangolin ? (
-                        <div className="flex">
-                            <div className="flex-grow">Pangolin</div>
-                            <div>${numberFormatter2.format(parseFloat(dexData.pangolin.volume.h24))}</div>
-                        </div>
-                    ) : null}
-                    {dexData && dexData.traderJoe && dexData.pangolin ? (
-                        <div className="flex">
-                            <div className="flex-grow">Total</div>
-                            <div>
+                    <div className="mt-4 rounded-lg bg-dapp-blue-800 p-4">
+                        <div className="grid grid-cols-3">
+                            <div className="col-span-2">Total</div>
+                            <div className="text-right">
                                 $
-                                {numberFormatter2.format(
-                                    parseFloat(dexData.pangolin.volume.h24) + parseFloat(dexData.traderJoe.volume.h24)
+                                {toReadableNumber(
+                                    Number(dexData?.traderJoe?.volume?.h24 ? dexData?.traderJoe?.volume?.h24 : 0) +
+                                        Number(dexData?.pangolin?.volume?.h24 ? dexData?.pangolin?.volume?.h24 : 0)
+                                )}
+                            </div>
+
+                            <div className="col-span-2">TraderJoe</div>
+                            <div className="text-right">
+                                $
+                                {toReadableNumber(
+                                    dexData?.traderJoe?.volume?.h24 ? dexData?.traderJoe?.volume?.h24 : 0
+                                )}
+                            </div>
+
+                            <div className="col-span-2">Pangolin</div>
+                            <div className="text-right">
+                                ${toReadableNumber(dexData?.pangolin?.volume?.h24 ? dexData?.pangolin?.volume?.h24 : 0)}
+                            </div>
+
+                            <div className="col-span-2">Diff. USD</div>
+                            <div className="text-right">
+                                {toReadableNumber(
+                                    dexData?.traderJoe?.priceUsd && dexData?.pangolin?.priceUsd
+                                        ? 1 - Number(dexData.traderJoe.priceUsd) / Number(dexData.pangolin.priceUsd)
+                                        : 0,
+                                    0,
+                                    { style: 'percent' }
+                                )}
+                            </div>
+
+                            <div className="col-span-2">Diff. AVAX</div>
+                            <div className="text-right">
+                                {toReadableNumber(
+                                    dexData?.traderJoe?.priceNative && dexData?.pangolin?.priceNative
+                                        ? 1 -
+                                              Number(dexData.traderJoe.priceNative) /
+                                                  Number(dexData.pangolin.priceNative)
+                                        : 0,
+                                    0,
+                                    { style: 'percent' }
                                 )}
                             </div>
                         </div>
-                    ) : null}
-                    {dexData && dexData.traderJoe && dexData.pangolin ? (
-                        <div className="flex">
-                            <div className="flex-grow">Price diff. USD</div>
-                            <div>
-                                {percentFormatter.format(
-                                    1 - parseFloat(dexData.traderJoe.priceUsd) / parseFloat(dexData.pangolin.priceUsd)
-                                )}
-                            </div>
-                        </div>
-                    ) : null}
-                    {dexData && dexData.traderJoe && dexData.pangolin ? (
-                        <div className="flex">
-                            <div className="flex-grow">Price diff. AVAX</div>
-                            <div>
-                                {percentFormatter.format(
-                                    1 -
-                                        parseFloat(dexData.traderJoe.priceNative) /
-                                            parseFloat(dexData.pangolin.priceNative)
-                                )}
-                            </div>
-                        </div>
-                    ) : null}
+                    </div>
                 </Tile>
             </div>
 
-            <div className="mb-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
+            <div className="mb-8">
                 <Tile>
-                    <H2>Price change</H2>
-                    {dexData && dexData.traderJoe && dexData.pangolin ? (
-                        <table className="min-w-full">
-                            <tbody className="">
-                                <tr>
-                                    <td className=""></td>
-                                    <td className="px-6 text-right font-bold text-dark dark:text-light-100 lg:px-1 xl:px-2 2xl:px-6">
-                                        TraderJoe
-                                    </td>
-                                    <td className="px-6 text-right font-bold text-dark dark:text-light-100 lg:px-1 xl:px-2 2xl:px-6">
-                                        Pangolin
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">5m</td>
-                                    <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">
-                                        <PriceChange item={dexData.traderJoe.priceChange.m5} />
-                                    </td>
-                                    <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">
-                                        <PriceChange item={dexData.pangolin.priceChange.m5} />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">1h</td>
-                                    <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">
-                                        <PriceChange item={dexData.traderJoe.priceChange.h1} />
-                                    </td>
-                                    <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">
-                                        <PriceChange item={dexData.pangolin.priceChange.h1} />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">6h</td>
-                                    <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">
-                                        <PriceChange item={dexData.traderJoe.priceChange.h6} />
-                                    </td>
-                                    <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">
-                                        <PriceChange item={dexData.pangolin.priceChange.h6} />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">24h</td>
-                                    <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">
-                                        <PriceChange item={dexData.traderJoe.priceChange.h24} />
-                                    </td>
-                                    <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">
-                                        <PriceChange item={dexData.pangolin.priceChange.h24} />
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    ) : null}
-                </Tile>
-                <Tile>
-                    <H2>Transactions (buys / sells)</H2>
-                    {dexData && dexData.traderJoe && dexData.pangolin ? (
-                        <table className="min-w-full">
-                            <tbody className="">
-                                <tr>
-                                    <td className=""></td>
-                                    <td className="px-6 text-right font-bold text-dark dark:text-light-100 lg:px-1 xl:px-2 2xl:px-6">
-                                        TraderJoe
-                                    </td>
-                                    <td className="px-6 text-right font-bold text-dark dark:text-light-100 lg:px-1 xl:px-2 2xl:px-6">
-                                        Pangolin
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">5m</td>
-                                    <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">
-                                        <TxnsCount item={dexData.traderJoe.txns.m5} />
-                                    </td>
-                                    <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">
-                                        <TxnsCount item={dexData.pangolin.txns.m5} />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">1h</td>
-                                    <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">
-                                        <TxnsCount item={dexData.traderJoe.txns.h1} />
-                                    </td>
-                                    <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">
-                                        <TxnsCount item={dexData.pangolin.txns.h1} />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">6h</td>
-                                    <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">
-                                        <TxnsCount item={dexData.traderJoe.txns.h6} />
-                                    </td>
-                                    <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">
-                                        <TxnsCount item={dexData.pangolin.txns.h6} />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">24h</td>
-                                    <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">
-                                        <TxnsCount item={dexData.traderJoe.txns.h24} />
-                                    </td>
-                                    <td className="px-6 text-right lg:px-1 xl:px-2 2xl:px-6">
-                                        <TxnsCount item={dexData.pangolin.txns.h24} />
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    ) : null}
+                    <H2>Price Changes & Transactions</H2>
+                    <div className="mt-4 rounded-lg bg-dapp-blue-800 p-4">
+                        <div className="grid grid-cols-3 md:grid-cols-9">
+                            <div></div>
+                            <div className="text-right font-bold md:col-span-4 md:text-center">Price Change</div>
+                            <div className="text-right font-bold md:col-span-4 md:text-center">Buys/Sells Txns</div>
+
+                            <div></div>
+                            <div className="hidden text-right md:inline-grid">5m</div>
+                            <div className="hidden text-right md:inline-grid">1h</div>
+                            <div className="hidden text-right md:inline-grid">6h</div>
+                            <div className="text-right">24h</div>
+                            <div className="hidden text-right md:inline-grid">5m</div>
+                            <div className="hidden text-right md:inline-grid">1h</div>
+                            <div className="hidden text-right md:inline-grid">6h</div>
+                            <div className="text-right">24h</div>
+
+                            <div className="font-bold">TraderJoe</div>
+                            <div className="hidden text-right md:inline-grid">
+                                <PriceChange item={dexData?.traderJoe?.priceChange?.m5} />
+                            </div>
+                            <div className="hidden text-right md:inline-grid">
+                                <PriceChange item={dexData?.traderJoe?.priceChange?.h1} />
+                            </div>
+                            <div className="hidden text-right md:inline-grid">
+                                <PriceChange item={dexData?.traderJoe?.priceChange?.h6} />
+                            </div>
+                            <div className="text-right">
+                                <PriceChange item={dexData?.traderJoe?.priceChange?.h24} />
+                            </div>
+                            <div className="hidden text-right md:inline-grid">
+                                <TxnsCount item={dexData?.traderJoe?.txns?.m5} />
+                            </div>
+                            <div className="hidden text-right md:inline-grid">
+                                <TxnsCount item={dexData?.traderJoe?.txns?.h1} />
+                            </div>
+                            <div className="hidden text-right md:inline-grid">
+                                <TxnsCount item={dexData?.traderJoe?.txns?.h6} />
+                            </div>
+                            <div className="text-right">
+                                <TxnsCount item={dexData?.traderJoe?.txns?.h24} />
+                            </div>
+
+                            <div className="font-bold">Pangolin</div>
+                            <div className="hidden text-right md:inline-grid">
+                                <PriceChange item={dexData?.pangolin?.priceChange?.m5} />
+                            </div>
+                            <div className="hidden text-right md:inline-grid">
+                                <PriceChange item={dexData?.pangolin?.priceChange?.h1} />
+                            </div>
+                            <div className="hidden text-right md:inline-grid">
+                                <PriceChange item={dexData?.pangolin?.priceChange?.h6} />
+                            </div>
+                            <div className="text-right">
+                                <PriceChange item={dexData?.pangolin?.priceChange?.h24} />
+                            </div>
+                            <div className="hidden text-right md:inline-grid">
+                                <TxnsCount item={dexData?.pangolin?.txns?.m5} />
+                            </div>
+                            <div className="hidden text-right md:inline-grid">
+                                <TxnsCount item={dexData?.pangolin?.txns?.h1} />
+                            </div>
+                            <div className="hidden text-right md:inline-grid">
+                                <TxnsCount item={dexData?.pangolin?.txns?.h6} />
+                            </div>
+                            <div className="text-right">
+                                <TxnsCount item={dexData?.pangolin?.txns?.h24} />
+                            </div>
+                        </div>
+                    </div>
                 </Tile>
             </div>
 
-            <div className="mb-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
+            {/* <div className="mb-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
                 <Tile>
                     <WalletInfo name="Marketing" address="0x16eF18E42A7d72E52E9B213D7eABA269B90A4643" />
                 </Tile>
                 <Tile>
                     <WalletInfo name="Platform" address="0xcA01A9d36F47561F03226B6b697B14B9274b1B10" />
                 </Tile>
-            </div>
+            </div> */}
         </div>
     )
 }

@@ -78,7 +78,7 @@ export default function Dapp() {
                                 </div>
                                 <main className="mx-auto w-full sm:w-11/12 lg:w-8/12">
                                     <Routes>
-                                        {/* <Route element={<Dashboard />} path="/dapp" /> */}
+                                        <Route element={<Dashboard />} path="/dapp" />
                                         <Route index={true} element={<DeFiTools />} path="/dapp/defitools/*" />
                                         <Route element={<LiquidityBacking />} path="/dapp/liquidity-backing" />
                                         <Route element={<Disburser />} path="/dapp/disburser" />
