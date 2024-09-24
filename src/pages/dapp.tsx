@@ -60,7 +60,7 @@ export default function Dapp() {
     return (
         <DAppContext.Provider value={{ data, setData, setTitle }}>
             <BrowserRouter>
-                <GoogleTagManager gtmId="GTM-P9D58C2G" />
+                <GoogleTagManager gtmId="GTM-KMQ2MVZL" />
                 <Head>
                     <title>{data.title}</title>
                     <meta

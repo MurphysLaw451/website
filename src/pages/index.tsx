@@ -32,7 +32,7 @@ export default function Home() {
                 <Team />
             </main>
             <Footer />
-            <GoogleTagManager gtmId="GTM-P9D58C2G" />
+            <GoogleTagManager gtmId="GTM-NG6GTPKR" />
         </>
     )
 }
