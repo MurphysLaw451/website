@@ -1,6 +1,6 @@
 import Head from 'next/head'
 
-import { GoogleTagManager } from '@next/third-parties/google'
+import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
 import { CallToAction } from '../components/CallToAction'
 import { Discover } from '../components/Discover'
 import { Empower } from '../components/Empower'
@@ -14,7 +14,7 @@ import { Team } from '../components/Team'
 export default function Home() {
     return (
         <>
-            <GoogleTagManager gtmId="GTM-KMQ2MVZL" />
+            <GoogleAnalytics gaId="G-3KR4TD9PFB" />
             <Head>
                 <title>DEGENX Ecosystem</title>
                 <meta
