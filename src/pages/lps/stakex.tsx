@@ -2,18 +2,18 @@ import { GoogleTagManager } from '@next/third-parties/google'
 import { useTheme } from 'next-themes'
 import Head from 'next/head'
 import Image from 'next/image'
+import { useEffect } from 'react'
 import { CallToAction } from 'src/components/lps/stakex/CallToAction'
 import { InnerContainer, OuterContainer } from 'src/components/lps/stakex/Container'
 import { Footer } from 'src/components/lps/stakex/Footer'
+import { ForDevelopers } from 'src/components/lps/stakex/ForDevelopers'
+import { ForHolders } from 'src/components/lps/stakex/ForHolders'
 import { Header } from 'src/components/lps/stakex/Header'
 import { Hero } from 'src/components/lps/stakex/Hero'
-import whatIsStakeX from './../../images/lps/stakex/whatisstakex.png'
-import whatDoesStakeX from './../../images/lps/stakex/whatdoesstakex.png'
 import whatCanStakeXDo from './../../images/lps/stakex/whatcanstakexdo.png'
 import whatCanStakeXDoHolders from './../../images/lps/stakex/whatcanstakexdoholders.png'
-import { useEffect } from 'react'
-import { ForHolders } from 'src/components/lps/stakex/ForHolders'
-import { ForDevelopers } from 'src/components/lps/stakex/ForDevelopers'
+import whatDoesStakeX from './../../images/lps/stakex/whatdoesstakex.png'
+import whatIsStakeX from './../../images/lps/stakex/whatisstakex.png'
 
 export default function Home() {
     const { setTheme } = useTheme()
@@ -22,6 +22,7 @@ export default function Home() {
         <>
             <Head>
                 <title>STAKEX - Audited and Secure Staking Solution</title>
+                <link rel="canonical" href="/" />
                 <meta
                     name="description"
                     content="STAKEX is a staking protocol developed by the DEGENX Ecosystem. It's available on chains like Ethereum, Avalanche, BNB Smart Chain, Arbitrum, Polygon, and Base. Take the opportunity to incentivize your token holders and store additional value of your project with an audited and secure staking contract"
