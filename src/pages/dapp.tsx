@@ -41,6 +41,7 @@ const queryClient = new QueryClient({
 export default function Dapp() {
     const { theme } = useTheme()
     const defaultTitle = 'DEGENX Ecosystem'
+    const [gtmTag, setGtmTag] = useState<string>()
     const [title, setTitle] = useState<string>(defaultTitle)
     const [data, setData] = useState<DAppContextDataType>({
         ready: false,
@@ -53,6 +54,9 @@ export default function Dapp() {
         setData({ ready: true, title: _titleUpdate })
     }, [title])
 
+    useEffect(() => {
+        setGtmTag('GTM-KMQ2MVZL')
+    }, [])
     if (!data.ready) {
         return null
     }
@@ -60,7 +64,7 @@ export default function Dapp() {
     return (
         <DAppContext.Provider value={{ data, setData, setTitle }}>
             <BrowserRouter>
-                <GoogleTagManager gtmId="GTM-KMQ2MVZL" />
+                {gtmTag && <GoogleTagManager gtmId={gtmTag} />}
                 <Head>
                     <title>{data.title}</title>
                     <meta
