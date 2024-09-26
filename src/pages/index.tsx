@@ -14,7 +14,7 @@ import { Team } from '../components/Team'
 export default function Home() {
     return (
         <>
-            <GoogleTagManager gtmId="GTM-NG6GTPKR" />
+            <GoogleTagManager gtmId="GTM-KMQ2MVZL" />
             <Head>
                 <title>DEGENX Ecosystem</title>
                 <meta
