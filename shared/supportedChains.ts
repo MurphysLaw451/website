@@ -11,6 +11,7 @@ import {
     localhost,
     mainnet as mainnetOriginal,
     polygon as polygonOriginal,
+    polygonAmoy as polygonTestnetOriginal,
 } from 'viem/chains'
 
 const avalanche = defineChain({
@@ -62,6 +63,20 @@ const polygon = defineChain({
             ...polygonOriginal.rpcUrls.default,
             http: [
                 `https://polygon-mainnet.infura.io/v3/${
+                    process.env.NEXT_PUBLIC_INFURA_ID || process.env.INFURA_ID
+                }`,
+            ],
+        },
+    },
+})
+const polygonAmoy = defineChain({
+    ...polygonTestnetOriginal,
+    rpcUrls: {
+        ...polygonTestnetOriginal.rpcUrls,
+        default: {
+            ...polygonTestnetOriginal.rpcUrls.default,
+            http: [
+                `https://polygon-amoy.infura.io/v3/${
                     process.env.NEXT_PUBLIC_INFURA_ID || process.env.INFURA_ID
                 }`,
             ],
@@ -137,6 +152,7 @@ export const chains: Chain[] = [
     base,
     arbitrum,
     polygon,
+    polygonAmoy,
     // optimism,
     Boolean(process.env.NEXT_PUBLIC_ENABLE_LOCALFORK) ||
     process.env.NODE_ENV != 'production'

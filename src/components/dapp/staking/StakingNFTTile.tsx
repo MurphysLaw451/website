@@ -49,15 +49,14 @@ export const StakingNFTTile = ({
     const timeAgo = new TimeAgo(navigator.language)
     const { data: dataBlock } = useBlock({ chainId })
     useMemo(() => {
-        if (data) {
-            const w = window.open('about:blank')
-            if (w) {
-                setTimeout(() => {
-                    w.document.body.style.margin = '0'
-                    w.document.body.appendChild(w.document.createElement('img')).src = data.image
-                }, 0)
-            }
-        }
+        data &&
+            fetch(data.image)
+                .then((res) => res.blob())
+                .then((blob) => {
+                    const url = URL.createObjectURL(blob)
+                    const w = window.open(url)
+                    if (w) w.onload = (_) => URL.revokeObjectURL(url)
+                })
     }, [data])
     return (
         <div className="flex flex-col gap-1 rounded-lg bg-dapp-blue-400 p-3">

@@ -1,4 +1,4 @@
-import { Field, Radio, RadioGroup } from '@headlessui/react'
+import { Checkbox, Field, Label, Radio, RadioGroup } from '@headlessui/react'
 import { isNumber } from 'lodash'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
@@ -17,6 +17,7 @@ export const NetworkSelectorForm = ({ chains, selectedChain, onChange }: Network
     const { switchChain } = useSwitchChain()
 
     let [selected, setSelected] = useState<number>(selectedChain.id)
+    let [showTestnets, setShowTestnets] = useState(false)
 
     useEffect(() => {
         chains &&
@@ -26,10 +27,14 @@ export const NetworkSelectorForm = ({ chains, selectedChain, onChange }: Network
             onChange(chains.find((chain) => chain.id == selected)!)
     }, [chains, selected, selectedChain, onChange])
 
+    useEffect(() => {
+        connectedChain && connectedChain.testnet && setShowTestnets(true)
+    }, [connectedChain])
+
     return (
         <RadioGroup value={selected} onChange={setSelected} className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {isConnected && connectedChain && connectedChain.id != selected && (
-                <div className="md:col-span-2 text-error/50">
+                <div className="text-error/50 md:col-span-2">
                     The network you&apos;ve selected differs the one you&apos;re connected with.{' '}
                     <button
                         onClick={() => {
@@ -42,7 +47,9 @@ export const NetworkSelectorForm = ({ chains, selectedChain, onChange }: Network
                 </div>
             )}
             {chains
+                .sort((chain) => (chain.testnet ? 1 : -1))
                 .sort((chain) => (connectedChain && connectedChain.id == chain.id ? -1 : 1))
+                .filter((chain) => !chain.testnet || (chain.testnet && showTestnets))
                 .map((chain, i) => (
                     <Field key={i} className="flex w-full items-center ">
                         <Radio
@@ -58,13 +65,36 @@ export const NetworkSelectorForm = ({ chains, selectedChain, onChange }: Network
                                         height={32}
                                     />
                                 </span>
-                                <p className="flex-1 font-semibold text-white">{chain.name}</p>
+                                <p className="flex-1 text-white">
+                                    <span className="font-semibold">{chain.name}</span>
+                                    {chain.testnet && <sub className="text-xs"> testnet</sub>}
+                                </p>
                                 <FaCircleCheck className="hidden h-6 w-6 fill-white transition group-data-[checked]:block" />
                                 <FaRegCircle className="block h-6 w-6 fill-white opacity-30 transition group-data-[checked]:hidden" />
                             </div>
                         </Radio>
                     </Field>
                 ))}
+            <Field className="flex flex-col gap-2 px-2 pt-2 md:col-span-2">
+                <div className="flex gap-2">
+                    <Checkbox
+                        checked={showTestnets}
+                        onChange={() => {
+                            setShowTestnets(!showTestnets)
+                        }}
+                        className="group block h-5 w-5 cursor-pointer rounded-sm border border-dapp-cyan-50 bg-transparent data-[checked]:border-dapp-cyan-500  data-[checked]:bg-dapp-cyan-500"
+                    >
+                        <svg
+                            className="stroke-white opacity-0 group-data-[checked]:opacity-100"
+                            viewBox="0 0 14 14"
+                            fill="none"
+                        >
+                            <path d="M3 8L6 11L11 3.5" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                    </Checkbox>
+                    <Label className="cursor-pointer">Show Testnets</Label>
+                </div>
+            </Field>
         </RadioGroup>
     )
 }

@@ -305,11 +305,9 @@ export const Create = () => {
     }, [data])
 
     useEffect(() => {
-        setDeployFee(dataFeeAmount && dataFeeAmount.fee ? dataFeeAmount.fee : 0n)
-        setNetworkFee(dataNetworkFeeEstimation ? dataNetworkFeeEstimation : 0n)
-        setTotalFeeEstimation(
-            dataFeeEstimation && dataNetworkFeeEstimation ? dataFeeEstimation + dataNetworkFeeEstimation : 0n
-        )
+        setDeployFee(dataFeeAmount?.fee || 0n)
+        setNetworkFee(dataNetworkFeeEstimation || 0n)
+        setTotalFeeEstimation((dataFeeEstimation || 0n) + (dataNetworkFeeEstimation || 0n))
     }, [dataFeeAmount, dataFeeEstimation, dataNetworkFeeEstimation])
 
     useEffect(() => {
@@ -486,7 +484,7 @@ export const Create = () => {
 
                                         <div className="col-span-4">Protocol</div>
                                         <div className="flex justify-end">
-                                            {!deployFee ? (
+                                            {typeof deployFee !== 'bigint' ? (
                                                 <Spinner theme="dark" />
                                             ) : (
                                                 toReadableNumber(deployFee, selectedChain.nativeCurrency.decimals)
@@ -522,7 +520,7 @@ export const Create = () => {
                                                     )}
                                                 </div>
                                                 <div className="flex justify-end">
-                                                    {deployFee ? (
+                                                    {typeof deployFee === 'bigint' ? (
                                                         <span>
                                                             &minus;
                                                             {dataGetDiscount.discountType == DiscountType.PERCENTAGE

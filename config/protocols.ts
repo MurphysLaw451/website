@@ -5,6 +5,7 @@ import {
     localhost,
     mainnet,
     polygon,
+    polygonAmoy,
     arbitrum,
     bsc,
     optimism,
@@ -63,6 +64,14 @@ const mainnets: ProtocolConfigs = {
         stakex: {
             genesis: '0x00000000004545cB8440FDD6095a97DEBd1F3814',
             init: '0x2eC519eeF9604C7495cdAaF73B213478552d74e5',
+        },
+    },
+    [polygonAmoy.id]: {
+        deployer: '0xe6450dB1226A2bdb8432E129a68E9ed18f4561AE',
+        nativeWrapper: '0xd50EE21FB0279E00F8C8fCAEc8269a1930C9757c',
+        stakex: {
+            genesis: '0x00000000004545cB8440FDD6095a97DEBd1F3814',
+            init: '0x51e48670098173025C477D9AA3f0efF7BF9f7812',
         },
     },
     // [optimism.id]: {

@@ -52,15 +52,7 @@ export const StakingProjectLogo = ({
                         </span>
                     </div>
                 )}
-                {!hideChain && (
-                    <Image
-                        className="absolute -bottom-1 -right-1"
-                        width={isLite ? 24 : 40}
-                        height={isLite ? 24 : 40}
-                        src={chain.id == 56 ? `/chains/${chain.id}.png` : `/chains/${chain.id}.svg`}
-                        alt={`Logo ${chain.nativeCurrency.symbol}`}
-                    />
-                )}
+
                 {source ? (
                     <Image
                         src={source}
@@ -85,6 +77,15 @@ export const StakingProjectLogo = ({
                             {projectName.substring(0, 1)}
                         </span>
                     </div>
+                )}
+                {!hideChain && (
+                    <Image
+                        className="absolute -bottom-1 -right-1"
+                        width={isLite ? 24 : 40}
+                        height={isLite ? 24 : 40}
+                        src={chain.id == 56 ? `/chains/${chain.id}.png` : `/chains/${chain.id}.svg`}
+                        alt={`Logo ${chain.nativeCurrency.symbol}`}
+                    />
                 )}
             </div>
 
