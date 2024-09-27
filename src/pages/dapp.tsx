@@ -1,5 +1,4 @@
 import { DAppContext, DAppContextDataType } from '@dapphelpers/dapp'
-import { GoogleTagManager } from '@next/third-parties/google'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ConnectKitProvider, getDefaultConfig } from 'connectkit'
 import TimeAgo from 'javascript-time-ago'
@@ -60,17 +59,33 @@ export default function Dapp() {
     return (
         <DAppContext.Provider value={{ data, setData, setTitle }}>
             <BrowserRouter>
-                <GoogleTagManager gtmId="GTM-KMQ2MVZL" />
                 <Head>
                     <title>{data.title}</title>
                     <meta
                         name="description"
                         content="DEGENX is multichain ecosystem that offers a suite of decentralized applications (dApps) and services to provide solutions for projects and individuals in the DeFi space. $DGNX is a multichain token with liquidity backing."
                     />
+                    <script
+                        dangerouslySetInnerHTML={{
+                            __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-KMQ2MVZL');`,
+                        }}
+                    ></script>
                 </Head>
                 <WagmiProvider config={config}>
                     <QueryClientProvider client={queryClient}>
                         <ConnectKitProvider mode={theme as 'light' | 'dark'}>
+                            <noscript>
+                                <iframe
+                                    src="https://www.googletagmanager.com/ns.html?id=GTM-KMQ2MVZL"
+                                    height="0"
+                                    width="0"
+                                    style={{ display: 'none', visibility: 'hidden' }}
+                                ></iframe>
+                            </noscript>
                             <DappHeader />
                             <div className="dapp my-40 flex sm:my-24 lg:ml-3">
                                 <div className="mr-4 hidden w-64 max-w-4xl lg:block">

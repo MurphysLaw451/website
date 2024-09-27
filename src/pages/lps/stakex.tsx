@@ -1,4 +1,3 @@
-import { GoogleTagManager } from '@next/third-parties/google'
 import { useTheme } from 'next-themes'
 import Head from 'next/head'
 import Image from 'next/image'
@@ -27,7 +26,24 @@ export default function Home() {
                     name="description"
                     content="STAKEX is a staking protocol developed by the DEGENX Ecosystem. It's available on chains like Ethereum, Avalanche, BNB Smart Chain, Arbitrum, Polygon, and Base. Take the opportunity to incentivize your token holders and store additional value of your project with an audited and secure staking contract"
                 />
+                <script
+                    dangerouslySetInnerHTML={{
+                        __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-N95JDKHQ');`,
+                    }}
+                ></script>
             </Head>
+            <noscript>
+                <iframe
+                    src="https://www.googletagmanager.com/ns.html?id=GTM-N95JDKHQ"
+                    height="0"
+                    width="0"
+                    style={{ display: 'none', visibility: 'hidden' }}
+                ></iframe>
+            </noscript>
             <div className="w-full text-dapp-cyan-50">
                 <div className="mx-auto max-w-7xl">
                     <Header />
@@ -198,7 +214,6 @@ export default function Home() {
                     <Footer />
                 </div>
             </div>
-            <GoogleTagManager gtmId="GTM-N95JDKHQ" />
         </>
     )
 }

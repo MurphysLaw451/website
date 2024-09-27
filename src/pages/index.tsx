@@ -1,6 +1,4 @@
 import Head from 'next/head'
-
-import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
 import { CallToAction } from '../components/CallToAction'
 import { Discover } from '../components/Discover'
 import { Empower } from '../components/Empower'
@@ -14,13 +12,21 @@ import { Team } from '../components/Team'
 export default function Home() {
     return (
         <>
-            <GoogleAnalytics gaId="G-3KR4TD9PFB" />
             <Head>
                 <title>DEGENX Ecosystem</title>
                 <meta
                     name="description"
                     content="DEGENX is multichain ecosystem that offers a suite of decentralized applications (dApps) and services to provide solutions for projects and individuals in the DeFi space. $DGNX is a multichain token with liquidity backing."
                 />
+                <script async src="https://www.googletagmanager.com/gtag/js?id=G-3KR4TD9PFB"></script>
+                <script
+                    dangerouslySetInnerHTML={{
+                        __html: `window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-3KR4TD9PFB');`,
+                    }}
+                ></script>
             </Head>
             <Header />
             <main className="website">
