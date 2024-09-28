@@ -6,24 +6,31 @@ import { Tile } from '@dappshared/Tile'
 import { toLower } from 'lodash'
 import { useCallback, useContext, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { getChainById } from 'shared/supportedChains'
+import { chains, getChainById } from 'shared/supportedChains'
 import { ProtocolsResponse } from 'shared/types'
 import { Button } from 'src/components/Button'
 import { Address } from 'viem'
+import { useAccount } from 'wagmi'
 import { StakingProjectLogo } from '../../staking/StakingProjectLogo'
 
 export const Protocols = () => {
     const { setTitle } = useContext(DAppContext)
     const [isLoading, setIsLoading] = useState(true)
+    const { chain: chainAccount } = useAccount()
     const navigate = useNavigate()
     let { chainId } = useParams()
+
     const [topProtocols, setTopProtocols] = useState<Address[]>([
         toLower('0x00000000004545cB8440FDD6095a97DEBd1F3814') as Address,
     ])
 
+    const chainIdsTestnet = chains.filter((chain) => chain.testnet).map((chain) => chain.id)
+    const [showTestnets, setShowTestnets] = useState(false)
+
     const [selectedChain, setSelectedChain] = useState<number>(Number(chainId)) // set default chain until we expand on additional networks
 
     const [protocols, setProtocols] = useState<ProtocolsResponse[]>()
+    const [allProtocols, setAllProtocols] = useState<ProtocolsResponse[]>()
 
     const loadProtocols = useCallback(() => {
         fetch(
@@ -33,20 +40,39 @@ export const Protocols = () => {
         )
             .then((res) => res.json())
             .then((res) => {
-                setProtocols(
-                    res
-                        .map((p: any) => ({
-                            ...p,
-                            protocol: {
-                                ...p.protocol,
-                                stakedAbs: BigInt(p.protocol.stakedAbs),
-                            },
-                        }))
-                        .sort((left: any, right: any) => (left.protocol.apy.high > right.protocol.apy.high ? -1 : 1))
-                        .sort((p: any) => (topProtocols.includes(toLower(p.protocol.source) as Address) ? -1 : 1))
+                setAllProtocols(
+                    res.map((p: any) => ({
+                        ...p,
+                        protocol: {
+                            ...p.protocol,
+                            stakedAbs: BigInt(p.protocol.stakedAbs),
+                        },
+                    }))
                 )
             })
     }, [selectedChain, topProtocols])
+
+    useEffect(() => {
+        if (allProtocols)
+            setProtocols(
+                allProtocols
+                    .map((p: any) => ({
+                        ...p,
+                        protocol: {
+                            ...p.protocol,
+                            stakedAbs: BigInt(p.protocol.stakedAbs),
+                        },
+                    }))
+                    .filter((p: any) => !chainIdsTestnet.includes(p.protocol.chainId) || showTestnets)
+                    .sort((left: any, right: any) => (left.protocol.apy.high > right.protocol.apy.high ? -1 : 1))
+                    .sort((p: any) => (topProtocols.includes(toLower(p.protocol.source) as Address) ? -1 : 1))
+            )
+        else setProtocols([])
+    }, [allProtocols, showTestnets])
+
+    useEffect(() => {
+        setShowTestnets(Boolean(chainAccount && chainAccount.testnet))
+    }, [chainAccount])
 
     useEffect(() => {
         setTitle && setTitle('Overview STAKEX protocols')
