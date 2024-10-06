@@ -45,6 +45,7 @@ export const Fees = () => {
         'unstaking',
         10000n
     )
+
     const {
         write: writeUpdateFeesForStaking,
         error: errorUpdateFeesForStaking,

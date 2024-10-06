@@ -1,8 +1,7 @@
-import Link from 'next/link'
-import { InnerContainer, OuterContainer } from './Container'
 import { YouTubeEmbed } from '@next/third-parties/google'
 import clsx from 'clsx'
 import { Fragment, useState } from 'react'
+import { InnerContainer, OuterContainer } from './Container'
 
 export const ForHolders = () => {
     const [currentTab, setCurrentTab] = useState(0)
@@ -18,13 +17,13 @@ export const ForHolders = () => {
             videoid: 'yuipPkm9EWk',
         },
         {
-            title: 'How to re-stake your rewards',
-            description: `Get to know how your stakers can re-stake their rewards they've received from your staking solution`,
+            title: 'How to retake your rewards',
+            description: `Get to know how your stakers can restake their rewards they've received from your staking solution`,
             videoid: 'xBOEP9bvDFc',
         },
         {
             title: 'How to claim your rewards',
-            description: `Get to know how your stakers can claim their rewards re-stake from your staking solution`,
+            description: `Get to know how your stakers can claim their rewards from your staking solution`,
             videoid: 'PGfYEnBns5s',
         },
         {

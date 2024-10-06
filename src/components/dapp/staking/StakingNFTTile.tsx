@@ -1,10 +1,12 @@
 import { useFetchTokenURI } from '@dapphooks/staking/useFetchTokenURI'
 import { CaretDivider } from '@dappshared/CaretDivider'
 import { StatsBoxTwoColumn } from '@dappshared/StatsBoxTwoColumn'
+import clsx from 'clsx'
 import TimeAgo from 'javascript-time-ago'
-import { useMemo } from 'react'
+import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { IoMdOpen } from 'react-icons/io'
 import { MdLockOutline } from 'react-icons/md'
+import { PiCaretDownBold, PiCaretUpBold } from 'react-icons/pi'
 import { Address } from 'viem'
 import { useBlock } from 'wagmi'
 import { Button } from '../../Button'
@@ -23,9 +25,12 @@ type StakingNFTTileProps = {
     canRestake: boolean
     canWithdraw: boolean
     canClaim: boolean
+    canUpstake: boolean
+    canMerge: boolean
     onRestake: (tokenId: bigint) => void
     onWithdraw: (tokenId: bigint) => void
     onClaim: (tokenId: bigint) => void
+    onUpstake: (tokenId: bigint) => void
 }
 export const StakingNFTTile = ({
     protocolAddress,
@@ -41,13 +46,27 @@ export const StakingNFTTile = ({
     canRestake,
     canWithdraw,
     canClaim,
+    canUpstake,
+    canMerge,
     onRestake,
     onWithdraw,
     onClaim,
+    onUpstake,
 }: StakingNFTTileProps) => {
     const { data, loadData } = useFetchTokenURI(protocolAddress, tokenId)
     const timeAgo = new TimeAgo(navigator.language)
     const { data: dataBlock } = useBlock({ chainId })
+    const [openContext, setOpenContext] = useState(false)
+
+    const contextMenu = useRef<HTMLDivElement>(null)
+
+    const [openContextToNorth, setOpenContextToNorth] = useState(false)
+
+    const onClickHandlerOpenContextMenu = () => {
+        setOpenContext(!openContext)
+        !openContext && setOpenContextToNorth(false)
+    }
+
     useMemo(() => {
         data &&
             fetch(data.image)
@@ -58,6 +77,16 @@ export const StakingNFTTile = ({
                     if (w) w.onload = (_) => URL.revokeObjectURL(url)
                 })
     }, [data])
+
+    useLayoutEffect(() => {
+        if (openContext && contextMenu.current) {
+            const { bottom } = contextMenu.current.getBoundingClientRect()
+            setOpenContextToNorth(bottom > (window.innerHeight || document.documentElement.clientHeight))
+        }
+
+        if (!openContext) setOpenContextToNorth(false)
+    }, [openContext])
+
     return (
         <div className="flex flex-col gap-1 rounded-lg bg-dapp-blue-400 p-3">
             <div className="flex items-center gap-2 text-xs text-darkTextLowEmphasis">
@@ -123,30 +152,103 @@ export const StakingNFTTile = ({
                     </>
                 )}
             </StatsBoxTwoColumn.Wrapper>
-            <div className="mt-2 grid grid-cols-2 gap-2">
-                <Button variant="secondary" disabled={!canRestake} onClick={() => onRestake(tokenId)} className="gap-2">
-                    Re-Stake {!canRestake && <MdLockOutline />}
-                </Button>
-                <Button
-                    variant="secondary"
-                    disabled={!canWithdraw && !isBurned}
-                    onClick={() => canWithdraw && onWithdraw(tokenId)}
-                    className={`gap-2 ${isBurned ? 'pointer-events-none cursor-default' : ''}`}
-                >
-                    {isBurned ? (
-                        <span className="font-bold text-degenOrange">BURNED</span>
-                    ) : (
-                        <>Withdraw {!canWithdraw && <MdLockOutline />}</>
+            <div className={clsx(['mt-2 grid gap-3', canUpstake ? 'grid-cols-7' : 'grid-cols-2'])}>
+                {openContext && (
+                    <div
+                        onClick={onClickHandlerOpenContextMenu}
+                        className="fixed inset-0 z-10 bg-dapp-blue-800/90"
+                    ></div>
+                )}
+                <div className={clsx(['relative col-span-7 grid gap-3', openContext && 'z-30'])}>
+                    {openContext && (
+                        <div
+                            ref={contextMenu}
+                            className={clsx([
+                                'absolute -left-3 -right-3 z-20 rounded-lg bg-dapp-blue-400 px-3 text-dapp-blue-800',
+                                openContextToNorth ? '-bottom-3 pb-16 pt-3' : '-top-3 pb-3 pt-16',
+                            ])}
+                        >
+                            <div className="flex flex-col gap-3">
+                                <Button
+                                    variant="secondary"
+                                    disabled={!canRestake}
+                                    onClick={() => {
+                                        setOpenContext(false)
+                                        onRestake(tokenId)
+                                    }}
+                                    className="flex w-full gap-2"
+                                >
+                                    Restake {!canRestake && <MdLockOutline />}
+                                </Button>
+                                {canUpstake && (
+                                    <Button
+                                        onClick={() => {
+                                            setOpenContext(false)
+                                            onUpstake(tokenId)
+                                        }}
+                                        variant="secondary"
+                                        className="cursor-pointer whitespace-nowrap"
+                                    >
+                                        Upstake
+                                    </Button>
+                                )}
+                                {canMerge && (
+                                    <Button variant="secondary" disabled={true} className="gap-2 whitespace-nowrap">
+                                        Merge <sub>available soon 🚀</sub>
+                                    </Button>
+                                )}
+                                {!isBurned && (
+                                    <Button
+                                        variant="secondary"
+                                        disabled={!canWithdraw}
+                                        onClick={() => {
+                                            if (canWithdraw) {
+                                                setOpenContext(false)
+                                                onWithdraw(tokenId)
+                                            }
+                                        }}
+                                        className="flex w-full gap-2"
+                                    >
+                                        Withdraw {!canWithdraw && <MdLockOutline />}
+                                    </Button>
+                                )}
+                            </div>
+                        </div>
                     )}
-                </Button>
-                <Button
-                    variant="primary"
-                    disabled={!canClaim}
-                    onClick={() => onClaim(tokenId)}
-                    className="col-span-2 gap-2"
-                >
-                    Claim Rewards {!canClaim && <MdLockOutline />}
-                </Button>
+                    <div
+                        className={clsx([
+                            'flex w-full items-center justify-center text-dapp-blue-800',
+                            openContext && 'z-40',
+                        ])}
+                    >
+                        <button
+                            disabled={!canClaim}
+                            onClick={() => {
+                                setOpenContext(false)
+                                onClaim(tokenId)
+                            }}
+                            className="focus:outline-non flex flex-grow items-center justify-center gap-2 rounded-bl-lg rounded-tl-lg border border-dapp-cyan-500 border-r-dapp-blue-800/10 bg-dapp-cyan-500 px-4 py-2 font-semibold leading-5 hover:border-dapp-cyan-500/0 hover:border-r-dapp-blue-800/10 hover:bg-dapp-cyan-500/70 active:border-dapp-cyan-50 disabled:opacity-40 disabled:hover:opacity-40"
+                        >
+                            Claim Rewards {!canClaim && <MdLockOutline />}
+                        </button>
+                        <button
+                            onClick={onClickHandlerOpenContextMenu}
+                            className={clsx([
+                                'focus:outline-non h-full rounded-br-lg rounded-tr-lg border border-dapp-cyan-500 border-l-dapp-blue-800/40 bg-dapp-cyan-500 px-3 py-2 leading-5 hover:border-dapp-cyan-500/0 hover:border-l-dapp-blue-800/40 hover:bg-dapp-cyan-500/70',
+                            ])}
+                        >
+                            {openContext ? <PiCaretUpBold /> : <PiCaretDownBold />}
+                        </button>
+                    </div>
+                </div>
+                {isBurned && (
+                    <Button
+                        variant="secondary"
+                        className="pointer-events-none col-span-7 flex w-full cursor-default gap-2"
+                    >
+                        <span className="font-bold text-degenOrange">🔥 BURNED 🔥</span>
+                    </Button>
+                )}
             </div>
         </div>
     )

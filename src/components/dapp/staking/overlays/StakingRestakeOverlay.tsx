@@ -27,13 +27,13 @@ type StakingRestakeOverlayProps = {
 } & BaseOverlayProps
 
 export const StakingRestakeOverlay = ({
-    protocolAddress,
-    chainId,
-    payoutTokenInfo,
-    stakingTokenInfo,
     tokenId,
     isOpen,
     onClose,
+    protocolAddress,
+    chainId,
+    stakingTokenInfo,
+    payoutTokenInfo,
 }: StakingRestakeOverlayProps) => {
     const { address } = useAccount()
     const [isLoading, setIsLoading] = useState(true)
@@ -143,7 +143,7 @@ export const StakingRestakeOverlay = ({
                 <>
                     <div className="flex flex-col gap-6 text-base">
                         <h3 className="flex flex-row items-center gap-3 text-xl">
-                            <div className="font-title">Re-Stake</div>
+                            <div className="font-title">Restake</div>
                             <div>
                                 <AiOutlineQuestionCircle />
                             </div>
@@ -161,7 +161,7 @@ export const StakingRestakeOverlay = ({
 
                         {durationButtons && (
                             <StakingDurationSelection
-                                description="Choose how to Re-Stake your Rewards."
+                                description="Choose how to Restake your Rewards."
                                 tokenSymbol={stakingTokenInfo.symbol}
                                 durations={durationButtons}
                                 onCheckbox={onCheckboxHandler}
@@ -170,7 +170,7 @@ export const StakingRestakeOverlay = ({
                             />
                         )}
 
-                        <StatsBoxTwoColumn.Wrapper className="rounded-lg bg-dapp-blue-800 px-5 py-2 text-sm">
+                        <StatsBoxTwoColumn.Wrapper className="rounded-lg bg-dapp-blue-800 px-4 py-2 text-sm">
                             <StatsBoxTwoColumn.LeftColumn>
                                 <span className="text-sm text-darkTextLowEmphasis">
                                     NFT#{tokenId.toString()} Rewards
@@ -228,7 +228,7 @@ export const StakingRestakeOverlay = ({
                                 <Spinner theme="dark" className="!h-4 !w-4" /> <span>processing...</span>
                             </>
                         ) : (
-                            <span>Re-Stake Rewards</span>
+                            <span>Restake Rewards</span>
                         )}
                     </Button>
                 </>
@@ -240,7 +240,7 @@ export const StakingRestakeOverlay = ({
                     {!hashRestake ? (
                         <div className="text-center">
                             Your wallet is prompting you <br />
-                            to confirm a re-stake of
+                            to confirm a restake of
                             <br />
                             <span className="text-xl font-bold">
                                 ~ {toReadableNumber(claimEstimationStakingToken, stakingTokenInfo.decimals)}{' '}
@@ -286,7 +286,7 @@ export const StakingRestakeOverlay = ({
                     <div className="flex flex-col items-center gap-6 p-6 text-center text-base">
                         <IoCheckmarkCircle className="h-[100px] w-[100px] text-success" />
                         <span>
-                            Successfully re-staked <br />
+                            Successfully restaked <br />
                             <span className="text-xl font-bold">
                                 {toReadableNumber(restakeAmount, stakingTokenInfo?.decimals)} {stakingTokenInfo?.symbol}
                             </span>

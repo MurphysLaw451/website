@@ -16,6 +16,7 @@ type StakingDurationSelectionProps = {
     description?: string
     tokenSymbol: string
     durations: StakeBucketButton[]
+    durationsDisabled?: Address[]
     isCheckboxSelected: boolean
     onCheckbox: (checked: boolean) => void
     onDurationSelection: (duration: StakeBucketButton) => void
@@ -28,6 +29,7 @@ export const StakingDurationSelection = ({
     isCheckboxSelected,
     onDurationSelection,
     onCheckbox,
+    durationsDisabled = [],
 }: StakingDurationSelectionProps) => {
     const isBurnBucketSelected = Boolean(durations?.find(({ burn, selected }) => burn && selected))
     const isLockBucketSelected = Boolean(durations?.find(({ duration, selected }) => duration && selected))
@@ -74,22 +76,24 @@ export const StakingDurationSelection = ({
                 ])}
             >
                 {durations && durations.length == 0 && (
-                    <div className="col-span-2 rounded-lg bg-dapp-blue-800 px-5 py-2 text-sm">No options available</div>
+                    <div className="col-span-2 rounded-lg bg-dapp-blue-800 px-4 py-2 text-sm">No options available</div>
                 )}
                 {durations &&
                     durations.length > 0 &&
                     durations.map((duration) => (
                         <button
                             key={duration.id}
+                            disabled={durationsDisabled.includes(duration.id)}
                             className={clsx(
                                 'flex flex-col items-center rounded-lg border border-solid bg-dapp-blue-400 p-1 leading-4',
                                 {
                                     'border-dapp-blue-400': !duration.selected,
                                     'border-dapp-cyan-500': duration.selected && !duration.burn,
                                     'border-degenOrange': duration.selected && duration.burn,
-                                }
+                                },
+                                'disabled:opacity-40'
                             )}
-                            onClick={() => itemSelectHandler(duration)}
+                            onClick={() => !durationsDisabled.includes(duration.id) && itemSelectHandler(duration)}
                         >
                             <span>Rewards x{duration.multiplier}</span>
                             <span className="text-xs">

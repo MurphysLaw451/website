@@ -104,7 +104,6 @@ export const StakingForm = ({ stakingTokenInfo, onDepositSuccessHandler }: Staki
 
     // duration is selected
     const onDurationSelectionHandler = (duration: StakeBucketButton | null) => {
-        console.log(duration)
         setStakeBucketId((duration?.id as Address) || defaultBucketId)
     }
 
@@ -356,7 +355,7 @@ export const StakingForm = ({ stakingTokenInfo, onDepositSuccessHandler }: Staki
                 )}
             </Button>
 
-            <StatsBoxTwoColumn.Wrapper className="rounded-lg bg-dapp-blue-800 px-5 py-2 text-sm">
+            <StatsBoxTwoColumn.Wrapper className="rounded-lg bg-dapp-blue-800 px-4 py-2 text-sm">
                 <StatsBoxTwoColumn.LeftColumn>{tokenSymbol}</StatsBoxTwoColumn.LeftColumn>
                 <StatsBoxTwoColumn.RightColumn>
                     {stakeAmountEntered ? stakeAmountEntered : '-'}

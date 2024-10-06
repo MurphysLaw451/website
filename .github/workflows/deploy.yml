@@ -51,7 +51,7 @@ jobs:
           NEXT_PUBLIC_STAKEX_API_ENDPOINT: ${{ vars.NEXT_PUBLIC_STAKEX_API_ENDPOINT }}
           NEXT_PUBLIC_DEGENX_BACKEND_API_ENDPOINT: ${{ vars.NEXT_PUBLIC_DEGENX_BACKEND_API_ENDPOINT }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          NEXT_PUBLIC_SENTRY_DSN: ${{ vars.NEXT_PUBLIC_SENTRY_DSN }}
+          NEXT_PUBLIC_SENTRY_DSN: ${{ vars.NEXT_PUBLIC_SENTRY_DSN }} # no skip
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2

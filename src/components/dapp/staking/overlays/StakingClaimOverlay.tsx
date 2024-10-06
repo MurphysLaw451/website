@@ -337,7 +337,7 @@ export const StakingClaimOverlay = ({
                             )}
 
                             {!isLoadingRewards && (
-                                <StatsBoxTwoColumn.Wrapper className="max-h-64 overflow-y-scroll rounded-lg bg-dapp-blue-800 px-5 py-2 text-sm">
+                                <StatsBoxTwoColumn.Wrapper className="max-h-64 overflow-y-scroll rounded-lg bg-dapp-blue-800 px-4 py-2 text-sm">
                                     {rewards &&
                                         rewards.length > 0 &&
                                         rewards.map((reward) => (
