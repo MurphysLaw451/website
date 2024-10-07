@@ -336,7 +336,7 @@ export const StakingUpstakeOverlay = ({
                                 <Spinner theme="dark" className="!h-4 !w-4" /> <span>processing...</span>
                             </>
                         ) : (
-                            <span>Upstake Rewards</span>
+                            <span>Upstake</span>
                         )}
                     </Button>
                 </>
