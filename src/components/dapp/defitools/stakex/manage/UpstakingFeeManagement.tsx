@@ -158,7 +158,7 @@ export const UpstakingFeeManagement = () => {
                                 </span>{' '}
                                 that are offering more than one reward pool with different locking periods. It enables
                                 the stakers to upgrade their stake to join a pool that has a higher lock period than the
-                                poll they are in right now.
+                                pool they are in right now.
                             </div>
                         }
                         className="w-[500px] max-w-[90%] bg-dapp-blue-50"
