@@ -121,14 +121,11 @@ export const StakingNFTTile = ({
                                 </StatsBoxTwoColumn.LeftColumn>
                                 <StatsBoxTwoColumn.RightColumn>
                                     <span
-                                        title={`${new Date(lockStartDate * 1000).toLocaleDateString(
-                                            navigator.language,
-                                            {
-                                                year: 'numeric',
-                                                month: '2-digit',
-                                                day: '2-digit',
-                                            }
-                                        )}, ${new Date(lockStartDate * 1000).toLocaleTimeString(navigator.language)}`}
+                                        title={`${new Date(withdrawDate * 1000).toLocaleDateString(navigator.language, {
+                                            year: 'numeric',
+                                            month: '2-digit',
+                                            day: '2-digit',
+                                        })}, ${new Date(lockStartDate * 1000).toLocaleTimeString(navigator.language)}`}
                                     >
                                         {Boolean(dataBlock && dataBlock?.timestamp) &&
                                             timeAgo.format(withdrawDate * 1000, {

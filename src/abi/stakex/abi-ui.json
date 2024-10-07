@@ -4451,24 +4451,31 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "_tokenId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "_targetBucketId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bool",
-        "name": "_includeRewards",
-        "type": "bool"
-      },
-      {
-        "internalType": "address",
-        "name": "_targetToken",
-        "type": "address"
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "targetBucketId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bool",
+            "name": "includeRewards",
+            "type": "bool"
+          },
+          {
+            "internalType": "address",
+            "name": "targetToken",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct IStakeXUpstakingFacet.UpstakeParams",
+        "name": "_params",
+        "type": "tuple"
       }
     ],
     "name": "stakeXUpstake",

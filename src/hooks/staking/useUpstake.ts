@@ -27,7 +27,14 @@ export const useUpstake = (
     const execProps = useExecuteFunction({
         abi,
         address,
-        args: [tokenId, stakeBucketId, includeRewards, target],
+        args: [
+            {
+                tokenId,
+                targetBucketId: stakeBucketId,
+                includeRewards,
+                targetToken: target,
+            },
+        ],
         functionName: 'stakeXUpstake',
         chainId,
         eventNames: ['Upstaked'],

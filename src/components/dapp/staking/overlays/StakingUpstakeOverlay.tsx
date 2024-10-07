@@ -306,16 +306,15 @@ export const StakingUpstakeOverlay = ({
                             <StatsBoxTwoColumn.RightColumn>
                                 {selectedStake ? (
                                     !selectedStake.burn ? (
-                                        `${new Date(Date.now() + selectedStake.duration * 1000).toLocaleDateString(
-                                            navigator.language,
-                                            {
-                                                year: 'numeric',
-                                                month: '2-digit',
-                                                day: '2-digit',
-                                            }
-                                        )}, ${new Date(Date.now() + selectedStake.duration * 1000).toLocaleTimeString(
-                                            navigator.language
-                                        )}`
+                                        `${new Date(
+                                            (Number(stake.release) + selectedStake.duration) * 1000
+                                        ).toLocaleDateString(navigator.language, {
+                                            year: 'numeric',
+                                            month: '2-digit',
+                                            day: '2-digit',
+                                        })}, ${new Date(
+                                            (Number(stake.release) + selectedStake.duration) * 1000
+                                        ).toLocaleTimeString(navigator.language)}`
                                     ) : (
                                         <span className="font-bold text-degenOrange">BURNED</span>
                                     )
