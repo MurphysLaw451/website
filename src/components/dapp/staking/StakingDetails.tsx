@@ -4,6 +4,7 @@ import { useGetRewardEstimationForTokens } from '@dapphooks/staking/useGetReward
 import { useGetStakeBuckets } from '@dapphooks/staking/useGetStakeBuckets'
 import { BucketStakedShare, useGetStakedSharesByStaker } from '@dapphooks/staking/useGetStakedSharesByStaker'
 import { useGetTargetTokens } from '@dapphooks/staking/useGetTargetTokens'
+import { useUpstakeActive } from '@dapphooks/staking/useUpstakeActive'
 import { CaretDivider } from '@dappshared/CaretDivider'
 import { StatsBoxTwoColumn } from '@dappshared/StatsBoxTwoColumn'
 import { StakeBucket, StakeResponse, StakingBaseProps, TokenInfoResponse } from '@dapptypes'
@@ -15,6 +16,7 @@ import { StakingNFTTile } from './StakingNFTTile'
 import { SortOption, StakingSortOptions } from './StakingSortOptions'
 import { StakingClaimOverlay } from './overlays/StakingClaimOverlay'
 import { StakingRestakeOverlay } from './overlays/StakingRestakeOverlay'
+import { StakingUpstakeOverlay } from './overlays/StakingUpstakeOverlay'
 import { StakingWithdrawOverlay } from './overlays/StakingWithdrawOverlay'
 
 type StakingDetailsProps = {
@@ -32,37 +34,6 @@ export const StakingDetails = ({ stakingTokenInfo, defaultShowToken, defaultPayo
         data: { protocol, chain },
     } = useContext(StakeXContext)
 
-    const sortOptions: SortOption[] = useMemo(
-        () => [
-            {
-                label: 'Most recent stake',
-                by: 'tokenId',
-                sort: 'DESC',
-            },
-            {
-                label: 'Oldest stake',
-                by: 'tokenId',
-                sort: 'ASC',
-            },
-            {
-                label: 'Burned stakes first',
-                by: 'burned',
-                sort: 'DESC',
-            },
-            {
-                label: 'Most staked',
-                by: 'amount',
-                sort: 'DESC',
-            },
-            {
-                label: 'Next unlocked stake',
-                by: 'release',
-                sort: 'ASC',
-            },
-        ],
-        []
-    )
-
     // const { address } = useAccount()
     const [selectedSortOption, setSelectedSortOption] = useState(0)
     const [isLoading, setIsLoading] = useState(true)
@@ -74,6 +45,9 @@ export const StakingDetails = ({ stakingTokenInfo, defaultShowToken, defaultPayo
         [tokenId: number]: bigint
     }>({})
     const [canClaimAll, setCanClaimAll] = useState(false)
+
+    const [hasBurnBuckets, setHasBurnBuckets] = useState(false)
+    const [largestLock, setLargestLock] = useState(0n)
 
     const [stakesOrdered, setStakesOrdered] = useState<StakeResponse[]>()
     const [stakeShareInfo, setStakeShareInfo] = useState<
@@ -92,9 +66,11 @@ export const StakingDetails = ({ stakingTokenInfo, defaultShowToken, defaultPayo
     const [isInProgessClaim, setIsInProgessClaim] = useState(false)
     const [isInProgessRestake, setIsInProgessRestake] = useState(false)
     const [isInProgessWithdraw, setIsInProgessWithdraw] = useState(false)
+    const [isInProgessUpstake, setIsInProgessUpstake] = useState(false)
     const [tokenIdToClaim, setTokenIdToClaim] = useState<bigint>()
     const [tokenIdToRestake, setTokenIdToRestake] = useState<bigint>()
     const [tokenIdToWithdraw, setTokenIdToWithdraw] = useState<bigint>()
+    const [tokenIdToUpstake, setTokenIdToUpstake] = useState<bigint>()
 
     const { refetchStakes } = useContext(StakeXContext)
     const { address } = useAccount()
@@ -106,51 +82,124 @@ export const StakingDetails = ({ stakingTokenInfo, defaultShowToken, defaultPayo
         defaultShowToken?.source
     )
     const { data: targetTokens } = useGetTargetTokens(protocol, chain?.id!)
-    const { data: dataGetStakedSharesByStaker } = useGetStakedSharesByStaker(protocol, chain?.id!, address!)
+    const { data: dataGetStakedSharesByStaker, refetch: refetchGetStakedSharesByStaker } = useGetStakedSharesByStaker(
+        protocol,
+        chain?.id!,
+        address!
+    )
     const { data: dataGetStakeBuckets } = useGetStakeBuckets(protocol, chain?.id!)
+    const { data: dataUpstakeActive } = useUpstakeActive(protocol, chain?.id!)
+
+    const sortOptions: SortOption[] = useMemo(
+        () =>
+            [
+                stakes.length > 0
+                    ? {
+                          label: 'Most recent stake',
+                          by: 'tokenId',
+                          sort: 'DESC',
+                      }
+                    : null,
+                {
+                    label: 'Oldest stake',
+                    by: 'tokenId',
+                    sort: 'ASC',
+                },
+                hasBurnBuckets
+                    ? {
+                          label: 'Burned stakes first',
+                          by: 'burned',
+                          sort: 'DESC',
+                      }
+                    : null,
+                {
+                    label: 'Most staked',
+                    by: 'amount',
+                    sort: 'DESC',
+                },
+                largestLock > 0n
+                    ? {
+                          label: 'Next unlocked stake',
+                          by: 'release',
+                          sort: 'ASC',
+                      }
+                    : null,
+            ].filter((item) => item) as SortOption[],
+        [hasBurnBuckets, largestLock]
+    )
 
     //
-    // handlers
+    // Handlers
     //
 
-    // CLAIM ALL
+    //
+    // Claim all
+    //
     const onClaimAllHandler = () => {
         setIsInProgessClaimAll(true)
     }
 
     const onClaimAllCloseHandler = () => {
-        refetchRewardEstimations()
+        refetchStakes && refetchStakes()
+        refetchGetStakedSharesByStaker && refetchGetStakedSharesByStaker()
+        refetchRewardEstimations && refetchRewardEstimations()
         setIsInProgessClaimAll(false)
     }
 
+    //
+    // Claim
+    //
     const onClaimHandler = (tokenId: bigint) => {
         setTokenIdToClaim(tokenId)
         setIsInProgessClaim(true)
     }
 
     const onClaimCloseHandler = () => {
-        refetchRewardEstimations()
+        refetchRewardEstimations && refetchRewardEstimations()
+        refetchGetStakedSharesByStaker && refetchGetStakedSharesByStaker()
         setIsInProgessClaim(false)
     }
 
+    //
+    // Restake
+    //
     const onRestakeHandler = (tokenId: bigint) => {
         setTokenIdToRestake(tokenId)
         setIsInProgessRestake(true)
     }
 
     const onRestakeCloseHandler = () => {
-        refetchStakes()
+        refetchStakes && refetchStakes()
+        refetchGetStakedSharesByStaker && refetchGetStakedSharesByStaker()
         setIsInProgessRestake(false)
     }
 
+    //
+    // Withdraw
+    //
     const onWithdrawHandler = (tokenId: bigint) => {
         setTokenIdToWithdraw(tokenId)
         setIsInProgessWithdraw(true)
     }
 
     const onWithdrawCloseHandler = () => {
-        refetchStakes()
+        refetchStakes && refetchStakes()
+        refetchGetStakedSharesByStaker && refetchGetStakedSharesByStaker()
         setIsInProgessWithdraw(false)
+    }
+
+    //
+    // Upstake
+    //
+    const onUpstakeHandler = (tokenId: bigint) => {
+        setTokenIdToUpstake(tokenId)
+        setIsInProgessUpstake(true)
+    }
+
+    const onUpstakeCloseHandler = () => {
+        refetchStakes && refetchStakes()
+        refetchGetStakedSharesByStaker && refetchGetStakedSharesByStaker()
+        setIsInProgessUpstake(false)
     }
 
     //
@@ -162,20 +211,29 @@ export const StakingDetails = ({ stakingTokenInfo, defaultShowToken, defaultPayo
     }, [isInProgessClaimAll, isInProgessClaim, isInProgessRestake, isInProgessWithdraw])
 
     useEffect(() => {
-        dataGetStakedSharesByStaker &&
-            dataGetStakeBuckets &&
-            setStakeShareInfo(
-                dataGetStakedSharesByStaker.map((share) => {
-                    const bucketData = dataGetStakeBuckets.find((bucket) => share.bucketId == bucket.id)
-                    return {
-                        burn: bucketData?.burn!,
-                        divider: BigInt(share.divider),
-                        duration: BigInt(bucketData?.duration!),
-                        share: share.share,
-                        staked: share.staked,
-                    }
-                })
+        if (dataGetStakeBuckets) {
+            if (dataGetStakedSharesByStaker) {
+                setStakeShareInfo(
+                    dataGetStakedSharesByStaker.map((share) => {
+                        const bucketData = dataGetStakeBuckets.find((bucket) => share.bucketId == bucket.id)
+                        return {
+                            burn: bucketData?.burn!,
+                            divider: BigInt(share.divider),
+                            duration: BigInt(bucketData?.duration!),
+                            share: share.share,
+                            staked: share.staked,
+                        }
+                    })
+                )
+            }
+            setHasBurnBuckets(Boolean(dataGetStakeBuckets.find((bucket) => bucket.burn)))
+            setLargestLock(
+                dataGetStakeBuckets.reduce(
+                    (acc, bucket) => (acc < BigInt(bucket.duration) ? BigInt(bucket.duration) : acc),
+                    0n
+                )
             )
+        }
     }, [dataGetStakedSharesByStaker, dataGetStakeBuckets])
 
     useEffect(() => {
@@ -245,7 +303,7 @@ export const StakingDetails = ({ stakingTokenInfo, defaultShowToken, defaultPayo
     ) : (
         <>
             <div className="flex flex-col gap-8">
-                <StatsBoxTwoColumn.Wrapper className="rounded-lg bg-dapp-blue-800 px-5 py-2 text-base">
+                <StatsBoxTwoColumn.Wrapper className="rounded-lg bg-dapp-blue-800 px-4 py-2 text-base">
                     <StatsBoxTwoColumn.LeftColumn>
                         <span className="text-darkTextLowEmphasis">Staked {stakingTokenInfo?.symbol}</span>
                     </StatsBoxTwoColumn.LeftColumn>
@@ -308,7 +366,8 @@ export const StakingDetails = ({ stakingTokenInfo, defaultShowToken, defaultPayo
                                     <StatsBoxTwoColumn.RightColumn>
                                         <div className="flex flex-row items-center justify-end gap-1">
                                             {toReadableNumber(Number(share.staked), stakingTokenInfo.decimals, {
-                                                maximumFractionDigits: 2,
+                                                minimumFractionDigits: 3,
+                                                maximumFractionDigits: 3,
                                             })}
                                             <span className="text-xs">
                                                 {`(${
@@ -375,7 +434,7 @@ export const StakingDetails = ({ stakingTokenInfo, defaultShowToken, defaultPayo
                             stakesOrdered.length > 0 &&
                             stakesOrdered.map((stake) => (
                                 <StakingNFTTile
-                                    key={'' + stake.tokenId}
+                                    key={`key-${stake.tokenId}`}
                                     protocolAddress={protocol}
                                     chainId={chain?.id!}
                                     rewardAmount={toReadableNumber(
@@ -392,9 +451,15 @@ export const StakingDetails = ({ stakingTokenInfo, defaultShowToken, defaultPayo
                                     canClaim={Boolean(tokenIdRewards[parseInt('' + stake.tokenId)] > 0n)}
                                     canRestake={Boolean(tokenIdRewards[parseInt('' + stake.tokenId)] > 0n)}
                                     canWithdraw={!stake.locked}
+                                    canUpstake={
+                                        ((!stake.burned && hasBurnBuckets) || stake.lock > largestLock) &&
+                                        Boolean(dataUpstakeActive)
+                                    }
+                                    canMerge={stakesOrdered.length > 1}
                                     onClaim={onClaimHandler}
                                     onRestake={onRestakeHandler}
                                     onWithdraw={onWithdrawHandler}
+                                    onUpstake={onUpstakeHandler}
                                 />
                             ))}
                     </div>
@@ -440,6 +505,17 @@ export const StakingDetails = ({ stakingTokenInfo, defaultShowToken, defaultPayo
                     tokenId={tokenIdToWithdraw}
                     isOpen={true}
                     onClose={onWithdrawCloseHandler}
+                />
+            )}
+            {isInProgessUpstake && tokenIdToUpstake && (
+                <StakingUpstakeOverlay
+                    protocolAddress={protocol}
+                    chainId={chain?.id!}
+                    stakingTokenInfo={stakingTokenInfo}
+                    payoutTokenInfo={defaultPayoutToken}
+                    stake={stakes.find((stake) => stake.tokenId === tokenIdToUpstake)!}
+                    isOpen={true}
+                    onClose={onUpstakeCloseHandler}
                 />
             )}
         </>

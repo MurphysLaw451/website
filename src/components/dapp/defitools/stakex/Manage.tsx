@@ -14,6 +14,7 @@ import { getChainById } from 'shared/supportedChains'
 import { Address, zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
 import { Buckets } from './manage/Buckets'
+import { Checklist } from './manage/Checklist'
 import { Control } from './manage/Control'
 import { Customization } from './manage/Customization'
 import { Fees } from './manage/Fees'
@@ -22,8 +23,8 @@ import { InjectRewards } from './manage/InjectRewards'
 import { NFTManagement } from './manage/NFTManagement'
 import { StakingProgressChart } from './manage/StakingProgressChart'
 import { TokenManagement } from './manage/TokenManagement'
-import { Checklist } from './manage/Checklist'
 import { UpdateAvailability } from './manage/UpdateAvailability'
+import { UpstakingFeeManagement } from './manage/UpstakingFeeManagement'
 
 export const Manage = () => {
     const { protocolAddress, chainId } = useParams<{
@@ -106,7 +107,10 @@ export const Manage = () => {
                     <NFTManagement />
                     {data.isOwner && <Control />}
                     <Fees />
-                    <InjectRewards />
+                    <div className="grid gap-8 sm:grid-cols-2">
+                        <UpstakingFeeManagement />
+                        <InjectRewards />
+                    </div>
                 </div>
             </ManageStakeXContext.Provider>
         )

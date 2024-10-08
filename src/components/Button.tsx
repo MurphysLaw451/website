@@ -54,7 +54,7 @@ export function Button({
     if (variant == 'secondary') {
         className = clsx(
             baseStyle,
-            'bg-dapp-blue-100 border-dapp-blue-100 disabled:bg-dapp-blue-50 text-dapp-cyan-50 active:border-dapp-cyan-500',
+            'bg-dapp-blue-100 border-dapp-blue-100 disabled:bg-dapp-blue-50 text-dapp-cyan-50 active:border-dapp-cyan-500 disabled:active:border-dapp-blue-100',
             className
         )
     }

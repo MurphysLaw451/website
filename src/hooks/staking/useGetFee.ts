@@ -1,9 +1,9 @@
 import abi from '@dappabis/stakex/abi-ui.json'
-import _ from 'lodash'
+import { upperFirst } from 'lodash'
 import { Address } from 'viem'
 import { useReadContract } from 'wagmi'
 
-type GetFeeFor = 'staking' | 'unstaking' | 'restaking'
+type GetFeeFor = 'staking' | 'unstaking' | 'restaking' | 'upstaking'
 
 export const useGetFeeFor = (
     address: Address,
@@ -15,7 +15,11 @@ export const useGetFeeFor = (
         address,
         chainId,
         abi,
-        functionName: `getFeeFor${_.upperFirst(whatFor)}`,
+        functionName: (() => {
+            return whatFor == 'upstaking'
+                ? 'stakeXGetFeeForUpstaking'
+                : `getFeeFor${upperFirst(whatFor)}`
+        }).toString(),
         args: [amount],
         query: {
             select: (data: any[]) => ({

@@ -7,12 +7,7 @@ export type BaseOverlayProps = {
     closeOnBackdropClick?: boolean
     children?: any
 }
-export const BaseOverlay = ({
-    isOpen,
-    onClose,
-    closeOnBackdropClick = true,
-    children,
-}: BaseOverlayProps) => {
+export const BaseOverlay = ({ isOpen, onClose, closeOnBackdropClick = true, children }: BaseOverlayProps) => {
     return (
         <Transition appear show={isOpen} as={Fragment}>
             <Dialog
@@ -44,7 +39,7 @@ export const BaseOverlay = ({
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95"
                         >
-                            <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-xl bg-dapp-blue-600 px-5 py-6 text-left align-middle text-dapp-cyan-50 shadow-xl transition-all">
+                            <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-xl bg-dapp-blue-600 px-4 py-6 text-left align-middle text-dapp-cyan-50 shadow-xl transition-all">
                                 {children}
                             </Dialog.Panel>
                         </Transition.Child>

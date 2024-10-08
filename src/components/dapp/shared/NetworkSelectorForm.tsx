@@ -54,7 +54,7 @@ export const NetworkSelectorForm = ({ chains, selectedChain, onChange }: Network
                     <Field key={i} className="flex w-full items-center ">
                         <Radio
                             value={chain.id}
-                            className="group relative flex w-full cursor-pointer rounded-lg bg-dapp-blue-400 px-5 py-4 text-white shadow-md transition focus:outline-none data-[checked]:bg-dapp-blue-200 data-[focus]:outline-1 data-[focus]:outline-dapp-blue-50"
+                            className="group relative flex w-full cursor-pointer rounded-lg bg-dapp-blue-400 px-4 py-4 text-white shadow-md transition focus:outline-none data-[checked]:bg-dapp-blue-200 data-[focus]:outline-1 data-[focus]:outline-dapp-blue-50"
                         >
                             <div className="flex w-full flex-row items-center justify-between gap-4">
                                 <span className="rounded-full bg-dapp-blue-50 p-1">

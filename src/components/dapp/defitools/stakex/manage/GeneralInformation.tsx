@@ -81,7 +81,7 @@ export const GeneralInformation = () => {
     return (
         <Tile className="flex w-full flex-col gap-8">
             <span className="flex-1 font-title text-xl font-bold">General Information</span>
-            <StatsBoxTwoColumn.Wrapper className="w-full rounded-lg bg-dapp-blue-800 px-5 py-2 text-sm">
+            <StatsBoxTwoColumn.Wrapper className="w-full rounded-lg bg-dapp-blue-800 px-4 py-2 text-sm">
                 <div className="col-span-2">
                     <span className="font-bold">Protocol address</span>
                     <br />

@@ -188,7 +188,7 @@ export const StakingWithdrawOverlay = ({
                         )}
 
                         {!isLoadingRewards && (
-                            <StatsBoxTwoColumn.Wrapper className="rounded-lg bg-dapp-blue-800 px-5 py-2 text-sm">
+                            <StatsBoxTwoColumn.Wrapper className="rounded-lg bg-dapp-blue-800 px-4 py-2 text-sm">
                                 <StatsBoxTwoColumn.LeftColumn>
                                     <span className="text-darkTextLowEmphasis">
                                         NFT#{tokenId.toString()} Staked {stakingTokenInfo.symbol}

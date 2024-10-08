@@ -230,7 +230,7 @@ export const Buckets = () => {
                         {dataStakeBuckets &&
                             dataStakeBuckets.map((bucket: StakeBucket) => (
                                 <div key={bucket.id} className="flex flex-col gap-4">
-                                    <StatsBoxTwoColumn.Wrapper className="w-full rounded-lg bg-dapp-blue-800 px-5 py-2 text-sm">
+                                    <StatsBoxTwoColumn.Wrapper className="w-full rounded-lg bg-dapp-blue-800 px-4 py-2 text-sm">
                                         <StatsBoxTwoColumn.LeftColumn>
                                             <span className="font-bold">Lock duration</span>
                                         </StatsBoxTwoColumn.LeftColumn>

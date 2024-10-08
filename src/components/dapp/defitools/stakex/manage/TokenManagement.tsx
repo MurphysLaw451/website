@@ -226,7 +226,7 @@ export const TokenManagement = () => {
                         {dataTargetTokens &&
                             dataTargetTokens.map((targetToken) => (
                                 <div key={targetToken.source} className="flex flex-col gap-4">
-                                    <StatsBoxTwoColumn.Wrapper className="w-full rounded-lg bg-dapp-blue-800 px-5 py-2 text-sm">
+                                    <StatsBoxTwoColumn.Wrapper className="w-full rounded-lg bg-dapp-blue-800 px-4 py-2 text-sm">
                                         <StatsBoxTwoColumn.LeftColumn>
                                             <span className="font-bold">{targetToken.symbol}</span>
                                         </StatsBoxTwoColumn.LeftColumn>
