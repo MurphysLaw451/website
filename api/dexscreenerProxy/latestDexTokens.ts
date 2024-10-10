@@ -1,4 +1,5 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
+import { toLower } from 'lodash'
 import fetch from 'node-fetch'
 import { DynamoDBHelper } from '../helpers/ddb/dynamodb'
 import { createReturn } from '../helpers/return'
@@ -14,8 +15,11 @@ export const handler = async (
     )
     let result = (await resultRaw.json()) as any
 
+    let fromCache = true
+
     // read from cache
     if (!result?.pairs) {
+        console.log('from cache')
         const _dbResult = await db.query({
             TableName: process.env.DB_TABLE_NAME_DEXSCREENER_TOKEN_CACHE,
             KeyConditionExpression: `#TokenKey = :TokenKey`,
@@ -23,15 +27,14 @@ export const handler = async (
                 [`#TokenKey`]: `TokenKey`,
             },
             ExpressionAttributeValues: {
-                [`:TokenKey`]: tokenAddress,
+                [`:TokenKey`]: toLower(tokenAddress),
             },
             ConsistentRead: true,
         })
-        if (_dbResult.Items && _dbResult.Items.length >= 1) {
-            result = _dbResult.Items[0].result
-        }
+        if (_dbResult.Items && _dbResult.Items.length >= 1)
+            result = JSON.parse(_dbResult.Items[0].result)
     } else if (result.pairs) {
-        console.log(result.pairs)
+        console.log('NOT from cache')
         // write to cache
         await db.batchWrite({
             RequestItems: {
@@ -39,48 +42,8 @@ export const handler = async (
                     {
                         PutRequest: {
                             Item: {
-                                TokenKey: tokenAddress,
-                                result: {
-                                    ...result,
-                                    pairs: result.pairs.map((pair: any) => ({
-                                        ...pair,
-                                        liquidity: pair.liquidity
-                                            ? {
-                                                  ...pair.liquidity,
-                                                  base: pair.liquidity.base
-                                                      ? Number.isSafeInteger(
-                                                            pair.liquidity.base
-                                                        )
-                                                          ? pair.liquidity.base
-                                                          : pair.liquidity
-                                                                .base %
-                                                                1 !=
-                                                            0
-                                                          ? pair.liquidity.base
-                                                          : BigInt(
-                                                                pair.liquidity
-                                                                    .base
-                                                            )
-                                                      : 0,
-                                                  quote: pair.liquidity.quote
-                                                      ? Number.isSafeInteger(
-                                                            pair.liquidity.quote
-                                                        )
-                                                          ? pair.liquidity.quote
-                                                          : pair.liquidity
-                                                                .quote %
-                                                                1 !=
-                                                            0
-                                                          ? pair.liquidity.quote
-                                                          : BigInt(
-                                                                pair.liquidity
-                                                                    .quote
-                                                            )
-                                                      : 0,
-                                              }
-                                            : {},
-                                    })),
-                                },
+                                TokenKey: toLower(tokenAddress),
+                                result: JSON.stringify(result),
                                 ttl: 86400,
                             },
                         },
@@ -88,7 +51,10 @@ export const handler = async (
                 ],
             },
         })
+        fromCache = false
     }
 
-    return createReturn(200, JSON.stringify(result))
+    return createReturn(200, JSON.stringify(result), 0, {
+        'From-Cache': fromCache,
+    })
 }
