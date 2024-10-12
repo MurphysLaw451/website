@@ -4237,12 +4237,510 @@
   },
   {
     "inputs": [],
-    "name": "InvalidBucket",
+    "name": "InvalidLock",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "InvalidStake",
     "type": "error"
   },
   {
     "inputs": [],
-    "name": "InvalidLock",
+    "name": "MergeImpossible",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "MergeNotActive",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TargetTokenInvalid",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TargetTokenNotActive",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "manager",
+        "type": "address"
+      }
+    ],
+    "name": "DisabledMerging",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "manager",
+        "type": "address"
+      }
+    ],
+    "name": "EnabledMerging",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "staker",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "fromTokenIds",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "fee",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "components": [
+              {
+                "internalType": "string",
+                "name": "name",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "symbol",
+                "type": "string"
+              },
+              {
+                "internalType": "uint8",
+                "name": "decimals",
+                "type": "uint8"
+              },
+              {
+                "internalType": "address",
+                "name": "source",
+                "type": "address"
+              }
+            ],
+            "internalType": "struct TokenInfo",
+            "name": "tokenInfo",
+            "type": "tuple"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct RewardEstimation",
+        "name": "reward",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "components": [
+              {
+                "internalType": "string",
+                "name": "name",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "symbol",
+                "type": "string"
+              },
+              {
+                "internalType": "uint8",
+                "name": "decimals",
+                "type": "uint8"
+              },
+              {
+                "internalType": "address",
+                "name": "source",
+                "type": "address"
+              }
+            ],
+            "internalType": "struct TokenInfo",
+            "name": "tokenInfo",
+            "type": "tuple"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct RewardEstimation[]",
+        "name": "rewardBreakDown",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "Merged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "manager",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16",
+        "name": "bpsMerge",
+        "type": "uint16"
+      }
+    ],
+    "name": "UpdatedFeeForMerging",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bool",
+        "name": "_enabled",
+        "type": "bool"
+      }
+    ],
+    "name": "stakeXEnableMerging",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256[]",
+            "name": "tokenIds",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "targetBucketId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bool",
+            "name": "includeRewards",
+            "type": "bool"
+          },
+          {
+            "internalType": "address",
+            "name": "targetToken",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct MergeParams",
+        "name": "_params",
+        "type": "tuple"
+      }
+    ],
+    "name": "stakeXMerge",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "_amountStaked",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_fee",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "components": [
+              {
+                "internalType": "string",
+                "name": "name",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "symbol",
+                "type": "string"
+              },
+              {
+                "internalType": "uint8",
+                "name": "decimals",
+                "type": "uint8"
+              },
+              {
+                "internalType": "address",
+                "name": "source",
+                "type": "address"
+              }
+            ],
+            "internalType": "struct TokenInfo",
+            "name": "tokenInfo",
+            "type": "tuple"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct RewardEstimation",
+        "name": "_rewards",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "components": [
+              {
+                "internalType": "string",
+                "name": "name",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "symbol",
+                "type": "string"
+              },
+              {
+                "internalType": "uint8",
+                "name": "decimals",
+                "type": "uint8"
+              },
+              {
+                "internalType": "address",
+                "name": "source",
+                "type": "address"
+              }
+            ],
+            "internalType": "struct TokenInfo",
+            "name": "tokenInfo",
+            "type": "tuple"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct RewardEstimation[]",
+        "name": "_rewardsBreakdown",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "_bpsMerge",
+        "type": "uint16"
+      }
+    ],
+    "name": "stakeXUpdateFeeForMerging",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "stakeXCanIncludeRewardsIntoMerge",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "_can",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "stakeXGetFeeForMerge",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "_bps",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "stakeXGetFeeForMerging",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "_stakeAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_feeAmount",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256[]",
+            "name": "tokenIds",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "targetBucketId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bool",
+            "name": "includeRewards",
+            "type": "bool"
+          },
+          {
+            "internalType": "address",
+            "name": "targetToken",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct MergeParams",
+        "name": "_params",
+        "type": "tuple"
+      }
+    ],
+    "name": "stakeXGetMergingEstimation",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "_stakeAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_targetAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_feeAmount",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "stakeXIsMergingActive",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "_is",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256[]",
+            "name": "tokenIds",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "targetBucketId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bool",
+            "name": "includeRewards",
+            "type": "bool"
+          },
+          {
+            "internalType": "address",
+            "name": "targetToken",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct MergeParams",
+        "name": "_params",
+        "type": "tuple"
+      }
+    ],
+    "name": "stakeXIsMergingPossible",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "_is",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidBucket",
     "type": "error"
   },
   {
