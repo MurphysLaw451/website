@@ -13,7 +13,8 @@ import { Tooltip } from 'flowbite-react'
 import { isBoolean } from 'lodash'
 import { useCallback, useContext, useEffect, useState } from 'react'
 import { AiOutlineQuestionCircle } from 'react-icons/ai'
-import { FaAngleDoubleUp, FaPen } from 'react-icons/fa'
+import { FaPen } from 'react-icons/fa'
+import { TbArrowMergeBoth } from 'react-icons/tb'
 import { Button } from 'src/components/Button'
 import { ApplyChangesConfirmation } from './merging/overlays/ApplyChangesConfirmation'
 import { ToggleStatusConfirmation } from './merging/overlays/ToggleStatusConfirmation'
@@ -167,7 +168,7 @@ export const MergingManagement = () => {
                 </div>
                 <div className="flex flex-row items-start gap-8">
                     <div className="flex flex-grow flex-row items-center gap-8">
-                        <FaAngleDoubleUp className={clsx([`h-8 w-8`, dataMergeActive && 'text-dapp-cyan-500'])} />
+                        <TbArrowMergeBoth className={clsx([`h-8 w-8`, dataMergeActive && 'text-dapp-cyan-500'])} />
                         <span>Merging {dataMergeActive ? 'enabled' : 'disabled'}</span>
                     </div>
                     {canEdit && (

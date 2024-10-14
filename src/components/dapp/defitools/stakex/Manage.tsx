@@ -26,6 +26,7 @@ import { StakingProgressChart } from './manage/StakingProgressChart'
 import { TokenManagement } from './manage/TokenManagement'
 import { UpdateAvailability } from './manage/UpdateAvailability'
 import { UpstakingManagement } from './manage/UpstakingManagement'
+import { AddingUpManagement } from './manage/AddingUpManagement'
 
 export const Manage = () => {
     const { protocolAddress, chainId } = useParams<{
@@ -112,7 +113,10 @@ export const Manage = () => {
                         <UpstakingManagement />
                         <MergingManagement />
                     </div>
-                    <InjectRewards />
+                    <div className="grid gap-8 sm:grid-cols-2">
+                        <AddingUpManagement />
+                        <InjectRewards />
+                    </div>
                 </div>
             </ManageStakeXContext.Provider>
         )

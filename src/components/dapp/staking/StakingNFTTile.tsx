@@ -27,11 +27,13 @@ type StakingNFTTileProps = {
     canClaim: boolean
     canUpstake: boolean
     canMerge: boolean
+    canAddUp: boolean
     onRestake: (tokenId: bigint) => void
     onWithdraw: (tokenId: bigint) => void
     onClaim: (tokenId: bigint) => void
     onUpstake: (tokenId: bigint) => void
     onMerge: (tokenId: bigint) => void
+    onAddUp: (tokenId: bigint) => void
 }
 export const StakingNFTTile = ({
     protocolAddress,
@@ -49,11 +51,13 @@ export const StakingNFTTile = ({
     canClaim,
     canUpstake,
     canMerge,
+    canAddUp,
     onRestake,
     onWithdraw,
     onClaim,
     onUpstake,
     onMerge,
+    onAddUp,
 }: StakingNFTTileProps) => {
     const { data, loadData } = useFetchTokenURI(protocolAddress, tokenId)
     const timeAgo = new TimeAgo(navigator.language)
@@ -179,6 +183,18 @@ export const StakingNFTTile = ({
                                 >
                                     Restake {!canRestake && <MdLockOutline />}
                                 </Button>
+                                {canAddUp && (
+                                    <Button
+                                        onClick={() => {
+                                            setOpenContext(false)
+                                            onAddUp(tokenId)
+                                        }}
+                                        variant="secondary"
+                                        className="cursor-pointer whitespace-nowrap"
+                                    >
+                                        Add Tokens
+                                    </Button>
+                                )}
                                 {canUpstake && (
                                     <Button
                                         onClick={() => {

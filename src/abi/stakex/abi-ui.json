@@ -4232,8 +4232,267 @@
   },
   {
     "inputs": [],
+    "name": "AddingUpNotActive",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "IncludeRewardsImpossible",
     "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TargetTokenInvalid",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TargetTokenNotActive",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "staker",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "fromTokenId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "components": [
+              {
+                "internalType": "string",
+                "name": "name",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "symbol",
+                "type": "string"
+              },
+              {
+                "internalType": "uint8",
+                "name": "decimals",
+                "type": "uint8"
+              },
+              {
+                "internalType": "address",
+                "name": "source",
+                "type": "address"
+              }
+            ],
+            "internalType": "struct TokenInfo",
+            "name": "tokenInfo",
+            "type": "tuple"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct RewardEstimation",
+        "name": "reward",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "components": [
+              {
+                "internalType": "string",
+                "name": "name",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "symbol",
+                "type": "string"
+              },
+              {
+                "internalType": "uint8",
+                "name": "decimals",
+                "type": "uint8"
+              },
+              {
+                "internalType": "address",
+                "name": "source",
+                "type": "address"
+              }
+            ],
+            "internalType": "struct TokenInfo",
+            "name": "tokenInfo",
+            "type": "tuple"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct RewardEstimation[]",
+        "name": "rewardBreakDown",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "AddedUp",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "manager",
+        "type": "address"
+      }
+    ],
+    "name": "DisabledAddingUp",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "manager",
+        "type": "address"
+      }
+    ],
+    "name": "EnabledAddingUp",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "targetToken",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "includeRewards",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct AddUpParams",
+        "name": "_params",
+        "type": "tuple"
+      }
+    ],
+    "name": "stakeXAddUpStake",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bool",
+        "name": "_enabled",
+        "type": "bool"
+      }
+    ],
+    "name": "stakeXEnableAddingUp",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "targetToken",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "includeRewards",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct AddUpParams",
+        "name": "_params",
+        "type": "tuple"
+      }
+    ],
+    "name": "stakeXGetAddingUpEstimation",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "_stakeAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_targetAmount",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "stakeXIsAddingUpActive",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "_is",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "inputs": [],
@@ -4253,22 +4512,17 @@
   },
   {
     "inputs": [],
+    "name": "InvalidStakes",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "MergeImpossible",
     "type": "error"
   },
   {
     "inputs": [],
     "name": "MergeNotActive",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "TargetTokenInvalid",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "TargetTokenNotActive",
     "type": "error"
   },
   {
