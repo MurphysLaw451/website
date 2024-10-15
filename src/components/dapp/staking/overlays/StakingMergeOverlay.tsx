@@ -19,7 +19,7 @@ import { MdError } from 'react-icons/md'
 import { SpinnerCircular } from 'spinners-react'
 import { Button } from 'src/components/Button'
 import { Address } from 'viem'
-import { useBlock } from 'wagmi'
+import { useBlock, useCall } from 'wagmi'
 import { Spinner } from '../../elements/Spinner'
 import { StakingPayoutTokenSelection } from '../StakingPayoutTokenSelection'
 
@@ -52,6 +52,7 @@ export const StakingMergeOverlay = ({
     const [isCheckboxSelected, setIsCheckboxSelected] = useState(false)
     const [isSelectedAll, setIsSelectedAll] = useState(false)
     const [availableStakes, setAvailableStakes] = useState<StakeResponse[]>([stake])
+    const [mergePossible, setMergePossible] = useState(false)
 
     //
     // Payout State
@@ -100,7 +101,7 @@ export const StakingMergeOverlay = ({
         claimedAmount,
         hash: hashUpstake,
     } = useMerge(
-        isCheckboxSelected && Boolean(bucketId && payoutToken && payoutToken.source) && isBoolean(claimRewards),
+        mergePossible && Boolean(bucketId && payoutToken && payoutToken.source) && isBoolean(claimRewards),
         protocolAddress,
         chainId,
         selectedTokenIds!,
@@ -148,6 +149,10 @@ export const StakingMergeOverlay = ({
         )
     }
 
+    const onChangeSelectAll = useCallback(() => {
+        setSelectedTokenIds(!isSelectedAll ? availableStakes.map((stake) => stake.tokenId) : [stake.tokenId])
+    }, [isSelectedAll, availableStakes])
+
     //
     // Effects
     //
@@ -183,8 +188,9 @@ export const StakingMergeOverlay = ({
     }, [dataGetStakes])
 
     useEffect(() => {
-        setSelectedTokenIds(isSelectedAll ? availableStakes.map((stake) => stake.tokenId) : [stake.tokenId])
-    }, [availableStakes, isSelectedAll])
+        setMergePossible(isCheckboxSelected && selectedTokenIds.length > 1)
+        setIsSelectedAll(selectedTokenIds.length == availableStakes.length)
+    }, [isCheckboxSelected, availableStakes, selectedTokenIds])
 
     return (
         <BaseOverlay isOpen={isOpen} closeOnBackdropClick={false} onClose={onCloseHandler}>
@@ -250,7 +256,7 @@ export const StakingMergeOverlay = ({
                                 <Field className="flex flex-row items-center gap-2 text-sm">
                                     <Checkbox
                                         checked={isSelectedAll}
-                                        onChange={setIsSelectedAll}
+                                        onChange={onChangeSelectAll}
                                         className="group block h-4 w-4 flex-shrink-0 rounded-sm border border-dapp-cyan-50 bg-transparent data-[checked]:border-dapp-cyan-500  data-[checked]:bg-dapp-cyan-500"
                                     >
                                         <svg
@@ -279,7 +285,7 @@ export const StakingMergeOverlay = ({
                                                 onChange={() => {
                                                     onSelectToggleTokenId(availableStake.tokenId)
                                                 }}
-                                                className="group block h-4 w-4 flex-shrink-0 rounded-sm border border-darkTextLowEmphasis bg-transparent data-[checked]:border-dapp-cyan-500  data-[checked]:bg-dapp-cyan-500"
+                                                className="group block h-4 w-4 flex-shrink-0 rounded-sm border bg-transparent data-[checked]:border-dapp-cyan-500  data-[checked]:bg-dapp-cyan-500"
                                             >
                                                 <svg
                                                     className="stroke-white opacity-0 group-data-[checked]:opacity-100"
@@ -294,17 +300,12 @@ export const StakingMergeOverlay = ({
                                                     />
                                                 </svg>
                                             </Checkbox>
-                                            <Label className="w-full">
-                                                <div className="grid grid-cols-2">
-                                                    <div className="text-darkTextLowEmphasis">{`NFT#${availableStake.tokenId}`}</div>
-                                                    <div className="text-right">
-                                                        <span className="text-xs">{stakingTokenInfo.symbol}</span>{' '}
-                                                        {toReadableNumber(
-                                                            availableStake.amount,
-                                                            stakingTokenInfo.decimals
-                                                        )}
-                                                    </div>
-                                                </div>
+                                            <Label className="grid w-full grid-cols-2">
+                                                <span>{`NFT#${availableStake.tokenId}`}</span>
+                                                <span className="text-right">
+                                                    <span className="text-xs">{stakingTokenInfo.symbol}</span>{' '}
+                                                    {toReadableNumber(availableStake.amount, stakingTokenInfo.decimals)}
+                                                </span>
                                             </Label>
                                         </Field>
                                     ))}
@@ -433,7 +434,7 @@ export const StakingMergeOverlay = ({
                         </Label>
                     </Field>
                     <Button
-                        disabled={!isCheckboxSelected || selectedTokenIds.length > 1}
+                        disabled={!mergePossible}
                         variant="primary"
                         onClick={onClickHandler}
                         className="mt-6 flex w-full items-center justify-center gap-2"
@@ -495,7 +496,11 @@ export const StakingMergeOverlay = ({
                 <div className="flex flex-col items-center gap-6 p-6 text-center text-base">
                     <MdError className="h-[100px] w-[100px] text-error " />
                     There was an error: <br />
-                    {error && (error as any).details}
+                    {error && (error as any).cause.shortMessage}
+                    <br />
+                    <br />
+                    You can either retry the request <br />
+                    or cancel the process.
                 </div>
             )}
 
