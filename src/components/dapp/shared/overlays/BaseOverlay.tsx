@@ -12,7 +12,7 @@ export const BaseOverlay = ({ isOpen, onClose, closeOnBackdropClick = true, chil
         <Transition appear show={isOpen} as={Fragment}>
             <Dialog
                 as="div"
-                className="relative z-10"
+                className="relative z-40"
                 onClose={() => {
                     closeOnBackdropClick && onClose && onClose()
                 }}

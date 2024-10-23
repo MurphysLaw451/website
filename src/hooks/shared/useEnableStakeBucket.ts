@@ -14,7 +14,7 @@ export const useEnableStakeBucket = (
         address,
         chainId,
         args: [bucketId, enableState],
-        eventNames: ['EnabledStakeBucket'],
+        eventNames: ['EnabledStakeBucket', 'DisabledStakeBucket'],
         functionName: 'stakeXEnableStakeBucket',
         enabled: Boolean(bucketId && isBoolean(enableState)),
     })

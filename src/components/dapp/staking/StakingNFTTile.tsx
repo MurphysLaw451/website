@@ -10,6 +10,8 @@ import { PiCaretDownBold, PiCaretUpBold } from 'react-icons/pi'
 import { Address } from 'viem'
 import { useBlock } from 'wagmi'
 import { Button } from '../../Button'
+import { AiOutlineQuestionCircle } from 'react-icons/ai'
+import { Tooltip } from 'flowbite-react'
 
 type StakingNFTTileProps = {
     protocolAddress: Address
@@ -22,6 +24,7 @@ type StakingNFTTileProps = {
     withdrawDate: number
     lockStartDate: number
     isBurned: boolean
+    isLocked: boolean
     canRestake: boolean
     canWithdraw: boolean
     canClaim: boolean
@@ -43,6 +46,7 @@ export const StakingNFTTile = ({
     withdrawDate,
     lockStartDate,
     isBurned,
+    isLocked,
     canRestake,
     canWithdraw,
     canClaim,
@@ -120,20 +124,41 @@ export const StakingNFTTile = ({
                                     Unlock {stakedTokenSymbol} to withdraw
                                 </StatsBoxTwoColumn.LeftColumn>
                                 <StatsBoxTwoColumn.RightColumn>
-                                    <span
-                                        title={`${new Date(withdrawDate * 1000).toLocaleDateString(navigator.language, {
-                                            year: 'numeric',
-                                            month: '2-digit',
-                                            day: '2-digit',
-                                        })}, ${new Date(lockStartDate * 1000).toLocaleTimeString(navigator.language)}`}
-                                    >
-                                        {Boolean(dataBlock && dataBlock?.timestamp) &&
-                                            timeAgo.format(withdrawDate * 1000, {
-                                                future: true,
-                                                round: 'floor',
-                                                now: Number(dataBlock?.timestamp) * 1000,
-                                            })}
-                                    </span>
+                                    <div className="flex items-center justify-end gap-2">
+                                        <span
+                                            className={clsx([!isLocked && 'line-through'])}
+                                            title={`${new Date(withdrawDate * 1000).toLocaleDateString(
+                                                navigator.language,
+                                                {
+                                                    year: 'numeric',
+                                                    month: '2-digit',
+                                                    day: '2-digit',
+                                                }
+                                            )}, ${new Date(lockStartDate * 1000).toLocaleTimeString(
+                                                navigator.language
+                                            )}`}
+                                        >
+                                            {Boolean(dataBlock && dataBlock?.timestamp) &&
+                                                timeAgo.format(withdrawDate * 1000, {
+                                                    future: true,
+                                                    round: 'floor',
+                                                    now: Number(dataBlock?.timestamp) * 1000,
+                                                })}
+                                        </span>
+                                        {!isLocked && (
+                                            <>
+                                                <span className="animate-bounce pl-2 font-bold text-degenOrange">
+                                                    NOW
+                                                </span>
+                                                <Tooltip
+                                                    content={`The pool your stake is in was changed to your disadvantage. You're qualified to withdraw your stake before the lock period has been expired`}
+                                                    className="text-center"
+                                                >
+                                                    <AiOutlineQuestionCircle className="h-5 w-5" />
+                                                </Tooltip>
+                                            </>
+                                        )}{' '}
+                                    </div>
                                 </StatsBoxTwoColumn.RightColumn>
                             </>
                         )}
