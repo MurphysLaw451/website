@@ -104,7 +104,7 @@ export const Manage = () => {
                     <StakingProgressChart />
                     <Buckets />
                     <TokenManagement />
-                    <NFTManagement />
+                    {/* <NFTManagement /> */}
                     {data.isOwner && <Control />}
                     <Fees />
                     <div className="grid gap-8 sm:grid-cols-2">
