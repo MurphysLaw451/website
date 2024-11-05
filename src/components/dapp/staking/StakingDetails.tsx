@@ -20,6 +20,8 @@ import { StakingMergeOverlay } from './overlays/StakingMergeOverlay'
 import { StakingRestakeOverlay } from './overlays/StakingRestakeOverlay'
 import { StakingUpstakeOverlay } from './overlays/StakingUpstakeOverlay'
 import { StakingWithdrawOverlay } from './overlays/StakingWithdrawOverlay'
+import { useAddingUpActive } from '@dapphooks/staking/useAddingUpActive'
+import { StakingAddingUpOverlay } from './overlays/StakingAddingUpOverlay'
 
 type StakingDetailsProps = {
     stakes: readonly StakeResponse[]
@@ -70,11 +72,13 @@ export const StakingDetails = ({ stakingTokenInfo, defaultShowToken, defaultPayo
     const [isInProgessWithdraw, setIsInProgessWithdraw] = useState(false)
     const [isInProgessUpstake, setIsInProgessUpstake] = useState(false)
     const [isInProgessMerge, setIsInProgessMerge] = useState(false)
+    const [isInProgessAddUp, setIsInProgessAddUp] = useState(false)
     const [tokenIdToClaim, setTokenIdToClaim] = useState<bigint>()
     const [tokenIdToRestake, setTokenIdToRestake] = useState<bigint>()
     const [tokenIdToWithdraw, setTokenIdToWithdraw] = useState<bigint>()
     const [tokenIdToUpstake, setTokenIdToUpstake] = useState<bigint>()
     const [tokenIdToMerge, setTokenIdToMerge] = useState<bigint>()
+    const [tokenIdToAddUp, setTokenIdToAddUp] = useState<bigint>()
 
     const { refetchStakes } = useContext(StakeXContext)
     const { address } = useAccount()
@@ -91,7 +95,9 @@ export const StakingDetails = ({ stakingTokenInfo, defaultShowToken, defaultPayo
         chain?.id!,
         address!
     )
+    
     const { data: dataGetStakeBuckets } = useGetStakeBuckets(protocol, chain?.id!, true)
+    const { data: dataAddingUpActive } = useAddingUpActive(protocol, chain?.id!)
     const { data: dataUpstakeActive } = useUpstakeActive(protocol, chain?.id!)
     const { data: dataMergeActive } = useMergeActive(protocol, chain?.id!)
 
@@ -219,6 +225,20 @@ export const StakingDetails = ({ stakingTokenInfo, defaultShowToken, defaultPayo
         refetchStakes && refetchStakes()
         refetchGetStakedSharesByStaker && refetchGetStakedSharesByStaker()
         setIsInProgessMerge(false)
+    }
+
+    //
+    // Add up
+    //
+    const onAddUpHandler = (tokenId: bigint) => {
+        setTokenIdToAddUp(tokenId)
+        setIsInProgessAddUp(true)
+    }
+
+    const onAddUpCloseHandler = () => {
+        refetchStakes && refetchStakes()
+        refetchGetStakedSharesByStaker && refetchGetStakedSharesByStaker()
+        setIsInProgessAddUp(false)
     }
 
     //
@@ -493,11 +513,13 @@ export const StakingDetails = ({ stakingTokenInfo, defaultShowToken, defaultPayo
                                     canMerge={Boolean(
                                         bucketStakes && bucketStakes[stake.bucketId] > 1 && dataMergeActive
                                     )}
+                                    canAddUp={Boolean(dataAddingUpActive)}
                                     onClaim={onClaimHandler}
                                     onRestake={onRestakeHandler}
                                     onWithdraw={onWithdrawHandler}
                                     onUpstake={onUpstakeHandler}
                                     onMerge={onMergeHandler}
+                                    onAddUp={onAddUpHandler}
                                 />
                             ))}
                     </div>
@@ -566,6 +588,17 @@ export const StakingDetails = ({ stakingTokenInfo, defaultShowToken, defaultPayo
                     stakerAddress={address!}
                     isOpen={true}
                     onClose={onMergeCloseHandler}
+                />
+            )}
+            {isInProgessAddUp && tokenIdToAddUp && (
+                <StakingAddingUpOverlay
+                    protocolAddress={protocol}
+                    chainId={chain?.id!}
+                    stakingTokenInfo={stakingTokenInfo}
+                    payoutTokenInfo={defaultPayoutToken}
+                    stake={stakes.find((stake) => stake.tokenId === tokenIdToAddUp)!}
+                    isOpen={true}
+                    onClose={onAddUpCloseHandler}
                 />
             )}
         </>
