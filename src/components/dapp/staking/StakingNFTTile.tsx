@@ -34,6 +34,7 @@ type StakingNFTTileProps = {
     onWithdraw: (tokenId: bigint) => void
     onClaim: (tokenId: bigint) => void
     onUpstake: (tokenId: bigint) => void
+    onMerge: (tokenId: bigint) => void
 }
 export const StakingNFTTile = ({
     protocolAddress,
@@ -56,6 +57,7 @@ export const StakingNFTTile = ({
     onWithdraw,
     onClaim,
     onUpstake,
+    onMerge,
 }: StakingNFTTileProps) => {
     const { data, loadData } = useFetchTokenURI(protocolAddress, tokenId)
     const timeAgo = new TimeAgo(navigator.language)
@@ -215,8 +217,15 @@ export const StakingNFTTile = ({
                                     </Button>
                                 )}
                                 {canMerge && (
-                                    <Button variant="secondary" disabled={true} className="gap-2 whitespace-nowrap">
-                                        Merge <sub>available soon 🚀</sub>
+                                    <Button
+                                        onClick={() => {
+                                            setOpenContext(false)
+                                            onMerge(tokenId)
+                                        }}
+                                        variant="secondary"
+                                        className="cursor-pointer whitespace-nowrap"
+                                    >
+                                        Merge
                                     </Button>
                                 )}
                                 {!isBurned && (
