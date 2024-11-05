@@ -1,4 +1,5 @@
 import { Handler } from 'aws-lambda'
+import { isBoolean } from 'lodash'
 import { Address, createPublicClient, http } from 'viem'
 import { getChainById } from '../../shared/supportedChains'
 import abi from '../../src/abi/stakex/abi-ui.json'
@@ -15,84 +16,7 @@ type CalculateAprBatchEventType = {
     batch: CalculateAprSingleEventType[]
 }
 
-const abiEvents = [
-    {
-        anonymous: false,
-        inputs: [
-            {
-                indexed: true,
-                internalType: 'address',
-                name: 'depositer',
-                type: 'address',
-            },
-            {
-                indexed: true,
-                internalType: 'address',
-                name: 'rewardToken',
-                type: 'address',
-            },
-            {
-                indexed: false,
-                internalType: 'uint256',
-                name: 'amount',
-                type: 'uint256',
-            },
-        ],
-        name: 'Deposited',
-        type: 'event',
-    },
-    {
-        anonymous: false,
-        inputs: [
-            {
-                indexed: true,
-                internalType: 'address',
-                name: 'manager',
-                type: 'address',
-            },
-        ],
-        name: 'Enabled',
-        type: 'event',
-    },
-    {
-        anonymous: false,
-        inputs: [
-            {
-                indexed: true,
-                internalType: 'address',
-                name: 'manager',
-                type: 'address',
-            },
-            {
-                indexed: false,
-                internalType: 'uint256',
-                name: 'chosenTime',
-                type: 'uint256',
-            },
-        ],
-        name: 'UpdatedActiveTime',
-        type: 'event',
-    },
-    {
-        anonymous: false,
-        inputs: [
-            {
-                indexed: true,
-                internalType: 'address',
-                name: 'manager',
-                type: 'address',
-            },
-            {
-                indexed: false,
-                internalType: 'uint256',
-                name: 'chosenBlock',
-                type: 'uint256',
-            },
-        ],
-        name: 'UpdatedActiveBlock',
-        type: 'event',
-    },
-]
+const abiEvents = abi.filter((fragment) => fragment.type === 'event')
 
 const gmxReaderAbi = [
     {
@@ -204,7 +128,7 @@ export const handler: Handler<
     return cb(null, true)
 }
 
-const calculateAPR = async (
+export const calculateAPR = async (
     chainId: number,
     address: Address,
     fromBlock: number,
@@ -241,6 +165,13 @@ const calculateAPR = async (
         ? await client.getBlock({ blockNumber: BigInt(toBlock!) })
         : await client.getBlock()
 
+    // check whether it's a staking token stand alone
+    const stakingToken = (await client.readContract({
+        abi,
+        address,
+        functionName: 'getStakingToken',
+    })) as any
+
     // get deposited events
     const depositLogs = await client.getContractEvents({
         address,
@@ -250,12 +181,70 @@ const calculateAPR = async (
         eventName: 'Deposited',
     })
 
-    // check whether it's a staking token stand alone
-    const stakingToken = (await client.readContract({
-        abi,
-        address,
-        functionName: 'getStakingToken',
-    })) as any
+    const checkFees = await client.multicall({
+        contracts: [
+            { abi, address, functionName: 'hasFeeForStaking' },
+            { abi, address, functionName: 'hasFeeForUnstaking' },
+            { abi, address, functionName: 'hasFeeForRestaking' },
+            { abi, address, functionName: 'stakeXGetFeeForUpstake' },
+        ],
+    })
+
+    const [hasStakeFees, hasRestakeFees, hasUnstakeFees, hasUpstakeFees] =
+        checkFees.map((fees) =>
+            fees.status === 'success'
+                ? isBoolean(fees.result)
+                    ? fees.result
+                    : (fees.result as bigint) > 0n
+                    ? true
+                    : false
+                : false
+        )
+
+    // get action events (stake)
+    const stakedEvents = !hasStakeFees
+        ? []
+        : await client.getContractEvents({
+              address,
+              abi: abiEvents,
+              eventName: 'Staked',
+              fromBlock: startBlock.number,
+              toBlock: endBlock.number,
+          })
+    const restakedEvents = !hasRestakeFees
+        ? []
+        : await client.getContractEvents({
+              address,
+              abi: abiEvents,
+              eventName: 'Restaked',
+              fromBlock: startBlock.number,
+              toBlock: endBlock.number,
+          })
+    const unstakedEvents = !hasUnstakeFees
+        ? []
+        : await client.getContractEvents({
+              address,
+              abi: abiEvents,
+              eventName: 'Unstaked',
+              fromBlock: startBlock.number,
+              toBlock: endBlock.number,
+          })
+    const upstakedEvents = !hasUpstakeFees
+        ? []
+        : await client.getContractEvents({
+              address,
+              abi: abiEvents,
+              eventName: 'Upstaked',
+              fromBlock: startBlock.number,
+              toBlock: endBlock.number,
+          })
+
+    const actionBlocks = [
+        ...stakedEvents.map((log) => log.blockNumber),
+        ...restakedEvents.map((log) => log.blockNumber),
+        ...unstakedEvents.map((log) => log.blockNumber),
+        ...upstakedEvents.map((log) => log.blockNumber),
+    ]
 
     if (!stakingToken.isReward) {
         // TODO Staking token is the only reward token
@@ -334,14 +323,31 @@ const calculateAPR = async (
             const { rewardToken, amount } = (log as any).args
 
             // when the reward token isn't the staking token
-            cumulativePayouts +=
-                stakingToken.source !== rewardToken
-                    ? await getSwapAmount(
-                          amount,
-                          swapsFromTo[stakingToken.source][rewardToken],
-                          log.blockNumber
-                      )
-                    : amount
+            if (stakingToken.source !== rewardToken) {
+                cumulativePayouts += await getSwapAmount(
+                    amount,
+                    swapsFromTo[stakingToken.source][rewardToken],
+                    log.blockNumber
+                )
+            } else actionBlocks.push(log.blockNumber)
+        }
+
+        const sortedActionBlocks = actionBlocks.sort((a, b) => (a > b ? 1 : -1))
+
+        let previousRewarded = 0n
+        for (const actionBlock of sortedActionBlocks) {
+            const token = (await client.readContract({
+                abi,
+                address,
+                functionName: 'getToken',
+                args: [stakingToken.source],
+                blockNumber: actionBlock,
+            })) as any
+
+            if (token.injected > previousRewarded)
+                cumulativePayouts += token.injected - previousRewarded
+
+            previousRewarded = token.injected
         }
 
         const yearlyPayout = BigInt(

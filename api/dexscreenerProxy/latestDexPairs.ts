@@ -33,9 +33,10 @@ export const handler = async (
             },
             ConsistentRead: true,
         })
+
         if (_dbResult.Items && _dbResult.Items.length >= 1)
             result = JSON.parse(_dbResult.Items[0].result)
-    } else if (result.pairs) {
+    } else if (result.pair) {
         console.log('NOT from cache')
         // write to cache
         await db.batchWrite({
@@ -45,7 +46,7 @@ export const handler = async (
                         PutRequest: {
                             Item: {
                                 PairKey,
-                                result,
+                                result: JSON.stringify(result),
                                 ttl: 86400,
                             },
                         },
