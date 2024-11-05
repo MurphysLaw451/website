@@ -87,7 +87,7 @@ export const StakingDetails = ({ stakingTokenInfo, defaultShowToken, defaultPayo
         chain?.id!,
         address!
     )
-    const { data: dataGetStakeBuckets } = useGetStakeBuckets(protocol, chain?.id!)
+    const { data: dataGetStakeBuckets } = useGetStakeBuckets(protocol, chain?.id!, true)
     const { data: dataUpstakeActive } = useUpstakeActive(protocol, chain?.id!)
 
     const sortOptions: SortOption[] = useMemo(
@@ -430,8 +430,10 @@ export const StakingDetails = ({ stakingTokenInfo, defaultShowToken, defaultPayo
                         </div>
                     </div>
                     <div className="mt-3 flex flex-col gap-3">
-                        {stakesOrdered &&
-                            stakesOrdered.length > 0 &&
+                        {dataGetStakeBuckets &&
+                            dataGetStakeBuckets.length &&
+                            stakesOrdered &&
+                            stakesOrdered.length &&
                             stakesOrdered.map((stake) => (
                                 <StakingNFTTile
                                     key={`key-${stake.tokenId}`}
@@ -448,8 +450,15 @@ export const StakingDetails = ({ stakingTokenInfo, defaultShowToken, defaultPayo
                                     withdrawDate={parseInt('' + stake.release)}
                                     lockStartDate={parseInt('' + stake.lockStart)}
                                     isBurned={stake.burned}
-                                    canClaim={Boolean(tokenIdRewards[parseInt('' + stake.tokenId)] > 0n)}
-                                    canRestake={Boolean(tokenIdRewards[parseInt('' + stake.tokenId)] > 0n)}
+                                    isLocked={stake.locked}
+                                    canClaim={
+                                        Boolean(tokenIdRewards[parseInt('' + stake.tokenId)] > 0n) &&
+                                        dataGetStakeBuckets.find((bucket) => bucket.id == stake.bucketId)?.active!
+                                    }
+                                    canRestake={
+                                        Boolean(tokenIdRewards[parseInt('' + stake.tokenId)] > 0n) &&
+                                        dataGetStakeBuckets.find((bucket) => bucket.id == stake.bucketId)?.active!
+                                    }
                                     canWithdraw={!stake.locked}
                                     canUpstake={
                                         ((!stake.burned && hasBurnBuckets) || stake.lock > largestLock) &&

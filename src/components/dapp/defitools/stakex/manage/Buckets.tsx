@@ -82,6 +82,8 @@ export const Buckets = () => {
         setShowChangeSharesForm(false)
     }
     const onClickSaveButton = useCallback(() => {
+        resetAddStakeBuckets()
+        resetUpdateStakeBucketShares()
         setAddBucketFormData(addBucketFormDataDraft)
         setIsApplyChangesModalOpen(true)
     }, [addBucketFormDataDraft])
