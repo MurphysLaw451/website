@@ -15,11 +15,10 @@ export const useGetFeeFor = (
         address,
         chainId,
         abi,
-        functionName: (() => {
-            return whatFor == 'upstaking'
+        functionName:
+            whatFor == 'upstaking'
                 ? 'stakeXGetFeeForUpstaking'
-                : `getFeeFor${upperFirst(whatFor)}`
-        }).toString(),
+                : `getFeeFor${upperFirst(whatFor)}`,
         args: [amount],
         query: {
             select: (data: any[]) => ({

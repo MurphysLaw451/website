@@ -74,8 +74,8 @@ export const StakingProgressChart = () => {
                         style: {
                             cssClass: 'dapp-apexcharts-xaxis-label',
                         },
-                        formatter: (val: any) => nFormatter(val, 20),
-                        offsetX: -16,
+                        formatter: (val: any) => nFormatter(val, 10),
+                        offsetX: -12,
                     },
                 },
                 grid: {
