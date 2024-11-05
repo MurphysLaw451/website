@@ -51,7 +51,7 @@ export const useGetRoutingsForToken = ({
         let hasError = false
 
         fetch(
-            `${process.env.NEXT_PUBLIC_DEGENX_BACKEND_API_ENDPOINT}/api/uberrouting`,
+            `${process.env.NEXT_PUBLIC_DEGENX_BACKEND_API_ENDPOINT}/api/routing`,
             {
                 method: 'POST',
                 signal,
