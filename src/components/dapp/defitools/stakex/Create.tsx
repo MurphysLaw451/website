@@ -52,10 +52,8 @@ const initStorageData: STAKEXCreatorData = {
 const initBucketData: BucketFormParams = {
     burn: false,
     initialShare: 10000,
-    shareLock: true,
     lockUnit: 'month',
     lockPeriod: 1,
-    shareMax: 5000,
     lock: false,
     share: 10000,
 }

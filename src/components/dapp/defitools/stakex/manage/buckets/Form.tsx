@@ -41,24 +41,26 @@ const balanceShares = (
     bucketIndex?: number
 ) => {
     const shareMax = 100 - (buckets.length - 1)
-    return buckets.map((bucket, i) => {
-        if (!isUndefined(bucketIndex)) {
-            if (initialBuckets && initialBuckets[bucketIndex].burn) {
-                if (initialBuckets[bucketIndex].share > buckets[bucketIndex].share) {
-                    buckets[bucketIndex].share = initialBuckets[bucketIndex].share
-                }
+    const shareBlocked = buckets.reduce((acc, bucket) => acc + bucket.share, 0)
+    if (!isUndefined(bucketIndex)) {
+        if (initialBuckets && initialBuckets[bucketIndex] && initialBuckets[bucketIndex].burn) {
+            if (initialBuckets[bucketIndex].share > buckets[bucketIndex].share) {
+                buckets[bucketIndex].share = initialBuckets[bucketIndex].share
             }
-            if (bucket.share < 1) bucket.share = 1
-            if (bucket.share > shareMax) bucket.share = shareMax
         }
-
-        return {
-            ...bucket,
-            ...(buckets.length === 1 && {
-                share: initialBucketData.share,
-            }),
-        }
-    })
+        if (100 - shareBlocked < 0) buckets[bucketIndex].share += 100 - shareBlocked
+    }
+    return buckets.map((bucket) => ({
+        ...bucket,
+        share:
+            buckets.length === 1
+                ? initialBucketData.share
+                : bucket.share < 1
+                ? 1
+                : bucket.share > shareMax
+                ? shareMax
+                : bucket.share,
+    }))
 }
 
 export const BucketsForm = ({ existingBuckets, onChange, editSharesOnly }: BucketsFormType) => {
@@ -129,12 +131,7 @@ export const BucketsForm = ({ existingBuckets, onChange, editSharesOnly }: Bucke
 
     const onShareChange = (event: ChangeEvent<HTMLInputElement>, bucketIndex: number) => {
         const updateBuckets = cloneDeep(currentBuckets)
-        if (
-            !!event.target.value
-            // &&
-            // Number(event.target.value) <= updateBuckets[bucketIndex].shareMax &&
-            // Number(event.target.value) >= 1
-        ) {
+        if (!!event.target.value) {
             updateBuckets[bucketIndex].share = Number(event.target.value)
             setCurrentBuckets(balanceShares(initialBuckets, updateBuckets, bucketIndex))
         }
@@ -304,7 +301,6 @@ export const BucketsForm = ({ existingBuckets, onChange, editSharesOnly }: Bucke
                                                                 className={clsx([
                                                                     'absolute bottom-2 right-0 z-20 h-2 rounded-full bg-success',
                                                                     shareBlocked < 100 && '!bg-yellow/60',
-                                                                    shareBlocked > 100 && '!bg-error/60',
                                                                 ])}
                                                                 style={{
                                                                     width: `${Math.min(
@@ -312,9 +308,7 @@ export const BucketsForm = ({ existingBuckets, onChange, editSharesOnly }: Bucke
                                                                         shareBlocked - bucket.share
                                                                     )}%`,
                                                                 }}
-                                                            >
-                                                                &nbsp;
-                                                            </div>
+                                                            ></div>
                                                             <input
                                                                 className="z-10 h-2 w-full appearance-none rounded-full bg-dapp-blue-800 outline-none transition [&::-webkit-slider-thumb]:relative [&::-webkit-slider-thumb]:z-30 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-dapp-cyan-50"
                                                                 type="range"

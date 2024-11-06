@@ -4,17 +4,20 @@ import { IoCheckmarkCircle } from 'react-icons/io5'
 import { MdError } from 'react-icons/md'
 import { Button } from 'src/components/Button'
 
-type ChangeStateConfirmationProps = BaseOverlayProps & {
+type AirdropStakersConfirmationProps = BaseOverlayProps & {
     onConfirm: () => void
     onCancel: () => void
     error?: any
     isLoading: boolean
     isSuccess: boolean
     isPending: boolean
-    enabled: boolean
+    amountAirdrop: number
+    amountAirdropped: number
+    amountAirdropEstimation: number
+    amountLeft: number
 }
 
-export const ChangeStateConfirmation = ({
+export const AirdropStakersConfirmation = ({
     isOpen,
     onClose,
     onConfirm,
@@ -23,12 +26,16 @@ export const ChangeStateConfirmation = ({
     isSuccess,
     isPending,
     error,
-    enabled,
-}: ChangeStateConfirmationProps) => {
+
+    amountAirdrop,
+    amountAirdropped,
+    amountAirdropEstimation,
+    amountLeft,
+}: AirdropStakersConfirmationProps) => {
     const showSuccessMessage = !error && !isLoading && isSuccess
     const showSpinner = !error && isLoading && !isSuccess
     const showContent = !error && !isLoading && !isSuccess
-    const showError = !!error && !isLoading && !isSuccess
+    const showError = !!error
 
     return (
         <BaseOverlay isOpen={isOpen} closeOnBackdropClick={false} onClose={() => {}}>
@@ -36,9 +43,12 @@ export const ChangeStateConfirmation = ({
                 <div>
                     <div className="flex flex-col items-center gap-6 p-6 text-center text-base">
                         <IoCheckmarkCircle className="h-[100px] w-[100px] text-success" />
-                        <span className="font-bold">
-                            Successfully {enabled ? 'enabled' : 'disabled'} your staking pool
-                        </span>
+                        <span className="font-bold">Successfully airdropped {amountAirdropped} stakes!</span>
+                        {amountLeft ? (
+                            <span>{amountLeft} stakes left to airdrop</span>
+                        ) : (
+                            <span>No stakers left to airdrop</span>
+                        )}
                     </div>
                     <Button
                         variant="primary"
@@ -65,25 +75,21 @@ export const ChangeStateConfirmation = ({
 
             {showContent && (
                 <div className="flex flex-col gap-6">
-                    <div className="text-3xl font-bold">{!enabled ? '⚠️ Disable' : 'Enable'} Pool</div>
+                    <div className="text-3xl font-bold">Airdrop Stakers</div>
+                    <div>You&apos;re about to airdrop the stakers of a disabled staking pool</div>
                     <div>
-                        You&apos;re about to {enabled ? 'enable' : 'disable'} a staking pool. <br />
-                        <br />
-                        {!enabled && (
-                            <span>
-                                You are about to deactivate a staking pool. If this pool still contains stakes from
-                                stakers, these stakers are at a disadvantage and are given the opportunity to cash out
-                                their tokens and rewards, even though they may still have a lockup period. <br />
-                                <br />
-                                If you plan to delete this staking pool completely, then you can airdrop the stakers
-                                with their stakes and the outstanding rewards afterwards or wait until they have paid
-                                out their stakes themselves.
-                                <br />
-                                <br />
-                                Are you sure you want to proceed?
-                            </span>
-                        )}
+                        There will be a total of {amountAirdrop} {amountAirdrop != 1 ? 'stakes' : 'stake'} being
+                        airdropped.
                     </div>
+                    {amountAirdropEstimation < amountAirdrop && (
+                        <div>
+                            In this transaction you can only aidrop {amountAirdropEstimation}
+                            {amountAirdropEstimation != 1 ? 'stakes' : 'stake'} due to high gas costs. There will be an
+                            estimated {amountAirdrop - amountAirdropEstimation}{' '}
+                            {amountAirdrop - amountAirdropEstimation != 1 ? 'stakes' : 'stake'} left to be airdropped in
+                            another transaction.
+                        </div>
+                    )}
                     <div className="flex w-full flex-row-reverse gap-4">
                         <Button variant="primary" onClick={() => onConfirm()} className="w-2/3">
                             Confirm & Proceed

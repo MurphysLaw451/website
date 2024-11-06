@@ -57,6 +57,7 @@ export type StakeBucketDataResponse = {
     share: bigint
     lock: bigint
     staked: bigint
+    stakes: bigint
 }
 
 export type StakeBucket = {
@@ -67,6 +68,7 @@ export type StakeBucket = {
     multiplier: number
     share: number
     staked: bigint
+    stakes: bigint
 }
 
 export type BucketParams = {

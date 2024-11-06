@@ -39,6 +39,7 @@ export const useGetStakeBuckets = (
                                 ),
                                 share: Number(res.share),
                                 staked: res.staked,
+                                stakes: res.stakes,
                             },
                         ],
                         []
