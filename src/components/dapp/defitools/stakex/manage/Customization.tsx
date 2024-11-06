@@ -166,72 +166,55 @@ export const Customization = () => {
                     isPending={isPendingNewLogo}
                     projectName={projectName ?? ''}
                 />
-            </Tile>
+                {canEdit && (
+                    <>
+                        {!cropImage && (
+                            <Button onClick={onClickUploadLogo} variant="primary">
+                                Upload Project Logo
+                            </Button>
+                        )}
 
-            {canEdit && (
-                <>
-                    <Tile className="w-full">
-                        <span className="flex-1 font-title text-xl font-bold">Project Logo</span>
-                        <div className="mt-8 flex flex-col gap-4">
-                            {!cropImage && (
-                                <Button onClick={onClickUploadLogo} variant="primary">
-                                    Choose new logo
-                                </Button>
-                            )}
-                            {cropImage && (
-                                <>
-                                    <div className="h-full sm:h-[400px]">
-                                        <Cropper
-                                            stencilComponent={CircleStencil}
-                                            src={cropImage}
-                                            ref={cropperRef}
-                                            disabled={isLoadingLogoUpload}
-                                            className={'cropper'}
-                                            maxWidth={600}
-                                            maxHeight={600}
-                                        />
-                                    </div>
-                                    <div className="flex flex-col justify-end gap-4 md:flex-row">
-                                        <Button
-                                            disabled={isLoadingLogoUpload}
-                                            onClick={onClickCancel}
-                                            variant="secondary"
-                                        >
-                                            Cancel
-                                        </Button>
-                                        <Button
-                                            disabled={isLoadingLogoUpload}
-                                            onClick={onClickPreview}
-                                            variant="secondary"
-                                        >
-                                            Preview
-                                        </Button>
-                                        <Button
-                                            disabled={isLoadingLogoUpload}
-                                            onClick={onClickUploadLogo}
-                                            variant="secondary"
-                                        >
-                                            Change
-                                        </Button>
-                                        <Button
-                                            disabled={isLoadingLogoUpload}
-                                            onClick={onClickUpload}
-                                            variant="primary"
-                                        >
-                                            {isLoadingLogoUpload && (
-                                                <span className="flex items-center justify-center gap-2 whitespace-nowrap">
-                                                    <Spinner theme="dark" />
-                                                    {isPendingSignMessage && <span>wait for signing</span>}
-                                                    {!isPendingSignMessage && <span>upload logo</span>}
-                                                </span>
-                                            )}
+                        {cropImage && (
+                            <div className="mt-8 flex flex-col gap-4">
+                                <div className="h-full sm:h-[400px]">
+                                    <Cropper
+                                        stencilComponent={CircleStencil}
+                                        src={cropImage}
+                                        ref={cropperRef}
+                                        disabled={isLoadingLogoUpload}
+                                        className={'cropper'}
+                                        maxWidth={600}
+                                        maxHeight={600}
+                                    />
+                                </div>
+                                <div className="flex flex-col justify-end gap-4 md:flex-row">
+                                    <Button disabled={isLoadingLogoUpload} onClick={onClickCancel} variant="secondary">
+                                        Cancel
+                                    </Button>
+                                    <Button disabled={isLoadingLogoUpload} onClick={onClickPreview} variant="secondary">
+                                        Preview
+                                    </Button>
+                                    <Button
+                                        disabled={isLoadingLogoUpload}
+                                        onClick={onClickUploadLogo}
+                                        variant="secondary"
+                                    >
+                                        Change
+                                    </Button>
+                                    <Button disabled={isLoadingLogoUpload} onClick={onClickUpload} variant="primary">
+                                        {isLoadingLogoUpload && (
+                                            <span className="flex items-center justify-center gap-2 whitespace-nowrap">
+                                                <Spinner theme="dark" />
+                                                {isPendingSignMessage && <span>wait for signing</span>}
+                                                {!isPendingSignMessage && <span>upload logo</span>}
+                                            </span>
+                                        )}
 
-                                            {!isLoadingLogoUpload && 'Upload'}
-                                        </Button>
-                                    </div>
-                                </>
-                            )}
-                        </div>
+                                        {!isLoadingLogoUpload && 'Upload'}
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
                         <input
                             accept=".gif,.jpg,.jpeg,.png,.webp,.svg"
                             type="file"
@@ -240,27 +223,9 @@ export const Customization = () => {
                             onChange={onChangeFileInput}
                             style={{ display: 'none' }}
                         />
-                    </Tile>
-                    {/* <Tile className="flex w-full flex-col gap-8">
-                        <span className="flex-1 font-title text-xl font-bold">
-                            Project Name
-                        </span>
-                        <div>
-                            <input
-                                type="text"
-                                value={
-                                    projectName ??
-                                    (stakingToken?.name
-                                        ? `${stakingToken?.name}s staking`
-                                        : '')
-                                }
-                                placeholder="Enter project name"
-                                className="w-full rounded-lg border-0 bg-dapp-blue-800 text-2xl leading-10 [appearance:textfield] focus:ring-0 focus:ring-offset-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                            />
-                        </div>
-                    </Tile> */}
-                </>
-            )}
+                    </>
+                )}
+            </Tile>
         </>
 
         // <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
