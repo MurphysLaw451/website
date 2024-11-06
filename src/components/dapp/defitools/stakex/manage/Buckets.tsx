@@ -3,6 +3,8 @@ import { toReadableNumber } from '@dapphelpers/number'
 import { durationFromSeconds } from '@dapphelpers/staking'
 import { useEnableStakeBucket } from '@dapphooks/shared/useEnableStakeBucket'
 import { useAddStakeBuckets } from '@dapphooks/staking/useAddStakeBuckets'
+import { useBucketsAirdropStakers } from '@dapphooks/staking/useBucketsAirdropStakers'
+import { useBucketsDeleteBucket } from '@dapphooks/staking/useBucketsDeleteBucket'
 import { useGetMultipliersPerOneStakingToken } from '@dapphooks/staking/useGetMultipliersPerOneStakingToken'
 import { useGetStakeBuckets } from '@dapphooks/staking/useGetStakeBuckets'
 import { useGetStakingData } from '@dapphooks/staking/useGetStakingData'
@@ -14,17 +16,14 @@ import { AnnualPercentageDataType, BucketParams, StakeBucket, StakeBucketUpdateS
 import clsx from 'clsx'
 import { useCallback, useContext, useEffect, useState } from 'react'
 import { FaParachuteBox, FaPen, FaPlus, FaRegCheckCircle, FaRegTimesCircle } from 'react-icons/fa'
+import { FaRegTrashCan } from 'react-icons/fa6'
 import { Button } from 'src/components/Button'
 import { Spinner } from 'src/components/dapp/elements/Spinner'
 import { Address } from 'viem'
 import { BucketsForm } from './buckets/Form'
+import { AirdropStakersConfirmation } from './buckets/overlays/AirdropStakersConfirmation'
 import { ApplyChangesConfirmation } from './buckets/overlays/ApplyChangesConfirmation'
 import { ChangeStateConfirmation } from './buckets/overlays/ChangeStateConfirmation'
-import { FaRegTrashCan } from 'react-icons/fa6'
-import { useBucketsAirdropStakers } from '@dapphooks/staking/useBucketsAirdropStakers'
-import { AirdropStakersConfirmation } from './buckets/overlays/AirdropStakersConfirmation'
-import { useBucketsGetStakes } from '@dapphooks/staking/useBucketsGetStakes'
-import { useBucketsDeleteBucket } from '@dapphooks/staking/useBucketsDeleteBucket'
 import { DeleteConfirmation } from './buckets/overlays/DeleteConfirmation'
 
 export const Buckets = () => {
@@ -74,7 +73,12 @@ export const Buckets = () => {
         write: writeUpdateStakeBucketShares,
         reset: resetUpdateStakeBucketShares,
         isPending: isPendingUpdateStakeBucketShares,
-    } = useUpdateStakeBucketShares(chain?.id!, protocol, addBucketFormData?.bucketUpdateShareParams!)
+    } = useUpdateStakeBucketShares(
+        chain?.id!,
+        protocol,
+        addBucketFormData?.bucketUpdateShareParams!,
+        Boolean(showChangeSharesForm)
+    )
 
     const onClickAddButton = () => {
         resetAddStakeBuckets()

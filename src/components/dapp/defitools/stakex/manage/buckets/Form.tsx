@@ -32,7 +32,7 @@ const initialBucketData: BucketFormParams = {
     lockUnit: 'month',
     lockPeriod: 1,
     initialShare: 100,
-    share: 0,
+    share: 100,
 }
 
 const balanceShares = (
@@ -64,23 +64,34 @@ const balanceShares = (
 }
 
 export const BucketsForm = ({ existingBuckets, onChange, editSharesOnly }: BucketsFormType) => {
+    let shareReduction = 100
     const initialBuckets = balanceShares(null, [
-        ...(editSharesOnly ? [] : [initialBucketData]),
+        ...(editSharesOnly
+            ? []
+            : [{ ...initialBucketData, share: existingBuckets && existingBuckets.length > 0 ? 1 : 100 }]),
         ...(existingBuckets || []).map(({ id, duration, burn, share }) => {
             const lockUnit = Object.keys(LockUnits)
                 .sort((a, b) => (LockUnits[a] > LockUnits[b] ? -1 : 1))
                 .find((unit) => !(duration % LockUnits[unit])) as keyof typeof LockUnits
+
+            let _share = share
+            if (shareReduction && !burn) {
+                _share -= shareReduction
+                shareReduction = 0
+            }
+
             return {
                 ...initialBucketData,
                 id,
                 lock: Boolean(duration),
                 lockUnit,
                 lockPeriod: duration / LockUnits[lockUnit],
-                share: (editSharesOnly ? share : 0) / 100,
+                share: _share / 100,
                 burn,
             } as BucketFormParams
         }),
     ])
+
     const [currentBuckets, setCurrentBuckets] = useState<BucketFormParams[]>(initialBuckets)
     const [shareBlocked, setShareBlocked] = useState(0)
 

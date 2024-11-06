@@ -6,7 +6,8 @@ import { Address } from 'viem'
 export const useUpdateStakeBucketShares = (
     chainId: number,
     address: Address,
-    paramsShares: StakeBucketUpdateShareParams[]
+    paramsShares: StakeBucketUpdateShareParams[],
+    enabled: boolean
 ) =>
     useExecuteFunction({
         address,
@@ -15,5 +16,5 @@ export const useUpdateStakeBucketShares = (
         functionName: 'stakeXUpdateStakeBucketShares',
         args: [paramsShares],
         eventNames: ['UpdatedStakeBucketShares'],
-        enabled: Boolean(paramsShares && paramsShares.length),
+        enabled: Boolean(paramsShares && paramsShares.length) && enabled,
     })
