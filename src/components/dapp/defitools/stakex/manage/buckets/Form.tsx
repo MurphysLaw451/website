@@ -64,7 +64,7 @@ const balanceShares = (
 }
 
 export const BucketsForm = ({ existingBuckets, onChange, editSharesOnly }: BucketsFormType) => {
-    let shareReduction = 100
+    let shareReduction = initialBucketData.share
     const initialBuckets = balanceShares(null, [
         ...(editSharesOnly
             ? []
@@ -96,9 +96,17 @@ export const BucketsForm = ({ existingBuckets, onChange, editSharesOnly }: Bucke
     const [shareBlocked, setShareBlocked] = useState(0)
 
     const onAddBucket = () => {
-        const updateBuckets = [...cloneDeep(currentBuckets), initialBucketData].map((bucket) => ({
-            ...bucket,
-        }))
+        let bucketToAdd = { ...initialBucketData, share: 1 }
+        let shareReduction = bucketToAdd.share
+        const updateBuckets = [...cloneDeep(currentBuckets), bucketToAdd].map((bucket) => {
+            if (bucket.share > shareReduction * 2 && !bucket.burn) {
+                bucket.share -= shareReduction
+                shareReduction = 0
+            }
+            return {
+                ...bucket,
+            }
+        })
         setCurrentBuckets(balanceShares(initialBuckets, updateBuckets))
     }
 

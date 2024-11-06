@@ -295,7 +295,7 @@ export const Buckets = () => {
                             {!showAddBucketsForm && !showChangeSharesForm && (
                                 <div className="flex w-full justify-end gap-2">
                                     <Button onClick={onClickAddButton} variant="primary" className="gap-3">
-                                        <FaPlus /> <span>Add</span>
+                                        <FaPlus /> <span>Add Pool</span>
                                     </Button>
                                     {dataStakeBuckets && dataStakeBuckets.length > 1 && (
                                         <Button onClick={onClickChangeSharesButton} variant="primary" className="gap-3">
