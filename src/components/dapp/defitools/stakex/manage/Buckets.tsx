@@ -1,14 +1,14 @@
 import { ManageStakeXContext } from '@dapphelpers/defitools'
 import { toReadableNumber } from '@dapphelpers/number'
 import { durationFromSeconds } from '@dapphelpers/staking'
-import { useEnableStakeBucket } from '@dapphooks/shared/useEnableStakeBucket'
-import { useAddStakeBuckets } from '@dapphooks/staking/useAddStakeBuckets'
+import { useBucketsEnableStakeBucket } from '@dapphooks/shared/useBucketsEnableStakeBucket'
+import { useBucketsAddStakeBuckets } from '@dapphooks/staking/useBucketsAddStakeBuckets'
 import { useBucketsAirdropStakers } from '@dapphooks/staking/useBucketsAirdropStakers'
 import { useBucketsDeleteBucket } from '@dapphooks/staking/useBucketsDeleteBucket'
+import { useBucketsGetStakeBuckets } from '@dapphooks/staking/useBucketsGetStakeBuckets'
+import { useBucketsUpdateStakeBucketShares } from '@dapphooks/staking/useBucketsUpdateStakeBucketShares'
 import { useGetMultipliersPerOneStakingToken } from '@dapphooks/staking/useGetMultipliersPerOneStakingToken'
-import { useGetStakeBuckets } from '@dapphooks/staking/useGetStakeBuckets'
 import { useGetStakingData } from '@dapphooks/staking/useGetStakingData'
-import { useUpdateStakeBucketShares } from '@dapphooks/staking/useUpdateStakeBucketShares'
 import { CaretDivider } from '@dappshared/CaretDivider'
 import { StatsBoxTwoColumn } from '@dappshared/StatsBoxTwoColumn'
 import { Tile } from '@dappshared/Tile'
@@ -50,7 +50,11 @@ export const Buckets = () => {
     /// Hooks
     ///
     const { data: dataStaking } = useGetStakingData(protocol, chain?.id!)
-    const { data: dataStakeBuckets, refetch: refetchStakeBuckets } = useGetStakeBuckets(protocol, chain?.id!, true)
+    const { data: dataStakeBuckets, refetch: refetchStakeBuckets } = useBucketsGetStakeBuckets(
+        protocol,
+        chain?.id!,
+        true
+    )
     const { data: dataMultipliersPerOneStakingToken, isLoading: isLoadingMultipliersPerOneStakingToken } =
         useGetMultipliersPerOneStakingToken(protocol, chain?.id!)
     const {
@@ -60,7 +64,7 @@ export const Buckets = () => {
         write: writeAddStakeBuckets,
         reset: resetAddStakeBuckets,
         isPending: isPendingAddStakeBuckets,
-    } = useAddStakeBuckets(
+    } = useBucketsAddStakeBuckets(
         chain?.id!,
         protocol,
         addBucketFormData?.bucketAddParams!,
@@ -73,7 +77,7 @@ export const Buckets = () => {
         write: writeUpdateStakeBucketShares,
         reset: resetUpdateStakeBucketShares,
         isPending: isPendingUpdateStakeBucketShares,
-    } = useUpdateStakeBucketShares(
+    } = useBucketsUpdateStakeBucketShares(
         chain?.id!,
         protocol,
         addBucketFormData?.bucketUpdateShareParams!,
@@ -160,7 +164,7 @@ export const Buckets = () => {
         write: writeEnableStakeBucket,
         reset: resetEnableStakeBucket,
         isPending: isPendingEnableStakeBucket,
-    } = useEnableStakeBucket(chain?.id!, protocol, bucketIdToToggle!, bucketIdToToggleState)
+    } = useBucketsEnableStakeBucket(chain?.id!, protocol, bucketIdToToggle!, bucketIdToToggleState)
 
     const onClickToggleActiveState = (bucket: StakeBucket) => {
         resetEnableStakeBucket()
@@ -295,7 +299,7 @@ export const Buckets = () => {
                             {!showAddBucketsForm && !showChangeSharesForm && (
                                 <div className="flex w-full justify-end gap-2">
                                     <Button onClick={onClickAddButton} variant="primary" className="gap-3">
-                                        <FaPlus /> <span>Add Pool</span>
+                                        <FaPlus /> <span>Add New Pool</span>
                                     </Button>
                                     {dataStakeBuckets && dataStakeBuckets.length > 1 && (
                                         <Button onClick={onClickChangeSharesButton} variant="primary" className="gap-3">

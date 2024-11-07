@@ -1,7 +1,7 @@
 import { toReadableNumber } from '@dapphelpers/number'
 import { StakeXContext, durationFromSeconds } from '@dapphelpers/staking'
 import { useGetRewardEstimationForTokens } from '@dapphooks/staking/useGetRewardEstimationForTokens'
-import { useGetStakeBuckets } from '@dapphooks/staking/useGetStakeBuckets'
+import { useBucketsGetStakeBuckets } from '@dapphooks/staking/useBucketsGetStakeBuckets'
 import { BucketStakedShare, useGetStakedSharesByStaker } from '@dapphooks/staking/useGetStakedSharesByStaker'
 import { useGetTargetTokens } from '@dapphooks/staking/useGetTargetTokens'
 import { useMergeActive } from '@dapphooks/staking/useMergeActive'
@@ -96,7 +96,7 @@ export const StakingDetails = ({ stakingTokenInfo, defaultShowToken, defaultPayo
         address!
     )
     
-    const { data: dataGetStakeBuckets } = useGetStakeBuckets(protocol, chain?.id!, true)
+    const { data: dataGetStakeBuckets } = useBucketsGetStakeBuckets(protocol, chain?.id!, true)
     const { data: dataAddingUpActive } = useAddingUpActive(protocol, chain?.id!)
     const { data: dataUpstakeActive } = useUpstakeActive(protocol, chain?.id!)
     const { data: dataMergeActive } = useMergeActive(protocol, chain?.id!)

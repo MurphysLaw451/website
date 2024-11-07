@@ -1,6 +1,5 @@
 import { ManageStakeXContext } from '@dapphelpers/defitools'
 import { useGetCustomization } from '@dapphooks/staking/useGetCustomization'
-import { useNFTGetConfigs } from '@dapphooks/staking/useNFTGetConfigs'
 import { Tile } from '@dappshared/Tile'
 import clsx from 'clsx'
 import { useContext, useEffect, useState } from 'react'
@@ -11,19 +10,13 @@ export const Checklist = () => {
         data: { isActive, protocol, chain, canEdit },
     } = useContext(ManageStakeXContext)
 
-    const [hasNFTConfiguration, setHasNFTConfiguration] = useState(false)
     const [hasLogo, setHasLogo] = useState(false)
 
     const { response } = useGetCustomization(protocol, chain?.id!)
-    const { data: dataNFTConfigs } = useNFTGetConfigs(protocol, chain?.id!)
 
     useEffect(() => {
         setHasLogo(Boolean(response && response.data && response.data.logoUrl))
     }, [response])
-
-    useEffect(() => {
-        setHasNFTConfiguration(Boolean(dataNFTConfigs && dataNFTConfigs.length > 0))
-    }, [dataNFTConfigs])
 
     if (!canEdit) return <></>
 

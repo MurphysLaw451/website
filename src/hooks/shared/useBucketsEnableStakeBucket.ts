@@ -3,7 +3,7 @@ import { isBoolean } from 'lodash'
 import { Address } from 'viem'
 import { useExecuteFunction } from './useExecuteFunction'
 
-export const useEnableStakeBucket = (
+export const useBucketsEnableStakeBucket = (
     chainId: number,
     address: Address,
     bucketId: Address,

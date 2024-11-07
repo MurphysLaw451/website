@@ -75,7 +75,7 @@ export const BucketsForm = ({ existingBuckets, onChange, editSharesOnly }: Bucke
                 .find((unit) => !(duration % LockUnits[unit])) as keyof typeof LockUnits
 
             let _share = share
-            if (shareReduction && !burn) {
+            if (!editSharesOnly && shareReduction && !burn) {
                 _share -= shareReduction
                 shareReduction = 0
             }

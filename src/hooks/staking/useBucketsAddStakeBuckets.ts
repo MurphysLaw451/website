@@ -3,7 +3,7 @@ import { useExecuteFunction } from '@dapphooks/shared/useExecuteFunction'
 import { BucketParams, StakeBucketUpdateShareParams } from '@dapptypes'
 import { Address } from 'viem'
 
-export const useAddStakeBuckets = (
+export const useBucketsAddStakeBuckets = (
     chainId: number,
     address: Address,
     params: BucketParams[],

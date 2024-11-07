@@ -1,5 +1,5 @@
 import { toReadableNumber } from '@dapphelpers/number'
-import { useGetStakeBuckets } from '@dapphooks/staking/useGetStakeBuckets'
+import { useBucketsGetStakeBuckets } from '@dapphooks/staking/useBucketsGetStakeBuckets'
 import { useGetTargetTokens } from '@dapphooks/staking/useGetTargetTokens'
 import { useGetUpstakingEstimation } from '@dapphooks/staking/useGetUpstakingEstimation'
 import { useUpstake } from '@dapphooks/staking/useUpstake'
@@ -60,7 +60,7 @@ export const StakingUpstakeOverlay = ({
     //
     //  Stake Bucket Data Hooks
     //
-    const { data: stakeBucketsData, isLoading: isLoadingGetStakeBuckets } = useGetStakeBuckets(protocolAddress, chainId)
+    const { data: stakeBucketsData, isLoading: isLoadingGetStakeBuckets } = useBucketsGetStakeBuckets(protocolAddress, chainId)
 
     //
     //  Payout Tokens Hooks

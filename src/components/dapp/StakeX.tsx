@@ -2,7 +2,6 @@ import { ManageStakeXContextInitialData } from '@dapphelpers/defitools'
 import { StakeXContext, StakeXContextDataType } from '@dapphelpers/staking'
 import { useActive } from '@dapphooks/staking/useActive'
 import { useGetCustomization } from '@dapphooks/staking/useGetCustomization'
-import { useGetStableToken } from '@dapphooks/staking/useGetStableToken'
 import { useGetStakes } from '@dapphooks/staking/useGetStakes'
 import { useGetStakingToken } from '@dapphooks/staking/useGetStakingToken'
 import { useGetTargetTokens } from '@dapphooks/staking/useGetTargetTokens'
@@ -27,6 +26,7 @@ import { StakingPayoutTokenSelection } from './staking/StakingPayoutTokenSelecti
 import { StakingProjectLogo } from './staking/StakingProjectLogo'
 import { StakingStatistics } from './staking/StakingSatistics'
 import { StakingTabber, StakingTabberItem } from './staking/StakingTabber'
+import { useTokensGetTokens } from '@dapphooks/staking/useTokensGetTokens'
 
 export const StakeX = () => {
     const { switchChain } = useSwitchChain()
@@ -94,8 +94,7 @@ export const StakeX = () => {
         address!,
         true
     )
-    const { data: targetTokens } = useGetTargetTokens(stakingData.protocol, stakingData.chain?.id!)
-    const { data: stableTokenInfo } = useGetStableToken(stakingData.protocol, stakingData.chain?.id!)
+    const { data: dataGetTokens } = useTokensGetTokens(stakingData.protocol, stakingData.chain?.id!)
     const { data: stakingTokenInfo } = useGetStakingToken(stakingData.protocol, stakingData.chain?.id!)
 
     const { response: responseCustomization, load: loadCustomization } = useGetCustomization(
@@ -146,35 +145,33 @@ export const StakeX = () => {
     }, [isConnected, stakes])
 
     useEffect(() => {
-        if (targetTokens && stakingData && stakingData.protocol) {
+        if (dataGetTokens && stakingData && stakingData.protocol) {
             let payoutTokenInfo =
-                targetTokens.find(
+                dataGetTokens.find(
                     (token) =>
                         token.source == JSON.parse(localStorage.getItem(`ptoken${stakingData.protocol}`) || 'null') ||
-                        token.source == stableTokenInfo?.source ||
                         token.source == stakingTokenInfo?.source
-                ) || targetTokens[0]
+                ) || dataGetTokens[0]
 
             localStorage.setItem(`ptoken${stakingData.protocol}`, JSON.stringify(payoutTokenInfo.source))
 
             let showTokenInfo =
-                targetTokens.find(
+                dataGetTokens.find(
                     (token) =>
                         token.source == JSON.parse(localStorage.getItem(`stoken${stakingData.protocol}`) || 'null') ||
-                        token.source == stableTokenInfo?.source ||
                         token.source == stakingTokenInfo?.source
-                ) || targetTokens[0]
+                ) || dataGetTokens[0]
 
             localStorage.setItem(`stoken${stakingData.protocol}`, JSON.stringify(showTokenInfo.source))
 
             setSelectedPayoutToken(payoutTokenInfo)
             setSelectedShowToken(showTokenInfo)
 
-            setActiveTargetTokens(targetTokens.filter((token) => token.isTargetActive))
+            setActiveTargetTokens(dataGetTokens.filter((token) => token.isTarget))
 
             setIsLoadingSettings(false)
         }
-    }, [stakingData, targetTokens, stableTokenInfo, stakingTokenInfo])
+    }, [stakingData, dataGetTokens, stakingTokenInfo])
 
     useEffect(() => {
         if (isDisconnected) {

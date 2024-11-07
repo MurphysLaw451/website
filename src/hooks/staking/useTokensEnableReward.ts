@@ -3,11 +3,8 @@ import { useExecuteFunction } from '@dapphooks/shared/useExecuteFunction'
 import { isBoolean } from 'lodash'
 import { useEffect, useState } from 'react'
 import { Address } from 'viem'
-/// TODO remove
-export const useTogglePayoutTokenStatus = (
-    address: Address,
-    chainId: number
-) => {
+
+export const useTokensEnableReward = (address: Address, chainId: number) => {
     const [token, setToken] = useState<Address | null>(null)
     const [status, setStatus] = useState<boolean | null>(null)
 
@@ -15,9 +12,9 @@ export const useTogglePayoutTokenStatus = (
         abi,
         address,
         args: [token, status],
-        functionName: 'stakeXEnableTargetToken',
+        functionName: 'stakeXTokensEnableReward',
         chainId,
-        eventNames: ['EnabledTargetToken', 'DisabledTargetToken'],
+        eventNames: ['EnabledRewardToken', 'DisabledRewardToken'],
         enabled: Boolean(token) && isBoolean(status),
         onEventMatch: (_: any) => {
             setToken(null)

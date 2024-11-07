@@ -6,7 +6,7 @@ import { useHasERC20Allowance } from '@dapphooks/shared/useHasERC20Allowance'
 import { useDepositStake } from '@dapphooks/staking/useDepositStake'
 import { useGetFeeFor } from '@dapphooks/staking/useGetFee'
 import { useGetMultipliersPerOneStakingToken } from '@dapphooks/staking/useGetMultipliersPerOneStakingToken'
-import { useGetStakeBuckets } from '@dapphooks/staking/useGetStakeBuckets'
+import { useBucketsGetStakeBuckets } from '@dapphooks/staking/useBucketsGetStakeBuckets'
 import { useHasFees } from '@dapphooks/staking/useHasFees'
 import { StatsBoxTwoColumn } from '@dappshared/StatsBoxTwoColumn'
 import { StakeBucket, StakingBaseProps } from '@dapptypes'
@@ -65,7 +65,7 @@ export const StakingForm = ({ stakingTokenInfo, onDepositSuccessHandler }: Staki
     // Hooks
     //
     // base data hooks
-    const { data: dataStakeBuckets } = useGetStakeBuckets(protocol, chain?.id!)
+    const { data: dataStakeBuckets } = useBucketsGetStakeBuckets(protocol, chain?.id!)
     const { data: dataMultiplierPerToken } = useGetMultipliersPerOneStakingToken(protocol, chain?.id!)
     const { data: dataBalanceOf } = useGetERC20BalanceOf(stakingTokenInfo?.source, address!, chain?.id!)
     const {

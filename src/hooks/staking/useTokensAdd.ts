@@ -1,18 +1,18 @@
 import abi from '@dappabis/stakex/abi-ui.json'
 import { useExecuteFunction } from '@dapphooks/shared/useExecuteFunction'
+import { TokenAddParams } from '@dapptypes'
 import { Address } from 'viem'
-
-export const useNFTAddConfig = (
+/// TODO remove
+export const useTokensAdd = (
     address: Address,
     chainId: number,
-    nftConfig: any
+    params: TokenAddParams
 ) =>
     useExecuteFunction({
-        address,
-        chainId,
         abi,
-        functionName: 'stakeXNFTAddConfig',
-        args: [nftConfig],
-        eventNames: ['AddedConfig'],
-        enabled: Boolean(address && chainId && nftConfig),
+        address,
+        args: [params],
+        chainId,
+        eventNames: ['AddedToken'],
+        functionName: 'stakeXTokensAdd',
     })

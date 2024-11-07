@@ -3,10 +3,10 @@ import { toReadableNumber } from '@dapphelpers/number'
 import { useERC20Approve } from '@dapphooks/shared/useERC20Approve'
 import { useGetERC20BalanceOf } from '@dapphooks/shared/useGetERC20BalanceOf'
 import { useHasERC20Allowance } from '@dapphooks/shared/useHasERC20Allowance'
-import { useGetRewardTokens } from '@dapphooks/staking/useGetRewardTokens'
 import { useGetStakingData } from '@dapphooks/staking/useGetStakingData'
 import { useHasDepositRestriction } from '@dapphooks/staking/useHasDepositRestriction'
 import { useInjectRewards } from '@dapphooks/staking/useInjectRewards'
+import { useTokensGetTokens } from '@dapphooks/staking/useTokensGetTokens'
 import { Tile } from '@dappshared/Tile'
 import { TokenInfoResponse } from '@dapptypes'
 import { Description, Field, Input, Label, Select } from '@headlessui/react'
@@ -51,7 +51,7 @@ export const InjectRewards = () => {
         write: writeApproval,
     } = useERC20Approve(selectedRewardToken?.source!, protocol, rewardAmount, chain?.id!)
     const { data: dataHasDepositRestriction } = useHasDepositRestriction(chain?.id!, protocol)
-    const { data: dataGetRewardTokens } = useGetRewardTokens(protocol, chain?.id!)
+    const { data: dataGetTokens } = useTokensGetTokens(protocol, chain?.id!)
     const {
         data: dataBalanceOf,
         isLoading: isLoadingBalanceOf,
@@ -82,7 +82,7 @@ export const InjectRewards = () => {
 
     const onChangeRewardToken = () => {
         setSelectedRewardToken(
-            dataGetRewardTokens?.find(
+            dataGetTokens?.find(
                 (token) => token.source === getAddress((rewardSelectionRef.current as HTMLSelectElement).value)
             )
         )
@@ -114,8 +114,8 @@ export const InjectRewards = () => {
     }, [dataHasDepositRestriction])
 
     useEffect(() => {
-        dataGetRewardTokens && !selectedRewardToken && setSelectedRewardToken(dataGetRewardTokens.at(0))
-    }, [dataGetRewardTokens, selectedRewardToken])
+        dataGetTokens && !selectedRewardToken && setSelectedRewardToken(dataGetTokens.at(0))
+    }, [dataGetTokens, selectedRewardToken])
 
     useEffect(() => {
         if (Boolean(dataBalanceOf && rewardAmountEntered && selectedRewardToken)) {
@@ -180,7 +180,7 @@ export const InjectRewards = () => {
             <div className="flex flex-row items-center">
                 <span className="flex-1 font-title text-xl font-bold">Inject Rewards</span>
             </div>
-            {dataGetRewardTokens && (
+            {dataGetTokens && (
                 <>
                     <div className="flex flex-col gap-8">
                         <Field>
@@ -198,11 +198,13 @@ export const InjectRewards = () => {
                                 ref={rewardSelectionRef}
                                 onChange={onChangeRewardToken}
                             >
-                                {dataGetRewardTokens.map((token) => (
-                                    <option key={token.source} value={token.source}>
-                                        {token.name} ({token.symbol})
-                                    </option>
-                                ))}
+                                {dataGetTokens
+                                    .filter((token) => token.isReward)
+                                    .map((token) => (
+                                        <option key={token.source} value={token.source}>
+                                            {token.name} ({token.symbol})
+                                        </option>
+                                    ))}
                             </Select>
                         </Field>
                         <Field>

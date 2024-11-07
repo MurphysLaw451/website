@@ -16,16 +16,15 @@ export type AtmStatsLoading = {
 
 // STAKING
 export type TokenInfoResponse = {
-    isReward: boolean
-    isTarget: boolean
-    isRewardActive: boolean
-    isTargetActive: boolean
-    decimals: bigint
     source: Address
-    injected: bigint
-    rewarded: bigint
     name: string
     symbol: string
+    decimals: bigint
+    exists: boolean
+    isReward: boolean
+    isTarget: boolean
+    injected: bigint
+    rewarded: bigint
 }
 
 export type StakingBaseProps = {
@@ -117,29 +116,35 @@ export type StakingMetrics = {
     }[]
 }
 
-type SwapCandidate = {
+type Swap = {
     calleeSwap: Address
     calleeAmountOut: Address
     path: Address[]
-    isGmx: boolean
 }
 
-type SwapCandidatesGroup = {
-    rewardToken: Address
-    candidates: SwapCandidate[]
+type SwapGroup = {
+    token: Address
+    swaps: Swap[]
 }
 
-export type SetTargetTokenParams = {
-    targetToken: Address
-    candidatesGroup: SwapCandidatesGroup[]
+export type TokenAddParams = {
+    token: Address
+    isReward: boolean
+    isTarget: boolean
+    swapGroup: SwapGroup[]
 }
 
-type GetSwapResponse = {
-    from: Address
-    to: Address
-    swaps: SwapCandidate[]
+export enum AddTokenType {
+    REWARD,
+    PAYOUT,
+    BOTH,
 }
-export type GetSwapsResponse = GetSwapResponse[]
+// type GetSwapResponse = {
+//     from: Address
+//     to: Address
+//     swaps: SwapCandidate[]
+// }
+// export type GetSwapsResponse = GetSwapResponse[]
 
 //
 // STAKEX Creator Types
@@ -148,7 +153,7 @@ export type STAKEXCreatorDataInitParams = {
     stakingToken: Address | null
     stableToken: Address | null
     bucketsToAdd: BucketParams[] | null
-    swaps: SetTargetTokenParams[] | null
+    swaps: any
     rewards: { token: Address }[] | null
     manager: Address | null
     excludeStakingTokenFromRewards: boolean

@@ -5,15 +5,13 @@ import { useEnableProtocolByBlock } from '@dapphooks/staking/useEnableProtocolBy
 import { useEnableProtocolByTime } from '@dapphooks/staking/useEnableProtocolByTime'
 import { useGetActivationBlock } from '@dapphooks/staking/useGetActivationBlock'
 import { useGetActivationTime } from '@dapphooks/staking/useGetActivationTime'
-import { useNFTGetConfigs } from '@dapphooks/staking/useNFTGetConfigs'
 import { CaretDivider } from '@dappshared/CaretDivider'
 import { Tile } from '@dappshared/Tile'
 import clsx from 'clsx'
 import TimeAgo from 'javascript-time-ago'
-import { isBoolean, isUndefined } from 'lodash'
-import { useContext, useEffect, useState } from 'react'
+import { isUndefined } from 'lodash'
+import { useContext, useState } from 'react'
 import { FaCheckDouble, FaCubes, FaRegClock } from 'react-icons/fa'
-import { MdLockOutline } from 'react-icons/md'
 import { Button } from 'src/components/Button'
 import { useBlock } from 'wagmi'
 import { BlockNumberActivation } from './control/overlays/BlockNumberActivation'
@@ -29,8 +27,6 @@ export const Control = () => {
 
     const timeAgo = new TimeAgo(navigator.language)
 
-    const [isActive, setIsActive] = useState<boolean | null>(null)
-    const [canActivate, setCanActivate] = useState(false)
     const [isApplyChangesModalOpen, setIsApplyChangesModalOpen] = useState(false)
     const [isBlockNumberActivationModalOpen, setIsBlockNumberActivationModalOpen] = useState(false)
     const [isBlockNumberDeactivationModalOpen, setIsBlockNumberDeactivationModalOpen] = useState(false)
@@ -39,7 +35,6 @@ export const Control = () => {
     const [activationBlock, setActivationBlock] = useState<bigint>()
     const [activationTime, setActivationTime] = useState<bigint>()
 
-    const { data: dataNFTConfigs, refetch: refetchNFTConfigs } = useNFTGetConfigs(protocol, chain?.id!)
     const { data: dataIsActive, refetch: refetchIsActive } = useActive(protocol, chain?.id!)
     const { data: currentActivationBlock, refetch: refetchActivationBlock } = useGetActivationBlock(
         protocol,
@@ -55,8 +50,7 @@ export const Control = () => {
     const { error, isLoading, isPending, isSuccess, reset, write } = useEnableProtocol(
         protocol,
         chain?.id!,
-        !isActive!,
-        canActivate
+        !dataIsActive
     )
 
     const onClickToggleProtocolStatus = () => {
@@ -76,13 +70,12 @@ export const Control = () => {
 
     const {
         error: errorEnableByBlock,
-        isError: isErrorEnableByBlock,
         isLoading: isLoadingEnableByBlock,
         isPending: isPendingEnableByBlock,
         isSuccess: isSuccessEnableByBlock,
         reset: resetEnableByBlock,
         write: writeEnableByBlock,
-    } = useEnableProtocolByBlock(protocol, chain?.id!, activationBlock!, canActivate)
+    } = useEnableProtocolByBlock(protocol, chain?.id!, activationBlock!)
 
     const onClickBlockNumberActivation = () => {
         resetEnableByBlock()
@@ -114,7 +107,7 @@ export const Control = () => {
         isSuccess: isSuccessEnableByTime,
         reset: resetEnableByTime,
         write: writeEnableByTime,
-    } = useEnableProtocolByTime(protocol, chain?.id!, activationTime!, canActivate)
+    } = useEnableProtocolByTime(protocol, chain?.id!, activationTime!)
 
     const onClickBlockTimeActivation = () => {
         resetEnableByTime()
@@ -138,15 +131,6 @@ export const Control = () => {
         setIsBlockTimeDeactivationModalOpen(false)
     }
 
-    useEffect(() => {
-        isBoolean(dataIsActive) && setIsActive(dataIsActive)
-        if (dataIsActive && refetchNFTConfigs) refetchNFTConfigs()
-    }, [refetchNFTConfigs, dataIsActive])
-
-    useEffect(() => {
-        setCanActivate(Boolean(dataNFTConfigs && dataNFTConfigs.length > 0))
-    }, [dataNFTConfigs])
-
     if (!canEdit) return <></>
 
     return (
@@ -159,10 +143,10 @@ export const Control = () => {
                     <div
                         className={clsx([
                             `flex flex-col gap-4 md:flex-row md:gap-8`,
-                            Boolean(currentActivationTime || isActive) && 'opacity-30',
+                            Boolean(currentActivationTime || dataIsActive) && 'opacity-30',
                         ])}
                     >
-                        <div className="flex flex-row items-center gap-8 md:flex-grow">
+                        <div className="flex flex-row items-center gap-8 px-4 md:flex-grow md:px-0">
                             <FaCubes className="h-8 w-8" />{' '}
                             {Boolean(currentBlock) &&
                                 (!Boolean(currentActivationBlock) ? (
@@ -186,7 +170,7 @@ export const Control = () => {
                         </div>
                         {!Boolean(currentActivationBlock) ? (
                             <Button
-                                disabled={Boolean(isActive) || Boolean(currentActivationTime) || !canActivate}
+                                disabled={Boolean(dataIsActive) || Boolean(currentActivationTime)}
                                 className="w-full md:w-auto"
                                 onClick={onClickBlockNumberActivation}
                                 variant={'primary'}
@@ -195,7 +179,7 @@ export const Control = () => {
                             </Button>
                         ) : (
                             <Button
-                                disabled={Boolean(isActive)}
+                                disabled={Boolean(dataIsActive)}
                                 className="w-full md:w-auto"
                                 onClick={onClickBlockNumberRemoveActivation}
                                 variant={'error'}
@@ -207,10 +191,10 @@ export const Control = () => {
                     <div
                         className={clsx([
                             `flex flex-col gap-4 md:flex-row md:gap-8`,
-                            Boolean(currentActivationTime || isActive) && 'opacity-30',
+                            Boolean(currentActivationTime || dataIsActive) && 'opacity-30',
                         ])}
                     >
-                        <div className="flex flex-row items-center gap-8 md:flex-grow">
+                        <div className="flex flex-row items-center gap-8 px-4 md:flex-grow md:px-0">
                             <FaRegClock className="h-8 w-8" />
                             {Boolean(currentBlock) &&
                                 (!Boolean(currentActivationTime) ? (
@@ -258,7 +242,7 @@ export const Control = () => {
                         </div>
                         {!Boolean(currentActivationTime) ? (
                             <Button
-                                disabled={Boolean(isActive) || Boolean(currentActivationBlock) || !canActivate}
+                                disabled={Boolean(dataIsActive) || Boolean(currentActivationBlock)}
                                 onClick={onClickBlockTimeActivation}
                                 className="w-full md:w-auto"
                                 variant={'primary'}
@@ -267,7 +251,7 @@ export const Control = () => {
                             </Button>
                         ) : (
                             <Button
-                                disabled={Boolean(isActive)}
+                                disabled={Boolean(dataIsActive)}
                                 onClick={onClickBlockTimeRemoveActivation}
                                 className="w-full md:w-auto"
                                 variant={'error'}
@@ -278,9 +262,9 @@ export const Control = () => {
                     </div>
                     <CaretDivider />
                     <div className="flex flex-col gap-4 md:flex-row md:gap-8">
-                        <div className="flex flex-row items-center gap-8 md:flex-grow">
-                            <FaCheckDouble className={clsx([`h-8 w-8`, isActive && 'text-dapp-cyan-500'])} />
-                            {isActive ? (
+                        <div className="flex flex-row items-center gap-8 px-4 md:flex-grow md:px-0">
+                            <FaCheckDouble className={clsx([`h-8 w-8`, dataIsActive && 'text-dapp-cyan-500'])} />
+                            {dataIsActive ? (
                                 <span>Your protocol is enabled</span>
                             ) : (
                                 <span>Enable the protocol, no matter of setting start time or start block</span>
@@ -288,24 +272,14 @@ export const Control = () => {
                         </div>
 
                         <Button
-                            disabled={!canActivate}
                             onClick={onClickToggleProtocolStatus}
                             className="w-full whitespace-nowrap md:w-auto"
-                            variant={isActive ? 'error' : 'primary'}
+                            variant={dataIsActive ? 'error' : 'primary'}
                         >
-                            {isActive ? 'Disable' : 'Enable'} Protocol
+                            {dataIsActive ? 'Disable' : 'Enable'} Protocol
                         </Button>
                     </div>
                 </div>
-                {!canActivate && (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 border-b border-t border-dapp-blue-100 bg-dapp-blue-800/90 md:rounded-lg md:border">
-                        <MdLockOutline className="h-32 w-32" />
-                        <span>
-                            Please choose an NFT template <br />
-                            in order to enable your protocol
-                        </span>
-                    </div>
-                )}
             </Tile>
             <DisableProtocolConfirmation
                 isLoading={isLoading}

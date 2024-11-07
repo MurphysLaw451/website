@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js'
 import { Address } from 'viem'
 import { useReadContract } from 'wagmi'
 
-export const useGetStakeBuckets = (
+export const useBucketsGetStakeBuckets = (
     address: Address,
     chainId: number,
     all?: boolean

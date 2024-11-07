@@ -2,7 +2,7 @@ import abi from '@dappabis/stakex/abi-ui.json'
 import { TokenInfoResponse } from '@dapptypes'
 import { Address } from 'viem'
 import { useReadContract } from 'wagmi'
-
+/// TODO remove
 export const useGetTargetTokens = (address: Address, chainId: number) =>
     useReadContract({
         address,

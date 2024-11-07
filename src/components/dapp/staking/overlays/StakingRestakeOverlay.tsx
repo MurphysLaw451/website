@@ -1,6 +1,6 @@
 import { toReadableNumber } from '@dapphelpers/number'
 import { useGetClaimEstimation } from '@dapphooks/staking/useGetClaimEstimation'
-import { useGetStakeBuckets } from '@dapphooks/staking/useGetStakeBuckets'
+import { useBucketsGetStakeBuckets } from '@dapphooks/staking/useBucketsGetStakeBuckets'
 import { useRestake } from '@dapphooks/staking/useRestake'
 import { CaretDivider } from '@dappshared/CaretDivider'
 import { StatsBoxTwoColumn } from '@dappshared/StatsBoxTwoColumn'
@@ -45,7 +45,7 @@ export const StakingRestakeOverlay = ({
     //
     // Data Hooks
     //
-    const { data: stakeBucketsData, isLoading: isLoadingGetStakeBuckets } = useGetStakeBuckets(protocolAddress, chainId)
+    const { data: stakeBucketsData, isLoading: isLoadingGetStakeBuckets } = useBucketsGetStakeBuckets(protocolAddress, chainId)
     const { data: claimEstimationNFT, isLoading: isLoadingClaimEstimationNFT } = useGetClaimEstimation(
         true,
         protocolAddress,
