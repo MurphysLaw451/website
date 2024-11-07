@@ -66,7 +66,8 @@ export const StakingForm = ({ stakingTokenInfo, onDepositSuccessHandler }: Staki
     //
     // base data hooks
     const { data: dataStakeBuckets } = useBucketsGetStakeBuckets(protocol, chain?.id!)
-    const { data: dataMultiplierPerToken } = useGetMultipliersPerOneStakingToken(protocol, chain?.id!)
+    const { data: dataMultiplierPerToken, isLoading: isLoadingMultiplierPerToken } =
+        useGetMultipliersPerOneStakingToken(protocol, chain?.id!, selectedStake?.id!, stakeAmount)
     const { data: dataBalanceOf } = useGetERC20BalanceOf(stakingTokenInfo?.source, address!, chain?.id!)
     const {
         data: dataAllowance,
@@ -245,7 +246,9 @@ export const StakingForm = ({ stakingTokenInfo, onDepositSuccessHandler }: Staki
                 dataMultiplierPerToken.reduce(
                     (acc, m) => ({
                         ...acc,
-                        [m.bucketId as Address]: Math.floor(Number(m.multiplier) / m.divider),
+                        [m.bucketId as Address]: (Number(m.multiplier) / m.divider).toLocaleString(navigator.language, {
+                            maximumFractionDigits: 2,
+                        }),
                     }),
                     {}
                 )
@@ -377,9 +380,15 @@ export const StakingForm = ({ stakingTokenInfo, onDepositSuccessHandler }: Staki
 
                 <StatsBoxTwoColumn.LeftColumn>Multiplier per {tokenSymbol} in Pool</StatsBoxTwoColumn.LeftColumn>
                 <StatsBoxTwoColumn.RightColumn>
-                    {multiplierPerToken && selectedStake && multiplierPerToken[selectedStake.id]
-                        ? `${multiplierPerToken?.[selectedStake.id]}x`
-                        : '-'}
+                    {isLoadingMultiplierPerToken ? (
+                        <span className="flex justify-end">
+                            <Spinner className="h-4 w-4" theme="dark" />
+                        </span>
+                    ) : multiplierPerToken && selectedStake && multiplierPerToken[selectedStake.id] ? (
+                        `${multiplierPerToken?.[selectedStake.id]}x`
+                    ) : (
+                        '-'
+                    )}
                 </StatsBoxTwoColumn.RightColumn>
 
                 {/* <StatsBoxTwoColumn.LeftColumn>

@@ -2,7 +2,6 @@ import { toReadableNumber } from '@dapphelpers/number'
 import { durationFromSeconds } from '@dapphelpers/staking'
 import { useGetMergingEstimation } from '@dapphooks/staking/useGetMergingEstimation'
 import { useGetStakes } from '@dapphooks/staking/useGetStakes'
-import { useGetTargetTokens } from '@dapphooks/staking/useGetTargetTokens'
 import { useMerge } from '@dapphooks/staking/useMerge'
 import { CaretDivider } from '@dappshared/CaretDivider'
 import { BaseOverlay, BaseOverlayProps } from '@dappshared/overlays/BaseOverlay'
@@ -19,13 +18,14 @@ import { MdError } from 'react-icons/md'
 import { SpinnerCircular } from 'spinners-react'
 import { Button } from 'src/components/Button'
 import { Address } from 'viem'
-import { useBlock, useCall } from 'wagmi'
+import { useBlock } from 'wagmi'
 import { Spinner } from '../../elements/Spinner'
 import { StakingPayoutTokenSelection } from '../StakingPayoutTokenSelection'
 
 type StakingMergeOverlayProps = {
     protocolAddress: Address
     chainId: number
+    tokens: TokenInfoResponse[]
     stakingTokenInfo: TokenInfoResponse
     payoutTokenInfo: TokenInfo
     stakerAddress: Address
@@ -35,6 +35,7 @@ type StakingMergeOverlayProps = {
 export const StakingMergeOverlay = ({
     isOpen,
     onClose,
+    tokens,
     protocolAddress,
     chainId,
     stakingTokenInfo,
@@ -60,11 +61,6 @@ export const StakingMergeOverlay = ({
     const [payoutToken, setPayoutToken] = useState<TokenInfo>(payoutTokenInfo)
     const [claimRewards, setClaimRewards] = useState(true)
     const [targetTokens, setTargetTokens] = useState<TokenInfoResponse[]>([])
-
-    //
-    //  Payout Tokens Hooks
-    //
-    const { data: dataTargetTokens, isLoading: isLoadingGetTargetTokens } = useGetTargetTokens(protocolAddress, chainId)
 
     //
     // Merging & Estimations
@@ -161,10 +157,10 @@ export const StakingMergeOverlay = ({
     // Effects Payout Tokens
     //
     useEffect(() => {
-        if (dataTargetTokens && dataTargetTokens.length > 0) {
-            setTargetTokens(dataTargetTokens.filter((token) => token.isTargetActive))
+        if (tokens && tokens.length > 0) {
+            setTargetTokens(tokens.filter((token) => token.isTarget))
         } else setTargetTokens([])
-    }, [dataTargetTokens])
+    }, [tokens])
 
     useEffect(() => {
         if (selectedTokenIds && payoutToken) {
@@ -194,13 +190,13 @@ export const StakingMergeOverlay = ({
 
     return (
         <BaseOverlay isOpen={isOpen} closeOnBackdropClick={false} onClose={onCloseHandler}>
-            {isLoadingGetTargetTokens && (
+            {!tokens && (
                 <div className="item-center flex flex-row justify-center">
                     <Spinner theme="dark" className="m-20 !h-24 !w-24" />
                 </div>
             )}
 
-            {!isLoadingGetTargetTokens && !isLoadingMerge && !isSuccessMerge && !isError && (
+            {tokens && !isLoadingMerge && !isSuccessMerge && !isError && (
                 <>
                     <div className="flex flex-col gap-6 text-base">
                         <h3 className="flex flex-row items-center gap-3 text-xl">
@@ -492,7 +488,7 @@ export const StakingMergeOverlay = ({
                 </div>
             )}
 
-            {isError && !isLoadingGetTargetTokens && !isSuccessMerge && !isLoadingMerge && (
+            {isError && tokens && !isSuccessMerge && !isLoadingMerge && (
                 <div className="flex flex-col items-center gap-6 p-6 text-center text-base">
                     <MdError className="h-[100px] w-[100px] text-error " />
                     There was an error: <br />
@@ -504,7 +500,7 @@ export const StakingMergeOverlay = ({
                 </div>
             )}
 
-            {!isLoadingGetTargetTokens && !isSuccessMerge && isError && (
+            {tokens && !isSuccessMerge && isError && (
                 <div>
                     <Button
                         variant="primary"

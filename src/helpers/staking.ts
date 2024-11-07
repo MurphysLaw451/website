@@ -1,3 +1,4 @@
+import { TokenInfoResponse } from '@dapptypes'
 import { createContext } from 'react'
 import { Address, Chain, zeroAddress } from 'viem'
 
@@ -115,6 +116,7 @@ export const durationFromSeconds = (
 export type StakeXContextDataType = {
     protocol: Address
     chain?: Chain
+    tokens: TokenInfoResponse[]
     isActive: boolean
     isRunning: boolean
     isLoading: boolean
@@ -131,6 +133,7 @@ export const StakeXContext = createContext<StakeXContextType>({
     setData: () => {},
     data: {
         protocol: zeroAddress,
+        tokens: [],
         isActive: false,
         isRunning: false,
         isLoading: true,

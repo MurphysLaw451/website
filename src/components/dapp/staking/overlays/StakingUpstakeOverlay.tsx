@@ -1,6 +1,5 @@
 import { toReadableNumber } from '@dapphelpers/number'
 import { useBucketsGetStakeBuckets } from '@dapphooks/staking/useBucketsGetStakeBuckets'
-import { useGetTargetTokens } from '@dapphooks/staking/useGetTargetTokens'
 import { useGetUpstakingEstimation } from '@dapphooks/staking/useGetUpstakingEstimation'
 import { useUpstake } from '@dapphooks/staking/useUpstake'
 import { CaretDivider } from '@dappshared/CaretDivider'
@@ -24,6 +23,7 @@ import { StakingPayoutTokenSelection } from '../StakingPayoutTokenSelection'
 type StakingUpstakeOverlayProps = {
     protocolAddress: Address
     chainId: number
+    tokens: TokenInfoResponse[]
     stakingTokenInfo: TokenInfoResponse
     payoutTokenInfo: TokenInfo
     stake: StakeResponse
@@ -32,6 +32,7 @@ type StakingUpstakeOverlayProps = {
 export const StakingUpstakeOverlay = ({
     isOpen,
     onClose,
+    tokens,
     protocolAddress,
     chainId,
     stakingTokenInfo,
@@ -60,12 +61,10 @@ export const StakingUpstakeOverlay = ({
     //
     //  Stake Bucket Data Hooks
     //
-    const { data: stakeBucketsData, isLoading: isLoadingGetStakeBuckets } = useBucketsGetStakeBuckets(protocolAddress, chainId)
-
-    //
-    //  Payout Tokens Hooks
-    //
-    const { data: dataTargetTokens, isLoading: isLoadingGetTargetTokens } = useGetTargetTokens(protocolAddress, chainId)
+    const { data: stakeBucketsData, isLoading: isLoadingGetStakeBuckets } = useBucketsGetStakeBuckets(
+        protocolAddress,
+        chainId
+    )
 
     //
     // Upstaking & Estimations
@@ -141,8 +140,8 @@ export const StakingUpstakeOverlay = ({
     // Effects Stake Bucket
     //
     useEffect(() => {
-        setIsLoading(isLoadingGetStakeBuckets || isLoadingGetTargetTokens)
-    }, [isLoadingGetStakeBuckets, isLoadingGetTargetTokens])
+        setIsLoading(isLoadingGetStakeBuckets || !tokens)
+    }, [isLoadingGetStakeBuckets, tokens])
 
     useEffect(() => {
         if (stakeBucketsData) {
@@ -173,10 +172,10 @@ export const StakingUpstakeOverlay = ({
     // Effects Payout Tokens
     //
     useEffect(() => {
-        if (dataTargetTokens && dataTargetTokens.length > 0) {
-            setTargetTokens(dataTargetTokens.filter((token) => token.isTargetActive))
+        if (tokens && tokens.length > 0) {
+            setTargetTokens(tokens.filter((token) => token.isTarget))
         } else setTargetTokens([])
-    }, [dataTargetTokens])
+    }, [tokens])
 
     useEffect(() => {
         if (tokenId && payoutToken && refetchUpstakingEstimation) refetchUpstakingEstimation()

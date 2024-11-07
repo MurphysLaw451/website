@@ -4,8 +4,8 @@ import { useActive } from '@dapphooks/staking/useActive'
 import { useGetCustomization } from '@dapphooks/staking/useGetCustomization'
 import { useGetStakes } from '@dapphooks/staking/useGetStakes'
 import { useGetStakingToken } from '@dapphooks/staking/useGetStakingToken'
-import { useGetTargetTokens } from '@dapphooks/staking/useGetTargetTokens'
 import { useRunning } from '@dapphooks/staking/useRunning'
+import { useTokensGetTokens } from '@dapphooks/staking/useTokensGetTokens'
 import { Tile } from '@dappshared/Tile'
 import { WrongChainHint } from '@dappshared/WrongChainHint'
 import { TokenInfoResponse } from '@dapptypes'
@@ -26,7 +26,6 @@ import { StakingPayoutTokenSelection } from './staking/StakingPayoutTokenSelecti
 import { StakingProjectLogo } from './staking/StakingProjectLogo'
 import { StakingStatistics } from './staking/StakingSatistics'
 import { StakingTabber, StakingTabberItem } from './staking/StakingTabber'
-import { useTokensGetTokens } from '@dapphooks/staking/useTokensGetTokens'
 
 export const StakeX = () => {
     const { switchChain } = useSwitchChain()
@@ -194,8 +193,9 @@ export const StakeX = () => {
         if (chainId) _data.chain = getChainById(Number(chainId))
         if (!isUndefined(dataActive)) _data.isActive = dataActive
         if (!isUndefined(dataRunning)) _data.isRunning = dataRunning
+        if (!isUndefined(dataGetTokens)) _data.tokens = dataGetTokens
         setStakingData(_data)
-    }, [protocolAddress, chainId, dataActive, dataRunning])
+    }, [dataGetTokens, protocolAddress, chainId, dataActive, dataRunning])
 
     useMemo(() => {
         protocolAddress && chainId && loadCustomization && loadCustomization()
@@ -208,6 +208,7 @@ export const StakeX = () => {
         <StakeXContext.Provider
             value={{
                 refetchStakes,
+
                 data: stakingData,
                 setData: setStakingData,
             }}

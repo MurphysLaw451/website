@@ -5,7 +5,6 @@ import { useGetERC20BalanceOf } from '@dapphooks/shared/useGetERC20BalanceOf'
 import { useHasERC20Allowance } from '@dapphooks/shared/useHasERC20Allowance'
 import { useAddUp } from '@dapphooks/staking/useAddUp'
 import { useGetAddingUpEstimation } from '@dapphooks/staking/useGetAddingUpEstimation'
-import { useGetTargetTokens } from '@dapphooks/staking/useGetTargetTokens'
 import { CaretDivider } from '@dappshared/CaretDivider'
 import { StatsBoxTwoColumn } from '@dappshared/StatsBoxTwoColumn'
 import { BaseOverlay, BaseOverlayProps } from '@dappshared/overlays/BaseOverlay'
@@ -28,6 +27,7 @@ import { StakingPayoutTokenSelection } from '../StakingPayoutTokenSelection'
 type StakingAddingUpOverlayProps = {
     protocolAddress: Address
     chainId: number
+    tokens: TokenInfoResponse[]
     stakingTokenInfo: TokenInfoResponse
     payoutTokenInfo: TokenInfo
     stake: StakeResponse
@@ -38,6 +38,7 @@ export const StakingAddingUpOverlay = ({
     onClose,
     protocolAddress,
     chainId,
+    tokens,
     stakingTokenInfo,
     payoutTokenInfo,
     stake,
@@ -86,11 +87,6 @@ export const StakingAddingUpOverlay = ({
         reset: resetApprove,
         hash: hashApprove,
     } = useERC20Approve(stakingTokenInfo.source, protocolAddress, amount!, chainId)
-
-    //
-    // Payout Hooks
-    //
-    const { data: dataTargetTokens, isLoading: isLoadingTargetTokens } = useGetTargetTokens(protocolAddress, chainId)
 
     //
     // Add Up Hooks
@@ -175,14 +171,14 @@ export const StakingAddingUpOverlay = ({
     }
 
     useEffect(() => {
-        if (dataTargetTokens && dataTargetTokens.length > 0) {
-            setTargetTokens(dataTargetTokens.filter((token) => token.isTargetActive))
+        if (tokens && tokens.length > 0) {
+            setTargetTokens(tokens.filter((token) => token.isTarget))
         } else setTargetTokens([])
-    }, [dataTargetTokens])
+    }, [tokens])
 
     useEffect(() => {
-        if (isLoading) setIsLoading(isLoadingTargetTokens || isLoadingAddingUpEstimation)
-    }, [isLoading, isLoadingAddingUpEstimation, isLoadingTargetTokens])
+        if (isLoading) setIsLoading(!tokens || isLoadingAddingUpEstimation)
+    }, [isLoading, isLoadingAddingUpEstimation, tokens])
 
     //
     // Deposit Effects

@@ -126,7 +126,6 @@ export const Buckets = () => {
 
     useEffect(() => {
         if (!dataMultipliersPerOneStakingToken) return
-
         setMultiplierPerStakingTokens(
             dataMultipliersPerOneStakingToken.reduce(
                 (acc, multiplier) => ({

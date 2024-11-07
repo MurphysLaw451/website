@@ -43,6 +43,7 @@ export type ManageStakeXContextType = {
 export const ManageStakeXContextInitialData = {
     protocol: zeroAddress,
     owner: zeroAddress,
+    tokens: [],
     isOwner: false,
     isActive: false,
     isRunning: false,

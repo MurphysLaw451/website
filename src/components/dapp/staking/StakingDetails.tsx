@@ -1,9 +1,9 @@
 import { toReadableNumber } from '@dapphelpers/number'
 import { StakeXContext, durationFromSeconds } from '@dapphelpers/staking'
-import { useGetRewardEstimationForTokens } from '@dapphooks/staking/useGetRewardEstimationForTokens'
+import { useAddingUpActive } from '@dapphooks/staking/useAddingUpActive'
 import { useBucketsGetStakeBuckets } from '@dapphooks/staking/useBucketsGetStakeBuckets'
+import { useGetRewardEstimationForTokens } from '@dapphooks/staking/useGetRewardEstimationForTokens'
 import { BucketStakedShare, useGetStakedSharesByStaker } from '@dapphooks/staking/useGetStakedSharesByStaker'
-import { useGetTargetTokens } from '@dapphooks/staking/useGetTargetTokens'
 import { useMergeActive } from '@dapphooks/staking/useMergeActive'
 import { useUpstakeActive } from '@dapphooks/staking/useUpstakeActive'
 import { CaretDivider } from '@dappshared/CaretDivider'
@@ -15,13 +15,12 @@ import { Button } from '../../Button'
 import { Spinner } from '../elements/Spinner'
 import { StakingNFTTile } from './StakingNFTTile'
 import { SortOption, StakingSortOptions } from './StakingSortOptions'
+import { StakingAddingUpOverlay } from './overlays/StakingAddingUpOverlay'
 import { StakingClaimOverlay } from './overlays/StakingClaimOverlay'
 import { StakingMergeOverlay } from './overlays/StakingMergeOverlay'
 import { StakingRestakeOverlay } from './overlays/StakingRestakeOverlay'
 import { StakingUpstakeOverlay } from './overlays/StakingUpstakeOverlay'
 import { StakingWithdrawOverlay } from './overlays/StakingWithdrawOverlay'
-import { useAddingUpActive } from '@dapphooks/staking/useAddingUpActive'
-import { StakingAddingUpOverlay } from './overlays/StakingAddingUpOverlay'
 
 type StakingDetailsProps = {
     stakes: readonly StakeResponse[]
@@ -35,7 +34,7 @@ type ComponentProps = StakingBaseProps & StakingDetailsProps
 
 export const StakingDetails = ({ stakingTokenInfo, defaultShowToken, defaultPayoutToken, stakes }: ComponentProps) => {
     const {
-        data: { protocol, chain },
+        data: { protocol, chain, tokens },
     } = useContext(StakeXContext)
 
     const [selectedSortOption, setSelectedSortOption] = useState(0)
@@ -61,6 +60,7 @@ export const StakingDetails = ({ stakingTokenInfo, defaultShowToken, defaultPayo
             divider: bigint
             duration: bigint
             burn: boolean
+            active: boolean
         }[]
     >()
 
@@ -89,13 +89,12 @@ export const StakingDetails = ({ stakingTokenInfo, defaultShowToken, defaultPayo
         tokenIds!,
         defaultShowToken?.source
     )
-    const { data: targetTokens } = useGetTargetTokens(protocol, chain?.id!)
     const { data: dataGetStakedSharesByStaker, refetch: refetchGetStakedSharesByStaker } = useGetStakedSharesByStaker(
         protocol,
         chain?.id!,
         address!
     )
-    
+
     const { data: dataGetStakeBuckets } = useBucketsGetStakeBuckets(protocol, chain?.id!, true)
     const { data: dataAddingUpActive } = useAddingUpActive(protocol, chain?.id!)
     const { data: dataUpstakeActive } = useUpstakeActive(protocol, chain?.id!)
@@ -261,6 +260,7 @@ export const StakingDetails = ({ stakingTokenInfo, defaultShowToken, defaultPayo
                             duration: BigInt(bucketData?.duration!),
                             share: share.share,
                             staked: share.staked,
+                            active: Boolean(bucketData?.active),
                         }
                     })
                 )
@@ -335,11 +335,9 @@ export const StakingDetails = ({ stakingTokenInfo, defaultShowToken, defaultPayo
 
     useEffect(() => {
         setIsLoading(
-            !Boolean(
-                rewardEstimations && rewardEstimations.length && targetTokens && targetTokens.length && defaultShowToken
-            )
+            !Boolean(rewardEstimations && rewardEstimations.length && tokens && tokens.length && defaultShowToken)
         )
-    }, [rewardEstimations, targetTokens, defaultShowToken])
+    }, [rewardEstimations, tokens, defaultShowToken])
 
     return isLoading ? (
         <div className="flex flex-col items-center justify-center gap-4">
@@ -394,44 +392,50 @@ export const StakingDetails = ({ stakingTokenInfo, defaultShowToken, defaultPayo
                                 </div>
                             </StatsBoxTwoColumn.RightColumn>
 
-                            {stakeShareInfo.map((share, i) => (
-                                <Fragment key={i}>
-                                    <StatsBoxTwoColumn.LeftColumn>
-                                        <span className="text-darkTextLowEmphasis">
-                                            {share.burn ? (
-                                                <span className="font-bold text-degenOrange opacity-60">BURNED</span>
-                                            ) : Boolean(share.duration) ? (
-                                                durationFromSeconds(Number(share.duration), {
-                                                    long: true,
-                                                })
-                                            ) : (
-                                                'Standard'
-                                            )}
-                                        </span>
-                                    </StatsBoxTwoColumn.LeftColumn>
-                                    <StatsBoxTwoColumn.RightColumn>
-                                        <div className="flex flex-row items-center justify-end gap-1">
-                                            {toReadableNumber(Number(share.staked), stakingTokenInfo.decimals, {
-                                                minimumFractionDigits: 3,
-                                                maximumFractionDigits: 3,
-                                            })}
-                                            <span className="text-xs">
-                                                {`(${
-                                                    Number(share.share) / Number(share.divider) < 0.01
-                                                        ? '<0.01'
-                                                        : toReadableNumber(
-                                                              Number(share.share) / Number(share.divider),
-                                                              0,
-                                                              {
-                                                                  maximumFractionDigits: 2,
-                                                              }
-                                                          )
-                                                }%)`}
+                            {stakeShareInfo
+                                .filter((share) => share.active)
+                                .sort((a, b) => (a.duration > b.duration ? 1 : -1))
+                                .sort((a, b) => (a.burn != b.burn ? -1 : 1))
+                                .map((share, i) => (
+                                    <Fragment key={i}>
+                                        <StatsBoxTwoColumn.LeftColumn>
+                                            <span className="text-darkTextLowEmphasis">
+                                                {share.burn ? (
+                                                    <span className="font-bold text-degenOrange opacity-60">
+                                                        BURNED
+                                                    </span>
+                                                ) : Boolean(share.duration) ? (
+                                                    durationFromSeconds(Number(share.duration), {
+                                                        long: true,
+                                                    })
+                                                ) : (
+                                                    'Standard'
+                                                )}
                                             </span>
-                                        </div>
-                                    </StatsBoxTwoColumn.RightColumn>
-                                </Fragment>
-                            ))}
+                                        </StatsBoxTwoColumn.LeftColumn>
+                                        <StatsBoxTwoColumn.RightColumn>
+                                            <div className="flex flex-row items-center justify-end gap-1">
+                                                {toReadableNumber(Number(share.staked), stakingTokenInfo.decimals, {
+                                                    minimumFractionDigits: 3,
+                                                    maximumFractionDigits: 3,
+                                                })}
+                                                <span className="text-xs">
+                                                    {`(${
+                                                        Number(share.share) / Number(share.divider) < 0.01
+                                                            ? '<0.01'
+                                                            : toReadableNumber(
+                                                                  Number(share.share) / Number(share.divider),
+                                                                  0,
+                                                                  {
+                                                                      maximumFractionDigits: 2,
+                                                                  }
+                                                              )
+                                                    }%)`}
+                                                </span>
+                                            </div>
+                                        </StatsBoxTwoColumn.RightColumn>
+                                    </Fragment>
+                                ))}
                         </>
                     )}
 
@@ -529,6 +533,7 @@ export const StakingDetails = ({ stakingTokenInfo, defaultShowToken, defaultPayo
                 <StakingClaimOverlay
                     protocolAddress={protocol}
                     chainId={chain?.id!}
+                    tokens={tokens}
                     targetToken={defaultPayoutToken}
                     isClaimAll={true}
                     isOpen={true}
@@ -539,6 +544,7 @@ export const StakingDetails = ({ stakingTokenInfo, defaultShowToken, defaultPayo
                 <StakingClaimOverlay
                     protocolAddress={protocol}
                     chainId={chain?.id!}
+                    tokens={tokens}
                     targetToken={defaultPayoutToken}
                     tokenId={tokenIdToClaim}
                     isOpen={true}
@@ -560,6 +566,7 @@ export const StakingDetails = ({ stakingTokenInfo, defaultShowToken, defaultPayo
                 <StakingWithdrawOverlay
                     protocolAddress={protocol}
                     chainId={chain?.id!}
+                    tokens={tokens}
                     stakingTokenInfo={stakingTokenInfo}
                     payoutTokenInfo={defaultPayoutToken}
                     tokenId={tokenIdToWithdraw}
@@ -571,6 +578,7 @@ export const StakingDetails = ({ stakingTokenInfo, defaultShowToken, defaultPayo
                 <StakingUpstakeOverlay
                     protocolAddress={protocol}
                     chainId={chain?.id!}
+                    tokens={tokens}
                     stakingTokenInfo={stakingTokenInfo}
                     payoutTokenInfo={defaultPayoutToken}
                     stake={stakes.find((stake) => stake.tokenId === tokenIdToUpstake)!}
@@ -582,6 +590,7 @@ export const StakingDetails = ({ stakingTokenInfo, defaultShowToken, defaultPayo
                 <StakingMergeOverlay
                     protocolAddress={protocol}
                     chainId={chain?.id!}
+                    tokens={tokens}
                     stakingTokenInfo={stakingTokenInfo}
                     payoutTokenInfo={defaultPayoutToken}
                     stake={stakes.find((stake) => stake.tokenId === tokenIdToMerge)!}
@@ -593,6 +602,7 @@ export const StakingDetails = ({ stakingTokenInfo, defaultShowToken, defaultPayo
             {isInProgessAddUp && tokenIdToAddUp && (
                 <StakingAddingUpOverlay
                     protocolAddress={protocol}
+                    tokens={tokens}
                     chainId={chain?.id!}
                     stakingTokenInfo={stakingTokenInfo}
                     payoutTokenInfo={defaultPayoutToken}

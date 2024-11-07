@@ -157,13 +157,20 @@ export const StakingNFTTile = ({
                                                     NOW
                                                 </span>
                                                 <Tooltip
-                                                    content={`The pool your stake is in was changed to your disadvantage. You're qualified to withdraw your stake before the lock period has been expired`}
-                                                    className="text-center"
+                                                    content={
+                                                        <span>
+                                                            <span className="font-bold">Your stake got unlocked</span>{' '}
+                                                            <br />
+                                                            This happens when the pool you've staked into has changed
+                                                            its parameters to your disadvantage.
+                                                        </span>
+                                                    }
+                                                    className="max-w-[400px] text-center"
                                                 >
                                                     <AiOutlineQuestionCircle className="h-5 w-5" />
                                                 </Tooltip>
                                             </>
-                                        )}{' '}
+                                        )}
                                     </div>
                                 </StatsBoxTwoColumn.RightColumn>
                             </>

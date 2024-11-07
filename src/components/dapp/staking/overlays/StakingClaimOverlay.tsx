@@ -5,7 +5,6 @@ import { useGetClaimAllEstimation } from '@dapphooks/staking/useGetClaimAllEstim
 import { useGetClaimEstimation } from '@dapphooks/staking/useGetClaimEstimation'
 import { useGetRewardEstimationForTokens } from '@dapphooks/staking/useGetRewardEstimationForTokens'
 import { useGetStakes } from '@dapphooks/staking/useGetStakes'
-import { useGetTargetTokens } from '@dapphooks/staking/useGetTargetTokens'
 import { CaretDivider } from '@dappshared/CaretDivider'
 import { StatsBoxTwoColumn } from '@dappshared/StatsBoxTwoColumn'
 import { BaseOverlay, BaseOverlayProps } from '@dappshared/overlays/BaseOverlay'
@@ -28,6 +27,7 @@ type StakingClaimOverlaySingleProps = { tokenId: bigint; isClaimAll?: false }
 type StakingClaimOverlayProps = {
     protocolAddress: Address
     chainId: number
+    tokens: TokenInfoResponse[]
     targetToken: TokenInfo
 } & (StakingClaimOverlayAllProps | StakingClaimOverlaySingleProps) &
     BaseOverlayProps
@@ -36,6 +36,7 @@ export const StakingClaimOverlay = ({
     tokenId,
     isOpen,
     onClose,
+    tokens,
     targetToken,
     protocolAddress,
     chainId,
@@ -47,8 +48,7 @@ export const StakingClaimOverlay = ({
     const [payoutToken, setPayoutToken] = useState<TokenInfo>(targetToken)
     const [rewards, setRewards] = useState<any[]>()
     const [rewardTotalAmount, setRewardTotalAmount] = useState<bigint>(0n)
-    const [rewardTotalAmountEstimation, setRewardTotalAmountEstimation] =
-        useState<bigint>(0n)
+    const [rewardTotalAmountEstimation, setRewardTotalAmountEstimation] = useState<bigint>(0n)
     const [tokenIds, setTokenIds] = useState<bigint[]>()
     const [targetTokens, setTargetTokens] = useState<TokenInfoResponse[]>([])
     const [claimedAmount, setClaimedAmount] = useState<bigint>(0n)
@@ -73,47 +73,29 @@ export const StakingClaimOverlay = ({
         reset: resetClaim,
         rewardAmount: rewardAmountClaim,
         hash: hashClaim,
-    } = useClaim(
+    } = useClaim(protocolAddress, chainId, tokenId!, payoutToken?.source, !isClaimAll)
+
+    const { data: rewardEstimations, refetch: refetchRewardEstimations } = useGetRewardEstimationForTokens(
         protocolAddress,
         chainId,
-        tokenId!,
+        tokenIds!,
+        payoutToken?.source
+    )
+    const { data: dataStakes } = useGetStakes(protocolAddress, chainId, address!, isClaimAll)
+    const { data: claimAllEstimation, isLoading: isLoadingClaimAllEstimation } = useGetClaimAllEstimation(
+        Boolean(isClaimAll && address && payoutToken),
+        protocolAddress,
         payoutToken?.source,
-        !isClaimAll
+        address!
     )
 
-    const { data: dataTargetTokens } = useGetTargetTokens(
+    const { data: claimEstimation, isLoading: isLoadingClaimEstimation } = useGetClaimEstimation(
+        Boolean(!isClaimAll && address && tokenId && payoutToken),
         protocolAddress,
-        chainId
-    )
-    const { data: rewardEstimations, refetch: refetchRewardEstimations } =
-        useGetRewardEstimationForTokens(
-            protocolAddress,
-            chainId,
-            tokenIds!,
-            payoutToken?.source
-        )
-    const { data: dataStakes } = useGetStakes(
-        protocolAddress,
-        chainId,
+        payoutToken?.source,
         address!,
-        isClaimAll
+        tokenId!
     )
-    const { data: claimAllEstimation, isLoading: isLoadingClaimAllEstimation } =
-        useGetClaimAllEstimation(
-            Boolean(isClaimAll && address && payoutToken),
-            protocolAddress,
-            payoutToken?.source,
-            address!
-        )
-
-    const { data: claimEstimation, isLoading: isLoadingClaimEstimation } =
-        useGetClaimEstimation(
-            Boolean(!isClaimAll && address && tokenId && payoutToken),
-            protocolAddress,
-            payoutToken?.source,
-            address!,
-            tokenId!
-        )
 
     const onCloseHandler = () => {
         onClose && onClose()
@@ -126,14 +108,7 @@ export const StakingClaimOverlay = ({
         if (payoutToken?.source != target.source) {
             setIsLoadingRewards(true)
             setRewards([])
-            setPayoutToken(
-                pick(target, [
-                    'name',
-                    'symbol',
-                    'decimals',
-                    'source',
-                ]) as TokenInfo
-            )
+            setPayoutToken(pick(target, ['name', 'symbol', 'decimals', 'source']) as TokenInfo)
         }
     }
 
@@ -156,11 +131,7 @@ export const StakingClaimOverlay = ({
     }
 
     useEffect(() => {
-        if (
-            tokenIds &&
-            rewardEstimations &&
-            Boolean(tokenIds.length && rewardEstimations.length)
-        ) {
+        if (tokenIds && rewardEstimations && Boolean(tokenIds.length && rewardEstimations.length)) {
             setRewards(
                 tokenIds
                     .map((tokenId, i) => ({
@@ -172,11 +143,7 @@ export const StakingClaimOverlay = ({
 
             isClaimAll &&
                 setRewardTotalAmount(
-                    rewardEstimations.reduce(
-                        (acc, rewardEstimation) =>
-                            acc + BigInt(rewardEstimation.amount),
-                        0n
-                    )
+                    rewardEstimations.reduce((acc, rewardEstimation) => acc + BigInt(rewardEstimation.amount), 0n)
                 )
         } else {
             setRewards([])
@@ -194,22 +161,17 @@ export const StakingClaimOverlay = ({
     }, [tokenId])
 
     useEffect(() => {
-        if (tokenId && payoutToken && refetchRewardEstimations)
-            refetchRewardEstimations()
+        if (tokenId && payoutToken && refetchRewardEstimations) refetchRewardEstimations()
     }, [tokenId, payoutToken, refetchRewardEstimations])
 
     useEffect(() => {
-        if (dataTargetTokens && dataTargetTokens.length > 0) {
-            setTargetTokens(
-                dataTargetTokens.filter((token) => token.isTargetActive)
-            )
+        if (tokens && tokens.length > 0) {
+            setTargetTokens(tokens.filter((token) => token.isTarget))
         } else setTargetTokens([])
-    }, [dataTargetTokens])
+    }, [tokens])
 
     useEffect(() => {
-        setRewardTotalAmountEstimation(
-            (isClaimAll ? claimAllEstimation : claimEstimation) as bigint
-        )
+        setRewardTotalAmountEstimation((isClaimAll ? claimAllEstimation : claimEstimation) as bigint)
     }, [claimAllEstimation, claimEstimation, isClaimAll])
 
     useEffect(() => {
@@ -219,8 +181,8 @@ export const StakingClaimOverlay = ({
         if (isLoading)
             setIsLoading(
                 !Boolean(
-                    dataTargetTokens &&
-                        dataTargetTokens.length &&
+                    tokens &&
+                        tokens.length &&
                         estimation &&
                         dataStakes &&
                         dataStakes.length &&
@@ -230,32 +192,18 @@ export const StakingClaimOverlay = ({
                         rewardEstimations.length
                 )
             )
-    }, [
-        isClaimAll,
-        isLoading,
-        dataTargetTokens,
-        claimAllEstimation,
-        claimEstimation,
-        dataStakes,
-        tokenIds,
-        rewardEstimations,
-    ])
+    }, [isClaimAll, isLoading, tokens, claimAllEstimation, claimEstimation, dataStakes, tokenIds, rewardEstimations])
 
     useEffect(() => {
         const hasRewards = rewards && rewards.length
 
-        const isLoadingEstimation = isClaimAll
-            ? isLoadingClaimAllEstimation
-            : isLoadingClaimEstimation
+        const isLoadingEstimation = isClaimAll ? isLoadingClaimAllEstimation : isLoadingClaimEstimation
 
         const rewardTotal = isClaimAll
             ? rewardTotalAmountEstimation > 0n && rewardTotalAmount > 0n
             : rewardTotalAmountEstimation > 0n
 
-        if (isLoadingRewards)
-            setIsLoadingRewards(
-                !(!isLoadingEstimation && hasRewards && rewardTotal)
-            )
+        if (isLoadingRewards) setIsLoadingRewards(!(!isLoadingEstimation && hasRewards && rewardTotal))
     }, [
         rewards,
         rewardTotalAmount,
@@ -268,25 +216,13 @@ export const StakingClaimOverlay = ({
     ])
 
     useEffect(() => {
-        if (!isClaimAll && isSuccessClaim && rewardAmountClaim)
-            setClaimedAmount(rewardAmountClaim)
+        if (!isClaimAll && isSuccessClaim && rewardAmountClaim) setClaimedAmount(rewardAmountClaim)
 
-        if (isClaimAll && isSuccessClaimAll && rewardAmountClaimAll)
-            setClaimedAmount(rewardAmountClaimAll)
-    }, [
-        isSuccessClaimAll,
-        rewardAmountClaimAll,
-        rewardAmountClaim,
-        isClaimAll,
-        isSuccessClaim,
-    ])
+        if (isClaimAll && isSuccessClaimAll && rewardAmountClaimAll) setClaimedAmount(rewardAmountClaimAll)
+    }, [isSuccessClaimAll, rewardAmountClaimAll, rewardAmountClaim, isClaimAll, isSuccessClaim])
 
     return (
-        <BaseOverlay
-            isOpen={isOpen}
-            closeOnBackdropClick={false}
-            onClose={onCloseHandler}
-        >
+        <BaseOverlay isOpen={isOpen} closeOnBackdropClick={false} onClose={onCloseHandler}>
             {isLoading && (
                 <div className="item-center flex flex-row justify-center">
                     <Spinner theme="dark" className="m-20 !h-24 !w-24" />
@@ -303,9 +239,7 @@ export const StakingClaimOverlay = ({
                     <>
                         <div className="flex flex-col gap-6 text-base">
                             <h3 className="flex flex-row items-center gap-3 text-xl">
-                                <div className="font-title">
-                                    {isClaimAll ? 'Claim All' : 'Claim'}
-                                </div>
+                                <div className="font-title">{isClaimAll ? 'Claim All' : 'Claim'}</div>
                                 <div>
                                     <AiOutlineQuestionCircle />
                                 </div>
@@ -329,10 +263,7 @@ export const StakingClaimOverlay = ({
 
                             {isLoadingRewards && (
                                 <div className="flex justify-center rounded-lg bg-dapp-blue-800 p-5">
-                                    <Spinner
-                                        theme="dark"
-                                        className="!h-10 !w-10"
-                                    />
+                                    <Spinner theme="dark" className="!h-10 !w-10" />
                                 </div>
                             )}
 
@@ -344,17 +275,13 @@ export const StakingClaimOverlay = ({
                                             <Fragment key={reward.tokenId}>
                                                 <StatsBoxTwoColumn.LeftColumn>
                                                     <span className="text-xs text-darkTextLowEmphasis">
-                                                        NFT#{reward.tokenId}{' '}
-                                                        Rewards
+                                                        NFT#{reward.tokenId} Rewards
                                                     </span>
                                                 </StatsBoxTwoColumn.LeftColumn>
                                                 <StatsBoxTwoColumn.RightColumn>
                                                     <span className="text-darkTextLowEmphasis">
                                                         {payoutToken?.symbol}{' '}
-                                                        {toReadableNumber(
-                                                            reward.amount,
-                                                            payoutToken?.decimals
-                                                        )}
+                                                        {toReadableNumber(reward.amount, payoutToken?.decimals)}
                                                     </span>
                                                 </StatsBoxTwoColumn.RightColumn>
                                             </Fragment>
@@ -366,15 +293,10 @@ export const StakingClaimOverlay = ({
                                                 <CaretDivider />
                                             </div>
 
-                                            <StatsBoxTwoColumn.LeftColumn>
-                                                Total Rewards
-                                            </StatsBoxTwoColumn.LeftColumn>
+                                            <StatsBoxTwoColumn.LeftColumn>Total Rewards</StatsBoxTwoColumn.LeftColumn>
                                             <StatsBoxTwoColumn.RightColumn>
                                                 {payoutToken?.symbol}{' '}
-                                                {toReadableNumber(
-                                                    rewardTotalAmount,
-                                                    payoutToken?.decimals
-                                                )}
+                                                {toReadableNumber(rewardTotalAmount, payoutToken?.decimals)}
                                             </StatsBoxTwoColumn.RightColumn>
                                         </>
                                     )}
@@ -387,10 +309,7 @@ export const StakingClaimOverlay = ({
                                         Approx. {payoutToken?.symbol}{' '}
                                     </StatsBoxTwoColumn.LeftColumn>
                                     <StatsBoxTwoColumn.RightColumn>
-                                        {`~ ${toReadableNumber(
-                                            rewardTotalAmountEstimation,
-                                            payoutToken?.decimals
-                                        )}`}
+                                        {`~ ${toReadableNumber(rewardTotalAmountEstimation, payoutToken?.decimals)}`}
                                     </StatsBoxTwoColumn.RightColumn>
                                 </StatsBoxTwoColumn.Wrapper>
                             )}
@@ -400,31 +319,19 @@ export const StakingClaimOverlay = ({
 
             {(isLoadingClaim || isLoadingClaimAll) && (
                 <div className="flex flex-col items-center gap-6 p-6 text-base">
-                    <SpinnerCircular
-                        size={100}
-                        thickness={200}
-                        speed={50}
-                        color="#0F978E"
-                        secondaryColor="#DBEAE8"
-                    />
+                    <SpinnerCircular size={100} thickness={200} speed={50} color="#0F978E" secondaryColor="#DBEAE8" />
                     {!hashClaim && !hashClaimAll ? (
                         <div className="text-center">
                             Your wallet is prompting you to confirm a claim of
                             <br />
                             <span className="text-xl font-bold">
-                                ~{' '}
-                                {toReadableNumber(
-                                    rewardTotalAmountEstimation,
-                                    payoutToken?.decimals
-                                )}{' '}
+                                ~ {toReadableNumber(rewardTotalAmountEstimation, payoutToken?.decimals)}{' '}
                                 {payoutToken?.symbol}
                             </span>
                             <br />
                         </div>
                     ) : (
-                        <div className="text-center">
-                            Waiting for transaction to be processed...
-                        </div>
+                        <div className="text-center">Waiting for transaction to be processed...</div>
                     )}
                 </div>
             )}
@@ -443,19 +350,14 @@ export const StakingClaimOverlay = ({
                     </div>
                 )}
 
-            {((!isLoadingClaim && isSuccessClaim) ||
-                (!isLoadingClaimAll && isSuccessClaimAll)) && (
+            {((!isLoadingClaim && isSuccessClaim) || (!isLoadingClaimAll && isSuccessClaimAll)) && (
                 <>
                     <div className="flex flex-col items-center gap-6 p-6 text-center text-base">
                         <IoCheckmarkCircle className="h-[100px] w-[100px] text-success" />
                         <span className="font-bold">
                             Successfully claimed <br />
                             <span className="text-xl font-bold">
-                                {toReadableNumber(
-                                    claimedAmount,
-                                    payoutToken?.decimals
-                                )}{' '}
-                                {payoutToken?.symbol}
+                                {toReadableNumber(claimedAmount, payoutToken?.decimals)} {payoutToken?.symbol}
                             </span>
                         </span>
                     </div>
@@ -485,27 +387,24 @@ export const StakingClaimOverlay = ({
                     </Button>
                 )}
 
-            {!isLoading &&
-                !isSuccessClaim &&
-                !isSuccessClaimAll &&
-                (isErrorClaimAll || isErrorClaim) && (
-                    <div>
-                        <Button
-                            variant="primary"
-                            onClick={onClickTryAgainButtonHandler}
-                            className="mt-6 flex w-full items-center justify-center gap-2"
-                        >
-                            Try again
-                        </Button>
-                        <Button
-                            variant="secondary"
-                            onClick={onClickCancelButtonHandler}
-                            className="mt-2 flex w-full items-center justify-center gap-2"
-                        >
-                            Cancel
-                        </Button>
-                    </div>
-                )}
+            {!isLoading && !isSuccessClaim && !isSuccessClaimAll && (isErrorClaimAll || isErrorClaim) && (
+                <div>
+                    <Button
+                        variant="primary"
+                        onClick={onClickTryAgainButtonHandler}
+                        className="mt-6 flex w-full items-center justify-center gap-2"
+                    >
+                        Try again
+                    </Button>
+                    <Button
+                        variant="secondary"
+                        onClick={onClickCancelButtonHandler}
+                        className="mt-2 flex w-full items-center justify-center gap-2"
+                    >
+                        Cancel
+                    </Button>
+                </div>
+            )}
         </BaseOverlay>
     )
 }

@@ -1,7 +1,6 @@
 import { toReadableNumber } from '@dapphelpers/number'
 import { useGetRewardEstimationForTokens } from '@dapphooks/staking/useGetRewardEstimationForTokens'
 import { useGetStakes } from '@dapphooks/staking/useGetStakes'
-import { useGetTargetTokens } from '@dapphooks/staking/useGetTargetTokens'
 import { useWithdraw } from '@dapphooks/staking/useWithdraw'
 import { CaretDivider } from '@dappshared/CaretDivider'
 import { StatsBoxTwoColumn } from '@dappshared/StatsBoxTwoColumn'
@@ -23,6 +22,7 @@ import { StakingPayoutTokenSelection } from '../StakingPayoutTokenSelection'
 type StakingWithdrawOverlayProps = {
     protocolAddress: Address
     chainId: number
+    tokens: TokenInfoResponse[]
     stakingTokenInfo: TokenInfoResponse
     payoutTokenInfo: TokenInfo
     tokenId: bigint
@@ -32,6 +32,7 @@ export const StakingWithdrawOverlay = ({
     tokenId,
     isOpen,
     onClose,
+    tokens,
     protocolAddress,
     chainId,
     stakingTokenInfo,
@@ -48,7 +49,6 @@ export const StakingWithdrawOverlay = ({
     const [targetTokens, setTargetTokens] = useState<TokenInfoResponse[]>([])
 
     const { data: dataStakes } = useGetStakes(protocolAddress, chainId, address!, true)
-    const { data: dataTargetTokens } = useGetTargetTokens(protocolAddress, chainId)
     const { data: rewardEstimations, refetch: refetchRewardEstimations } = useGetRewardEstimationForTokens(
         protocolAddress,
         chainId,
@@ -128,24 +128,24 @@ export const StakingWithdrawOverlay = ({
     }, [tokenId, payoutToken, refetchRewardEstimations])
 
     useEffect(() => {
-        if (dataTargetTokens && dataTargetTokens.length > 0) {
-            setTargetTokens(dataTargetTokens.filter((token) => token.isTargetActive))
+        if (tokens && tokens.length > 0) {
+            setTargetTokens(tokens.filter((token) => token.isTarget))
         } else setTargetTokens([])
-    }, [dataTargetTokens])
+    }, [tokens])
 
     useEffect(() => {
         if (isLoading)
             setIsLoading(
                 !Boolean(
-                    dataTargetTokens &&
-                        dataTargetTokens.length &&
+                    tokens &&
+                        tokens.length &&
                         dataStakes &&
                         dataStakes.length &&
                         rewardEstimations &&
                         rewardEstimations.length
                 )
             )
-    }, [isLoading, dataTargetTokens, dataStakes, rewardEstimations])
+    }, [isLoading, tokens, dataStakes, rewardEstimations])
 
     return (
         <BaseOverlay isOpen={isOpen} closeOnBackdropClick={false} onClose={onCloseHandler}>
