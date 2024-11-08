@@ -67,7 +67,8 @@ export const StakingForm = ({ stakingTokenInfo, onDepositSuccessHandler }: Staki
     // base data hooks
     const { data: dataStakeBuckets } = useBucketsGetStakeBuckets(protocol, chain?.id!)
     const { data: dataMultiplierPerToken, isLoading: isLoadingMultiplierPerToken } =
-        useGetMultipliersPerOneStakingToken(protocol, chain?.id!, selectedStake?.id!, stakeAmount)
+        useGetMultipliersPerOneStakingToken(protocol, chain?.id!, stakeBucketId, stakeAmount)
+
     const { data: dataBalanceOf } = useGetERC20BalanceOf(stakingTokenInfo?.source, address!, chain?.id!)
     const {
         data: dataAllowance,
