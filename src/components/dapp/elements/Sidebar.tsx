@@ -21,7 +21,9 @@ const navigation = [
     {
         name: 'Buy $DGNX',
         icon: HiCurrencyDollar,
-        href: 'https://broccoliswap.com/?inputToken=AVAX&inputChain=AVAX&outputToken=DGNX&outputChain=AVAX&amount=10',
+        href: 'http://localhost:3000/dapp/defitools/broccoliswap/outputCurrency=0x51e48670098173025C477D9AA3f0efF7BF9f7812&outputChain=43114',//">Buy My Token</a>
+
+        //href: 'https://broccoliswap.com/?inputToken=AVAX&inputChain=AVAX&outputToken=DGNX&outputChain=AVAX&amount=10',
         count: undefined,
         children: null,
     },
@@ -63,6 +65,20 @@ const navigation = [
                 name: 'STAKEX',
                 icon: PiCoins,
                 href: 'defitools/stakex/',
+                count: undefined,
+                children: [],
+            },
+            {
+                name: 'Broccoliswap',
+                icon: PiCoins,
+                href: 'defitools/broccoliswap/',
+                count: undefined,
+                children: [],
+            },
+            {
+                name: 'Linkbridge',
+                icon: PiCoins,
+                href: 'defitools/linkbridge/',
                 count: undefined,
                 children: [],
             },

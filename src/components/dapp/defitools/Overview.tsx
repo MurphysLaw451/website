@@ -1,6 +1,8 @@
 import { Tile } from '@dappshared/Tile'
 import imageBacking from '@public/defitools/backing.svg'
 import imageSTAKEX from '@public/defitools/stakex.svg'
+import imageBroccoliswap from '@public/defitools/broccoliswap.svg'
+import imageLinkbridge from '@public/defitools/linkbridge.svg'
 import clsx from 'clsx'
 import Image from 'next/image'
 import { useNavigate } from 'react-router-dom'
@@ -36,6 +38,28 @@ const defitools: DeFiToolType[] = [
         toMore: 'https://docs.dgnx.finance/degenx-ecosystem/Products/Liquidity_Backing/liquidity_backing',
         description:
             'Liquidity Backing is setting a foundational value for your project by establishing a growing pool of assets based on your total supply. This mechanism allows your holders to unlock their share of Liquidity Backing assets by choosing to burn their tokens. With this product, your project will earn more trust and security for the holders.',
+    },
+    {
+        name: 'BROCCOLISWAP',
+        logo: imageBroccoliswap,
+        to: './broccoliswap/',
+        toLabel: 'Open Broccoliswap',
+        toMore: 'https://docs.debridge.finance',
+        toOverview: './broccoliswap/',
+        toOverviewLabel: 'Overview Broccoliswap',
+        description:
+            'Broccoliswap is a decentralized exchange for swapping tokens across multiple blockchains seamlessly, powered by DeBridge.',
+    },
+    {
+        name: 'LINKBRIDGE',
+        logo: imageLinkbridge,
+        to: './linkbridge/',
+        toLabel: 'Open Linkbridge',
+        toMore: 'https://docs.debridge.finance',
+        toOverview: './linkbridge/',
+        toOverviewLabel: 'Overview Linkbridge',
+        description:
+            'Linkbridge allows you to create wrapped tokens on all major blockchains, enabling seamless token interoperability.',
     },
     // {
     //     name: 'LOCKR',

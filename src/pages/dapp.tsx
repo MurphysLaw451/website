@@ -18,6 +18,8 @@ import { LiquidityBacking } from '../components/dapp/LiquidityBacking'
 import { StakeX } from '../components/dapp/StakeX'
 import { DappHeader } from '../components/dapp/elements/DappHeader'
 import Sidebar from '../components/dapp/elements/Sidebar'
+import Broccoliswap from '../components/dapp/defitools/broccoliswap/Broccoliswap';
+import Linkbridge from '../components/dapp/defitools/linkbridge/Linkbridge';
 
 TimeAgo.addDefaultLocale(en)
 
@@ -100,6 +102,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                                         <Route element={<ATM />} path="/dapp/atm" />
                                         <Route element={<Bouncer />} path="/dapp/bouncer/:hash" />
                                         <Route element={<StakeX />} path="/dapp/staking/:chainId/:protocolAddress" />
+                                        <Route path="/defitools/broccoliswap" element={<Broccoliswap />} />
+                                        <Route path="/defitools/linkbridge" element={<Linkbridge />} />
                                     </Routes>
                                 </main>
                             </div>

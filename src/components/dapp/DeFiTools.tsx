@@ -7,6 +7,8 @@ import {
 } from '@dapphelpers/defitools'
 import { useState } from 'react'
 import { Overview as DeFiToolsStakeXOverview } from './defitools/stakex/Overview'
+import Broccoliswap from './defitools/broccoliswap/Broccoliswap'
+import Linkbridge from './defitools/linkbridge/Linkbridge'
 
 export const DeFiTools = () => {
     const [dataDeFiToolsContext, setDataDeFiToolsContext] =
@@ -26,6 +28,9 @@ export const DeFiTools = () => {
                         element={<DeFiToolsStakeXOverview />}
                         path="stakex/*"
                     />
+                    <Route element={<Broccoliswap />} path="broccoliswap" />
+                    <Route element={<Linkbridge />} path="linkbridge" />
+
                 </Routes>
             </div>
         </DeFiToolsContext.Provider>
